@@ -1,0 +1,26 @@
+/* body { padding-top: 80px; } */
+/* @media screen and (max-width: 768px) {
+    body { padding-top: 70px; }
+} */
+
+body {
+    background: #e3e3e3;
+}
+#main {
+    background-color: #f8f8f8;
+}
+#footer {
+    background: #c4c4c4;
+}
+.custom-table th {
+    background-color: var(--bs-primary) !important;
+    color: white !important;
+}
+.custom-table td {
+    background-color: white;
+    color: black;
+}
+.custom-table {
+    border-radius: 10px;
+    overflow: hidden;
+}
