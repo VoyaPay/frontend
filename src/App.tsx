@@ -1,38 +1,51 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthProvider';
-import ProtectedRoute from './components/ProtectedRoute';
-import LoginPage from './components/Login';
-import DashboardLayout from './partials/DasboardLayout';
-import LogoutButton from './components/Logout';
-import './App.css'
-import MyAccountPage from './pages/MyAccount';
-import SharedCardPage from './pages/SharedCard';
-import TransactionsPage from './pages/Transactions';
-import SettingsPage from './pages/Settings';
-import QaPage from './pages/Qa';
-import PrePaidCardPage from './pages/PrePaidCard';
-import DepositPage from './pages/Deposit';
+import { useState, useEffect } from "react";
+import { getBrowserLang } from "@/utils/util";
+import { ConfigProvider } from "antd";
+import { connect } from "react-redux";
+import { setLanguage } from "@/redux/modules/global/action";
+import { HashRouter } from "react-router-dom";
+import AuthRouter from "@/routers/utils/authRouter";
+import Router from "@/routers/index";
+import useTheme from "@/hooks/useTheme";
+import zhCN from "antd/lib/locale/zh_CN";
+import enUS from "antd/lib/locale/en_US";
+import i18n from "i18next";
+import "moment/dist/locale/zh-cn";
 
-function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-                <Route element={<DashboardLayout/>} >
-                    <Route path="/" element={<ProtectedRoute><MyAccountPage /></ProtectedRoute>} />
-                    <Route path="/deposit" element={<ProtectedRoute><DepositPage /></ProtectedRoute>} />
-                    <Route path="/pre-paid-card" element={<ProtectedRoute><PrePaidCardPage /></ProtectedRoute>} />
-                    <Route path="/shared-card" element={<ProtectedRoute><SharedCardPage /></ProtectedRoute>} />
-                    <Route path="/transactions" element={<ProtectedRoute><TransactionsPage /></ProtectedRoute>} />
-                    <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-                    <Route path="/qa" element={<ProtectedRoute><QaPage /></ProtectedRoute>} />
-                </Route>
-          <Route path="/logout" element={<LogoutButton />} />
-        </Routes>
-      </AuthProvider>
-    </Router>
-  );
-}
+const App = (props: any) => {
+	const { language, assemblySize, themeConfig, setLanguage } = props;
+	const [i18nLocale, setI18nLocale] = useState(zhCN);
 
-export default App;
+	// 全局使用主题
+	useTheme(themeConfig);
+
+	// 设置 antd 语言国际化
+	const setAntdLanguage = () => {
+		// 如果 redux 中有默认语言就设置成 redux 的默认语言，没有默认语言就设置成浏览器默认语言
+		if (language && language == "zh") return setI18nLocale(zhCN);
+		if (language && language == "en") return setI18nLocale(enUS);
+		if (getBrowserLang() == "zh") return setI18nLocale(zhCN);
+		if (getBrowserLang() == "en") return setI18nLocale(enUS);
+	};
+
+	useEffect(() => {
+		// 全局使用国际化
+		i18n.changeLanguage(language || getBrowserLang());
+		setLanguage(language || getBrowserLang());
+		setAntdLanguage();
+	}, [language]);
+
+	return (
+		<HashRouter>
+			<ConfigProvider locale={i18nLocale} componentSize={assemblySize}>
+				<AuthRouter>
+					<Router />
+				</AuthRouter>
+			</ConfigProvider>
+		</HashRouter>
+	);
+};
+
+const mapStateToProps = (state: any) => state.global;
+const mapDispatchToProps = { setLanguage };
+export default connect(mapStateToProps, mapDispatchToProps)(App);
