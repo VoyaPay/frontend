@@ -20,11 +20,16 @@ const Account = () => {
 		const fetchData = async () => {
 			try {
 				const response = await UserTransfersApi();
-				console.log("Response data object:", response);
-				console.log("Response data field:", response.data);
-					
-				setDataSource(response.data);
-	
+				const formattedData = response.map(transaction => ({
+          key: transaction.id,
+          transactionType: transaction.type,
+          dynamicAccountType: transaction.origin,
+          amount: transaction.amount,
+          currency: "USD", 
+          time: transaction.processedAt,
+          transactionDetail: transaction.externalId
+        }));
+        setDataSource(formattedData);
 			} catch (error) {
 				console.error('Error fetching data:', error);
 			}
@@ -32,35 +37,6 @@ const Account = () => {
 	
 		fetchData();
 	}, []);
-
-	// const dataSource = [
-	// 	{
-	// 		key: "1",
-	// 		transactionType: "转入",
-	// 		dynamicAccountType: "+",
-	// 		amount: 500,
-	// 		currency: "美元",
-	// 		time: "2024/06/11 14:50",
-	// 		transactionDetail: '预付卡转至沃易卡账户'
-	// 	},
-	// 	{
-	// 		key: "2",
-	// 		transactionType: "转入",
-	// 		dynamicAccountType: "+",
-	// 		amount: 500,
-	// 		currency: "美元",
-	// 		time: "2024/06/11 14:50",
-	// 		transactionDetail: '预付卡转至沃易卡账户'
-	// 	}, {
-	// 		key: "3",
-	// 		transactionType: "转入",
-	// 		dynamicAccountType: "+",
-	// 		amount: 500,
-	// 		currency: "美元",
-	// 		time: "2024/06/11 14:50",
-	// 		transactionDetail: '预付卡转至沃易卡账户'
-	// 	}
-	// ];
 
 	const columns: any[] = [
 		{
