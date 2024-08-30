@@ -19,10 +19,30 @@ export const loginApi = (params: Login.ReqLoginForm) => {
 
 // * 获取按钮权限
 export const getAuthorButtons = () => {
-	return http.get<Login.ResAuthButtons>(PORT1 + `/auth/buttons`);
+
+	const token = localStorage.getItem('access_token'); // 从localStorage中获取token
+	console.log
+  if (!token) {
+    throw new Error('No token found. Please login first.');
+  }
+  return http.get<Login.ResAuthButtons>(PORT1 + `/auth/buttons`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // 在请求头中添加token
+    },
+    
+  });
 };
 
 // * 获取菜单列表
 export const getMenuList = () => {
-	return http.get<Menu.MenuOptions[]>(PORT1 + `/menu/list`);
+	const token = localStorage.getItem('access_token'); // 从localStorage中获取token
+  if (!token) {
+    throw new Error('No token found. Please login first.');
+  }
+  return http.get<Menu.MenuOptions[]>(PORT1 + `/menu/list`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // 在请求头中添加token
+    },
+    
+  });
 };

@@ -1,50 +1,66 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Table, DatePicker, Button, Space } from "antd";
-import useAuthButtons from "@/hooks/useAuthButtons";
+// import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
 // import { HOME_URL } from "@/config/config";
 // import { useNavigate, NavLink } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import "./index.less";
+import { UserTransfersApi  } from "@/api/modules/ledger"
 
 const Account = () => {
 	// 按钮权限
-	const { BUTTONS } = useAuthButtons();
 	const { RangePicker } = DatePicker;
 	// const navigate = useNavigate();
+	const [dataSource, setDataSource]= useState([])
 
 	useEffect(() => {
-		console.log(BUTTONS);
+		console.log('here');
+		
+		const fetchData = async () => {
+			try {
+				const response = await UserTransfersApi();
+				console.log("Response data object:", response);
+				console.log("Response data field:", response.data);
+					
+				setDataSource(response.data);
+	
+			} catch (error) {
+				console.error('Error fetching data:', error);
+			}
+		};
+	
+		fetchData();
 	}, []);
 
-	const dataSource = [
-		{
-			key: "1",
-			transactionType: "转入",
-			dynamicAccountType: "+",
-			amount: 500,
-			currency: "美元",
-			time: "2024/06/11 14:50",
-			transactionDetail: '预付卡转至沃易卡账户'
-		},
-		{
-			key: "2",
-			transactionType: "转入",
-			dynamicAccountType: "+",
-			amount: 500,
-			currency: "美元",
-			time: "2024/06/11 14:50",
-			transactionDetail: '预付卡转至沃易卡账户'
-		}, {
-			key: "3",
-			transactionType: "转入",
-			dynamicAccountType: "+",
-			amount: 500,
-			currency: "美元",
-			time: "2024/06/11 14:50",
-			transactionDetail: '预付卡转至沃易卡账户'
-		}
-	];
+	// const dataSource = [
+	// 	{
+	// 		key: "1",
+	// 		transactionType: "转入",
+	// 		dynamicAccountType: "+",
+	// 		amount: 500,
+	// 		currency: "美元",
+	// 		time: "2024/06/11 14:50",
+	// 		transactionDetail: '预付卡转至沃易卡账户'
+	// 	},
+	// 	{
+	// 		key: "2",
+	// 		transactionType: "转入",
+	// 		dynamicAccountType: "+",
+	// 		amount: 500,
+	// 		currency: "美元",
+	// 		time: "2024/06/11 14:50",
+	// 		transactionDetail: '预付卡转至沃易卡账户'
+	// 	}, {
+	// 		key: "3",
+	// 		transactionType: "转入",
+	// 		dynamicAccountType: "+",
+	// 		amount: 500,
+	// 		currency: "美元",
+	// 		time: "2024/06/11 14:50",
+	// 		transactionDetail: '预付卡转至沃易卡账户'
+	// 	}
+	// ];
 
 	const columns: any[] = [
 		{

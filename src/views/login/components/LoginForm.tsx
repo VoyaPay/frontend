@@ -26,10 +26,21 @@ const LoginForm = (props: any) => {
 			setLoading(true);
 			console.log('loginForm', loginForm);
 			// loginForm.password = md5(loginForm.password);
-			const { data } = await loginApi(loginForm);
-			setToken(data ?.access_token);
+			const response = await loginApi(loginForm);
+			console.log(response.data)
+			
+			const access_token= response.data?.access_token
+			// const access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsI…yMjN9.ZHJadrstMseAP76F2OmxQBxfyZe2Pk9TlvwoobFE5bo'
+			console.log(access_token)
+			if (!access_token) {
+				throw new Error('No access token received');
+			}
+			
+			console.log('Received token:', access_token);
+			setToken("access token is " + access_token);
 			setTabsList([]);
 			message.success("登录成功！");
+			localStorage.setItem('access_token', access_token);
 			navigate(HOME_URL);
 		} finally {
 			setLoading(false);
