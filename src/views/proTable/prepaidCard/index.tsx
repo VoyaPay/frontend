@@ -12,6 +12,8 @@ import { UserCardApi } from "@/api/modules/prepaid"
 const PrepaidCard = () => {
   // State to hold the card data
   const [dataSource, setDataSource] = useState([]);
+	const [totalAmount, setTotalAmount]= useState(0);
+	const [totalCardNumber, setTotalCardNumber]= useState(100);
   
   // Button permissions
   // const { BUTTONS } = useAuthButtons();
@@ -33,7 +35,14 @@ const PrepaidCard = () => {
           banlance: '200.0', // Replace with actual balance if available
           createCardTime: '2024/06/11 14:50' // Replace with actual creation time if available
         }));
+
+				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
+        const totalcard = 100 - formattedData.length;
+				console.log(total)
+				setTotalCardNumber(totalcard)
         setDataSource(formattedData ); // Adjust based on your API response structure
+				setTotalAmount(total)
+
       } catch (error) {
         console.error("Failed to fetch user cards:", error);
       }
@@ -99,7 +108,7 @@ const PrepaidCard = () => {
     }
   ];
 
-  const onSearch = (value, e, info) => console.log(info.source, value);
+  const onSearch = (value ) => console.log( value);
 
   return (
     <div className="card content-box">
@@ -115,14 +124,14 @@ const PrepaidCard = () => {
           <span className="pre">预付卡内总余额</span>
           <div className="amountWrap">
             <img src={accountextra} className="accountIcons" />
-            <span className="amount">$ 100.0</span>
+            <span className="amount">${totalAmount}</span>
           </div>
         </div>
         <div className="banlanceWrap">
           <span className="pre">剩余可用开卡数</span>
           <div className="amountWrap">
             <img src={canuse} className="accountIcons" />
-            <span className="amount">$ 100.0</span>
+            <span className="amount">{totalCardNumber}</span>
           </div>
         </div>
       </div>

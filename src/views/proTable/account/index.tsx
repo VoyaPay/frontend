@@ -13,6 +13,7 @@ const Account = () => {
 	const { RangePicker } = DatePicker;
 	// const navigate = useNavigate();
 	const [dataSource, setDataSource]= useState([])
+	const [totalAmount, setTotalAmount]= useState(0)
 
 	useEffect(() => {
 		console.log('here');
@@ -30,6 +31,9 @@ const Account = () => {
           transactionDetail: transaction.externalId
         }));
         setDataSource(formattedData);
+				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.amount) || 0), 0);
+				
+				setTotalAmount(total);
 			} catch (error) {
 				console.error('Error fetching data:', error);
 			}
@@ -85,7 +89,7 @@ const Account = () => {
 			<div className="accountInfo">
 				<div className="accountBlanceWrap">
 					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">$ 100.0</span>
+					<span className="amount">$ {totalAmount}</span>
 				</div>
 				{/* <Button onClick={goToCharge}>充值</Button> */}
 				<Button>
