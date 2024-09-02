@@ -18,7 +18,16 @@ const proTableRouter: Array<RouteObject> = [
 					requiresAuth: true,
 					title: "沃易卡账户",
 					key: "account"
-				},
+				}
+			},
+			{
+				path: "/proTable/tradeQuery",
+				element: lazyLoad(React.lazy(() => import("@/views/proTable/tradeQuery/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "交易查询",
+					key: "tradeQuery"
+				}
 			},
 			{
 				path: "/recharge/index",
@@ -36,6 +45,33 @@ const proTableRouter: Array<RouteObject> = [
 					requiresAuth: true,
 					title: "查看详情",
 					key: "detail"
+				}
+			},
+			{
+				path: "/prepaidRecharge/index",
+				element: lazyLoad(React.lazy(() => import("@/views/proTable/prepaidRecharge/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "预付卡充值",
+					key: "prepaidRecharge"
+				}
+			},
+			{
+				path: "/addPrepaidCard/index",
+				element: lazyLoad(React.lazy(() => import("@/views/proTable/addPrepaidCard/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "新增预付卡",
+					key: "addPrepaidCard"
+				}
+			},
+			{
+				path: "/applySuccess/index",
+				element: lazyLoad(React.lazy(() => import("@/views/proTable/applySuccess/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "卡片申请成功",
+					key: "applySuccess"
 				}
 			},
 			{

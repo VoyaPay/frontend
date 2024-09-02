@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { Table, Button, Input, Space } from "antd";
 import useAuthButtons from "@/hooks/useAuthButtons";
-import {
-	PlusOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
 import accountextra from "@/assets/images/accountbanlace.png";
@@ -26,8 +24,8 @@ const PrepaidCard = () => {
 			cardGroup: "Visa",
 			cardNo: "4856043****222222",
 			cardStatus: "已冻结",
-			banlance: '200.0',
-			createCardTime: '2024/06/11 14:50'
+			banlance: "200.0",
+			createCardTime: "2024/06/11 14:50"
 		},
 		{
 			key: "1",
@@ -36,8 +34,8 @@ const PrepaidCard = () => {
 			cardGroup: "Visa",
 			cardNo: "4856043****222222",
 			cardStatus: "已冻结",
-			banlance: '200.0',
-			createCardTime: '2024/06/11 14:50'
+			banlance: "200.0",
+			createCardTime: "2024/06/11 14:50"
 		},
 		{
 			key: "1",
@@ -46,8 +44,8 @@ const PrepaidCard = () => {
 			cardGroup: "Visa",
 			cardNo: "4856043****222222",
 			cardStatus: "已冻结",
-			banlance: '200.0',
-			createCardTime: '2024/06/11 14:50'
+			banlance: "200.0",
+			createCardTime: "2024/06/11 14:50"
 		},
 		{
 			key: "1",
@@ -56,9 +54,9 @@ const PrepaidCard = () => {
 			cardGroup: "Visa",
 			cardNo: "4856043****222222",
 			cardStatus: "已冻结",
-			banlance: '200.0',
-			createCardTime: '2024/06/11 14:50'
-		},
+			banlance: "200.0",
+			createCardTime: "2024/06/11 14:50"
+		}
 	];
 
 	const columns: any[] = [
@@ -79,12 +77,14 @@ const PrepaidCard = () => {
 			dataIndex: "cardGroup",
 			key: "cardGroup",
 			align: "center"
-		}, {
+		},
+		{
 			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
 			align: "center"
-		}, {
+		},
+		{
 			title: "状态",
 			dataIndex: "cardStatus",
 			key: "cardStatus",
@@ -94,13 +94,13 @@ const PrepaidCard = () => {
 			title: "余额",
 			dataIndex: "banlance",
 			key: "banlance",
-			align: "center",
+			align: "center"
 		},
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
 			key: "createCardTime",
-			align: "center",
+			align: "center"
 		},
 		{
 			title: "操作",
@@ -112,9 +112,11 @@ const PrepaidCard = () => {
 					<Button type="link" size="small">
 						<NavLink to="/detail/index">查看详情</NavLink>
 					</Button>
-					<Button type="link" size="small">充值</Button>
+					<Button type="link" size="small">
+						<NavLink to="/prepaidRecharge/index">充值</NavLink>
+					</Button>
 				</Space>
-			),
+			)
 		}
 	];
 
@@ -149,7 +151,11 @@ const PrepaidCard = () => {
 					<span className="title">动帐明细</span>
 					<Search placeholder="Search" onSearch={onSearch} style={{ width: 200 }} />
 				</div>
-				<Button type="primary" icon={<PlusOutlined />}>新增预付卡</Button>
+				<Button type="primary" icon={<PlusOutlined />}>
+					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
+						新增预付卡
+					</NavLink>
+				</Button>
 			</div>
 			{/* <div className="auth">
 				<Space>
