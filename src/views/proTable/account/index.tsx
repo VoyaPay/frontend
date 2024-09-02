@@ -1,50 +1,46 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Table, DatePicker, Button, Space } from "antd";
-import useAuthButtons from "@/hooks/useAuthButtons";
+// import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
 // import { HOME_URL } from "@/config/config";
 // import { useNavigate, NavLink } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import "./index.less";
+import { UserTransfersApi } from "@/api/modules/ledger";
 
 const Account = () => {
 	// 按钮权限
-	const { BUTTONS } = useAuthButtons();
 	const { RangePicker } = DatePicker;
 	// const navigate = useNavigate();
+	const [dataSource, setDataSource] = useState([]);
+	const [totalAmount, setTotalAmount] = useState(0);
 
 	useEffect(() => {
-		console.log(BUTTONS);
-	}, []);
+		console.log("here");
 
-	const dataSource = [
-		{
-			key: "1",
-			transactionType: "转入",
-			dynamicAccountType: "+",
-			amount: 500,
-			currency: "美元",
-			time: "2024/06/11 14:50",
-			transactionDetail: '预付卡转至沃易卡账户'
-		},
-		{
-			key: "2",
-			transactionType: "转入",
-			dynamicAccountType: "+",
-			amount: 500,
-			currency: "美元",
-			time: "2024/06/11 14:50",
-			transactionDetail: '预付卡转至沃易卡账户'
-		}, {
-			key: "3",
-			transactionType: "转入",
-			dynamicAccountType: "+",
-			amount: 500,
-			currency: "美元",
-			time: "2024/06/11 14:50",
-			transactionDetail: '预付卡转至沃易卡账户'
-		}
-	];
+		const fetchData = async () => {
+			try {
+				const response = await UserTransfersApi();
+				const formattedData = response.map(transaction => ({
+					key: transaction.id,
+					transactionType: transaction.type,
+					dynamicAccountType: transaction.origin,
+					amount: transaction.amount,
+					currency: "USD",
+					time: transaction.processedAt,
+					transactionDetail: transaction.externalId
+				}));
+				setDataSource(formattedData);
+				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.amount) || 0), 0);
+
+				setTotalAmount(total);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+
+		fetchData();
+	}, []);
 
 	const columns: any[] = [
 		{
@@ -64,12 +60,14 @@ const Account = () => {
 			dataIndex: "amount",
 			key: "amount",
 			align: "center"
-		}, {
+		},
+		{
 			title: "币种",
 			dataIndex: "currency",
 			key: "currency",
 			align: "center"
-		}, {
+		},
+		{
 			title: "时间",
 			dataIndex: "time",
 			key: "time",
@@ -79,7 +77,7 @@ const Account = () => {
 			title: "交易明细",
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
-			align: "center",
+			align: "center"
 		}
 	];
 	const handleChange = (value: string) => {
@@ -93,7 +91,7 @@ const Account = () => {
 			<div className="accountInfo">
 				<div className="accountBlanceWrap">
 					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">$ 100.0</span>
+					<span className="amount">$ {totalAmount}</span>
 				</div>
 				{/* <Button onClick={goToCharge}>充值</Button> */}
 				<Button>
@@ -110,12 +108,12 @@ const Account = () => {
 							style={{ width: 120 }}
 							onChange={handleChange}
 							options={[
-								{ value: 'transactionType', label: '交易类型' },
-								{ value: 'dynamicAccountType', label: '动帐类型' },
-								{ value: 'amount', label: '金额' },
-								{ value: 'currency', label: '币种' },
-								{ value: 'time', label: '时间' },
-								{ value: 'transactionDetail', label: '交易明细' },
+								{ value: "transactionType", label: "交易类型" },
+								{ value: "dynamicAccountType", label: "动帐类型" },
+								{ value: "amount", label: "金额" },
+								{ value: "currency", label: "币种" },
+								{ value: "time", label: "时间" },
+								{ value: "transactionDetail", label: "交易明细" }
 							]}
 						/>
 					</Space>

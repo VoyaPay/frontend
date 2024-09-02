@@ -1,63 +1,54 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, Input, Space } from "antd";
-import useAuthButtons from "@/hooks/useAuthButtons";
+// import useAuthButtons from "@/hooks/useAuthButtons";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
 import accountextra from "@/assets/images/accountbanlace.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
+import { UserCardApi } from "@/api/modules/prepaid";
 
 const PrepaidCard = () => {
-	// 按钮权限
-	const { BUTTONS } = useAuthButtons();
-	const { Search } = Input;
-	useEffect(() => {
-		console.log(BUTTONS);
-	}, []);
+	// State to hold the card data
+	const [dataSource, setDataSource] = useState([]);
+	const [totalAmount, setTotalAmount] = useState(0);
+	const [totalCardNumber, setTotalCardNumber] = useState(100);
 
-	const dataSource = [
-		{
-			key: "1",
-			cardName: "广告1",
-			cardOwner: "张三",
-			cardGroup: "Visa",
-			cardNo: "4856043****222222",
-			cardStatus: "已冻结",
-			banlance: "200.0",
-			createCardTime: "2024/06/11 14:50"
-		},
-		{
-			key: "1",
-			cardName: "广告1",
-			cardOwner: "张三",
-			cardGroup: "Visa",
-			cardNo: "4856043****222222",
-			cardStatus: "已冻结",
-			banlance: "200.0",
-			createCardTime: "2024/06/11 14:50"
-		},
-		{
-			key: "1",
-			cardName: "广告1",
-			cardOwner: "张三",
-			cardGroup: "Visa",
-			cardNo: "4856043****222222",
-			cardStatus: "已冻结",
-			banlance: "200.0",
-			createCardTime: "2024/06/11 14:50"
-		},
-		{
-			key: "1",
-			cardName: "广告1",
-			cardOwner: "张三",
-			cardGroup: "Visa",
-			cardNo: "4856043****222222",
-			cardStatus: "已冻结",
-			banlance: "200.0",
-			createCardTime: "2024/06/11 14:50"
-		}
-	];
+	// Button permissions
+	// const { BUTTONS } = useAuthButtons();
+	const { Search } = Input;
+
+	// Fetch data from the API on component mount
+	useEffect(() => {
+		const fetchUserCards = async () => {
+			try {
+				const response = await UserCardApi();
+				console.log(response);
+				const formattedData = response.map(card => ({
+					key: card.id,
+					cardName: card.alias,
+					cardOwner: "张三", // Replace with actual owner data if available
+					cardGroup: card.network,
+					cardNo: card.number, // Or card.last4 if you prefer to show only the last 4 digits
+					cardStatus: "已冻结", // Replace with actual status if available
+					banlance: "200.0", // Replace with actual balance if available
+					createCardTime: "2024/06/11 14:50" // Replace with actual creation time if available
+				}));
+
+				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
+				const totalcard = 100 - formattedData.length;
+				console.log(total);
+				setTotalCardNumber(totalcard);
+				setDataSource(formattedData); // Adjust based on your API response structure
+				setTotalAmount(total);
+			} catch (error) {
+				console.error("Failed to fetch user cards:", error);
+			}
+		};
+
+		fetchUserCards();
+	}, []);
 
 	const columns: any[] = [
 		{
@@ -120,7 +111,8 @@ const PrepaidCard = () => {
 		}
 	];
 
-	const onSearch = (value, e, info) => console.log(info.source, value);
+	const onSearch = value => console.log(value);
+
 	return (
 		<div className="card content-box">
 			<div className="prepaidCardInfo">
@@ -135,14 +127,14 @@ const PrepaidCard = () => {
 					<span className="pre">预付卡内总余额</span>
 					<div className="amountWrap">
 						<img src={accountextra} className="accountIcons" />
-						<span className="amount">$ 100.0</span>
+						<span className="amount">${totalAmount}</span>
 					</div>
 				</div>
 				<div className="banlanceWrap">
 					<span className="pre">剩余可用开卡数</span>
 					<div className="amountWrap">
 						<img src={canuse} className="accountIcons" />
-						<span className="amount">$ 100.0</span>
+						<span className="amount">{totalCardNumber}</span>
 					</div>
 				</div>
 			</div>
@@ -157,13 +149,6 @@ const PrepaidCard = () => {
 					</NavLink>
 				</Button>
 			</div>
-			{/* <div className="auth">
-				<Space>
-					{BUTTONS.add && <Button type="primary">我是 Admin && User 能看到的按钮</Button>}
-					{BUTTONS.delete && <Button type="primary">我是 Admin 能看到的按钮</Button>}
-					{BUTTONS.edit && <Button type="primary">我是 User 能看到的按钮</Button>}
-				</Space>
-			</div> */}
 			<Table bordered={true} dataSource={dataSource} columns={columns} />
 		</div>
 	);
