@@ -16,19 +16,18 @@ const Account = () => {
 	const [totalAmount, setTotalAmount] = useState(0);
 
 	useEffect(() => {
-		console.log("here");
 
 		const fetchData = async () => {
 			try {
 				const response = await UserTransfersApi();
 				const formattedData = response.map(transaction => ({
 					key: transaction.id,
-					transactionType: transaction.type,
-					dynamicAccountType: transaction.origin,
-					amount: transaction.amount,
-					currency: "USD",
-					time: transaction.processedAt,
-					transactionDetail: transaction.externalId
+					transactionType: transaction.type, //"交易类型"
+					dynamicAccountType: transaction.origin, //"动帐类型"
+					amount: transaction.amount,//"金额"
+					currency: "USD",//"币种"
+					time: transaction.processedAt,//"时间"
+					transactionDetail: transaction.externalId //"交易明细"
 				}));
 				setDataSource(formattedData);
 				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.amount) || 0), 0);

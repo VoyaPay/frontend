@@ -1,38 +1,51 @@
 import { useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button } from "antd";
+import { Input, Button, message } from "antd";
 import "./index.less";
+import { AddCardApi } from "@/api/modules/prepaid";
 
 const AddPrepaidCard = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
-
 	const [cardName, setCardName] = useState("masterCard");
+	const [cardOwner, setCardOwner] = useState("张三");
+	const [amount, setAmount] = useState(0);
+	const navigate = useNavigate();
 
-	const changeCardName = e => {
+	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardName(e.target.value);
 	};
 
-	const [cardOwner, setCardOwner] = useState("张三");
-
-	const changeCardOwner = e => {
+	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardOwner(e.target.value);
 	};
 
-	const [amount, setAmount] = useState(0);
+	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setAmount(parseInt(e.target.value, 10) || 0);
+	};
 
-	const changeAmount = e => {
-		setAmount(e.target.value);
+	const handleSubmit = async () => {
+		const payload = {
+			type: cardName,
+			initialLimit: amount,
+			alias: cardOwner
+		};
+
+		try {
+			
+			const response = await AddCardApi(payload);
+			console.log(response)
+			if (response && response.status === 200) {
+				// Navigate to success page
+				navigate("/applySuccess/index");
+			} else {
+				// Show error message
+				console.log("failed")
+				message.error('卡片申请失败');
+			}
+		} catch (error) {
+			// Handle any errors
+			message.error('提交过程中发生错误');
+		}
 	};
 
 	return (
@@ -81,7 +94,7 @@ const AddPrepaidCard = () => {
 				</div>
 			</div>
 			<div className="btns">
-				<Button type="primary" className="actionBtn">
+				<Button type="primary" className="actionBtn" onClick={handleSubmit}>
 					立即申请
 				</Button>
 				<Button type="text" className="return">
