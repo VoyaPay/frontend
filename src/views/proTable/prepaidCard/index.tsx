@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { Table, Button, Input, Space } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 import { PlusOutlined } from "@ant-design/icons";
@@ -8,12 +9,25 @@ import accountextra from "@/assets/images/accountbanlace.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
+import { GetBalanceApi} from "@/api/modules/ledger";
 
+const formatDate = (dateString) => {
+	const date = new Date(dateString);
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0'); 
+	const day = String(date.getDate()).padStart(2, '0');
+	const hours = String(date.getHours()).padStart(2, '0');
+	const minutes = String(date.getMinutes()).padStart(2, '0');
+	const seconds = String(date.getSeconds()).padStart(2, '0');
+
+	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
 const PrepaidCard = () => {
 	// State to hold the card data
 	const [dataSource, setDataSource] = useState([]);
 	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
+	const [accountBalance, setAccountBalance]= useState(0);
 
 	// Button permissions
 	// const { BUTTONS } = useAuthButtons();
@@ -27,13 +41,13 @@ const PrepaidCard = () => {
 				console.log(response);
 				const formattedData = response.map(card => ({
 					key: card.id,
-					cardName: card.alias,
-					cardOwner: "张三", // Replace with actual owner data if available
+					cardName: card.type,
+					cardOwner: card.alias,
 					cardGroup: card.network,
-					cardNo: card.number, // Or card.last4 if you prefer to show only the last 4 digits
-					cardStatus: "已冻结", // Replace with actual status if available
-					banlance: "200.0", // Replace with actual balance if available
-					createCardTime: "2024/06/11 14:50" // Replace with actual creation time if available
+					cardNo: card.last4, 
+					cardStatus: card.status,
+					banlance: card.initialLimit, // Replace with actual balance if available
+					createCardTime: formatDate(card.updatedAt )
 				}));
 
 				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
@@ -47,6 +61,22 @@ const PrepaidCard = () => {
 			}
 		};
 
+		const getBalance = async () => {
+			try {
+				const response = await GetBalanceApi(); 
+				console.log("Full response:", response); 
+				
+				const formattedData = {
+					account: response.currentBalance, 
+				};
+		
+				setAccountBalance(formattedData.account); 
+			} catch (error) {
+				console.log("Cannot get balance of the account:", error);
+			}
+		};
+		
+		getBalance();
 		fetchUserCards();
 	}, []);
 
@@ -98,10 +128,13 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			render: () => (
+			render: (_, record) => (
 				<Space>
 					<Button type="link" size="small">
-						<NavLink to="/detail/index">查看详情</NavLink>
+						<NavLink to={{
+							pathname: "/detail/index",
+							state: { card: record } // Passing card details to the detail page
+						}}>查看详情</NavLink>
 					</Button>
 					<Button type="link" size="small">
 						<NavLink to="/prepaidRecharge/index">充值</NavLink>
@@ -120,7 +153,7 @@ const PrepaidCard = () => {
 					<span className="pre">沃易卡账户余额</span>
 					<div className="amountWrap">
 						<img src={accountBanlance} className="accountIcons" />
-						<span className="amount">$ 100.0</span>
+						<span className="amount">${accountBalance}</span>
 					</div>
 				</div>
 				<div className="banlanceWrap">

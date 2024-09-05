@@ -34,8 +34,15 @@ const AddPrepaidCard = () => {
 			
 			const response = await AddCardApi(payload);
 			console.log(response)
-			if (response && response.status === 200) {
-				// Navigate to success page
+			const formattedData = {
+				card: response.card,
+				transaction: response.transaction,
+			};
+			
+			console.log("transaction is "+formattedData.transaction.status)
+
+			if (response && formattedData.transaction.status) {
+				console.log(formattedData.status)
 				navigate("/applySuccess/index");
 			} else {
 				// Show error message

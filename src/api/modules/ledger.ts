@@ -19,3 +19,16 @@ export const UserTransfersApi = () => {
 
 	return http.get<ResultData>(PORT3 + "/Ledger", undefined, { headers });
 };
+
+export const GetBalanceApi=() => {
+	const token = localStorage.getItem("access_token"); // 从localStorage中获取token
+	if (!token) {
+		throw new Error("No token found. Please login first.");
+	}
+
+	const headers = {
+		Authorization: `Bearer ${token}` // 在请求头中添加 token
+	};
+
+	return http.get<ResultData>(PORT3 + "/Ledger/balance", undefined, { headers });
+}

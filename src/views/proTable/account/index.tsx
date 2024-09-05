@@ -8,6 +8,17 @@ import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
 const Account = () => {
 	// 按钮权限
 	const { RangePicker } = DatePicker;
@@ -26,7 +37,7 @@ const Account = () => {
 					dynamicAccountType: transaction.origin, //"动帐类型"
 					amount: transaction.amount,//"金额"
 					currency: "USD",//"币种"
-					time: transaction.processedAt,//"时间"
+					time: formatDate(transaction.processedAt),//"时间"
 					transactionDetail: transaction.externalId //"交易明细"
 				}));
 				setDataSource(formattedData);

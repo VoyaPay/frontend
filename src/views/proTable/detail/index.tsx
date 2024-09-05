@@ -1,67 +1,47 @@
 import { useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Input, Button } from "antd";
+import { NavLink } from "react-router-dom";
 import bankcard from "@/assets/images/bankcard.png";
 import "./index.less";
 
 const Detail = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
-
-	const [cardName, setCardName] = useState("cardname");
+	
+	const location = useLocation();
+	const { card } = location.state || {}; 
+	console.log(location)
+	
+	const [cardName, setCardName] = useState(card?.cardName || "cardname");
 	const [cardNameStatus, setCardNameStatus] = useState(false);
 
-	const [address, setAddress] = useState("cardname");
+	const [address, setAddress] = useState(card?.address || "cardname");
 	const [addressStatus, setAddressStatus] = useState(false);
 
-	const [cardOwner, setCardOwner] = useState("cardname");
+	const [cardOwner, setCardOwner] = useState(card?.cardOwner || "cardname");
 	const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
 
 	const changeCardName = e => {
-		console.log(e);
 		setCardName(e.target.value);
 	};
 
-	const tongleCardName = (status: any) => {
-		if (status == "change") {
-			setCardNameStatus(true);
-		} else {
-			setCardNameStatus(false);
-		}
+	const tongleCardName = (status) => {
+		setCardNameStatus(status === "change");
 	};
 
 	const changeAddress = e => {
 		setAddress(e.target.value);
 	};
 
-	const tongleAddress = (status: any) => {
-		if (status == "change") {
-			setAddressStatus(true);
-		} else {
-			setAddressStatus(false);
-		}
+	const tongleAddress = (status) => {
+		setAddressStatus(status === "change");
 	};
 
 	const changeCardOwner = e => {
 		setCardOwner(e.target.value);
 	};
 
-	const tongleCardOwner = (status: any) => {
-		if (status == "change") {
-			setCardOwnerStatus(true);
-		} else {
-			setCardOwnerStatus(false);
-		}
+	const tongleCardOwner = (status) => {
+		setCardOwnerStatus(status === "change");
 	};
 
 	return (
@@ -104,20 +84,20 @@ const Detail = () => {
 					</div>
 					<div className="content">
 						<div className="pre">卡组：</div>
-						<div className="text">MasterCard</div>
+						<div className="text">{card?.cardGroup || "MasterCard"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">卡号：</div>
-						<div className="text">1234344555</div>
+						<div className="text">{card?.cardNo || "1234344555"}</div>
 						<span className="action">复制完整卡号</span>
 					</div>
 					<div className="content">
 						<div className="pre">有效期：</div>
-						<div className="text">02/28</div>
+						<div className="text">{card?.expirationDate || "02/28"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">CVV2：</div>
-						<div className="text">122</div>
+						<div className="text">{card?.cvv || "122"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">地址：</div>
@@ -175,15 +155,15 @@ const Detail = () => {
 					</div>
 					<div className="content">
 						<div className="pre">状态：</div>
-						<div className="text">122</div>
+						<div className="text">{card?.cardStatus || "Active"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">余额：</div>
-						<div className="text">122</div>
+						<div className="text">{card?.banlance || "122"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">开卡时间：</div>
-						<div className="text">122</div>
+						<div className="text">{card?.createCardTime || "2024/09/05"}</div>
 					</div>
 				</div>
 				<div className="right">
