@@ -77,33 +77,6 @@ const TradeQuery = () => {
 		}
 	];
 
-	const createDataSource = [
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			applyId: "4444555555",
-			createTime: "2024/06/02 16：00",
-			cardName: "广告1",
-			cardGroup: "visa"
-		},
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			applyId: "4444555555",
-			createTime: "2024/06/02 16：00",
-			cardName: "广告1",
-			cardGroup: "visa"
-		},
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			applyId: "4444555555",
-			createTime: "2024/06/02 16：00",
-			cardName: "广告1",
-			cardGroup: "visa"
-		}
-	];
-
 	const authColumns: any[] = [
 		{
 			title: "授权时间",
@@ -155,39 +128,6 @@ const TradeQuery = () => {
 		}
 	];
 
-	const authDataSource = [
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			authTime: "2024/06/02 16：00",
-			authNum: "5656565656565",
-			shopName: "meta",
-			authStatus: "成功",
-			tradeCurrency: "USD",
-			tradeAmount: "10.0"
-		},
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			authTime: "2024/06/02 16：00",
-			authNum: "5656565656565",
-			shopName: "meta",
-			authStatus: "成功",
-			tradeCurrency: "USD",
-			tradeAmount: "10.0"
-		},
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			authTime: "2024/06/02 16：00",
-			authNum: "5656565656565",
-			shopName: "meta",
-			authStatus: "成功",
-			tradeCurrency: "USD",
-			tradeAmount: "10.0"
-		}
-	];
-
 	const settleColumns: any[] = [
 		{
 			title: "结算时间",
@@ -233,36 +173,6 @@ const TradeQuery = () => {
 		}
 	];
 
-	const settleDataSource = [
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			settleTime: "2024/06/02 16：00",
-			settleNum: "5656565656565",
-			shopName: "meta",
-			entryCurrency: "USD",
-			settleAmount: "10.0"
-		},
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			settleTime: "2024/06/02 16：00",
-			settleNum: "5656565656565",
-			shopName: "meta",
-			entryCurrency: "USD",
-			settleAmount: "10.0"
-		},
-		{
-			cardNum: "12345****66666",
-			cardType: "预付卡",
-			settleTime: "2024/06/02 16：00",
-			settleNum: "5656565656565",
-			shopName: "meta",
-			entryCurrency: "USD",
-			settleAmount: "10.0"
-		}
-	];
-
 	// 按钮权限
 	const { BUTTONS } = useAuthButtons();
 	const { RangePicker } = DatePicker;
@@ -271,7 +181,6 @@ const TradeQuery = () => {
 	const [options, setOptions] = useState(createOptions);
 	const [defaultOptions, setDefaultOptions] = useState("cardNum");
 	const [columns, setColumns] = useState(createColumns);
-	const [dataSource, setDataSource] = useState(createDataSource);
 
 	useEffect(() => {
 		console.log(BUTTONS);
@@ -287,21 +196,19 @@ const TradeQuery = () => {
 			setOptions(createOptions);
 			setDefaultOptions("cardNum");
 			setColumns(createColumns);
-			setDataSource(createDataSource);
 		}
 		if (type == "auth") {
 			setOptions(authOptions);
 			setDefaultOptions("authTime");
 			setColumns(authColumns);
-			setDataSource(authDataSource);
 		}
 		if (type == "settle") {
 			setOptions(settleOptions);
 			setDefaultOptions("settleTime");
 			setColumns(settleColumns);
-			setDataSource(settleDataSource);
 		}
 	};
+	const dataSource:any=[];
 
 	return (
 		<div className="card content-box tradeQueryWrap">
@@ -332,15 +239,7 @@ const TradeQuery = () => {
 					结算明细
 				</div>
 			</div>
-			{/* <div className="accountInfo">
-				<div className="accountBlanceWrap">
-					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">$ 100.0</span>
-				</div>
-				<Button>
-					<NavLink to="/recharge/index">充值</NavLink>
-				</Button>
-			</div> */}
+		
 			<div className="actionWrap">
 				<div>
 					<img src={filter} alt="" className="filterIcon" />

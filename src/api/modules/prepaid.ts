@@ -2,6 +2,7 @@ import { PORT3 } from "@/api/config/servicePort";
 // import { PORT1 } from "@/api/config/servicePort";
 // import qs from "qs";
 import { ResultData } from "@/api/interface/index";
+import { AxiosRequestConfig } from 'axios';
 
 import http from "@/api";
 

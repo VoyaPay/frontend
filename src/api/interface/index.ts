@@ -1,7 +1,25 @@
 // * 请求响应参数(不包含data)
-export interface Result {
+export interface NewTransaction {
+	transferId?: number;
+	newBalance?:number;
+	status?:boolean;
+}
+export interface TransactionDetail {
+  id: string;
+  type: string;
+  origin: string;
+  amount: string;
+  processedAt: string;
+  externalId: string;
+	
+}
+export interface Result{
 	code: string;
 	msg: string;
+	card?: object;
+	transaction?: NewTransaction;
+	currentBalance?: string;
+	
 }
 
 // * 请求响应参数(包含data)

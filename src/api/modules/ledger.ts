@@ -7,8 +7,8 @@ import http from "@/api";
 
 // * 获取按钮权限
 export const UserTransfersApi = () => {
-	const token = localStorage.getItem("access_token"); // 从localStorage中获取token
-	console.log("Using token:", token); // 确认token被正确获取
+	const token = localStorage.getItem("access_token");
+	console.log("Using token:", token); 
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -21,7 +21,8 @@ export const UserTransfersApi = () => {
 };
 
 export const GetBalanceApi=() => {
-	const token = localStorage.getItem("access_token"); // 从localStorage中获取token
+	const token = localStorage.getItem("access_token"); 
+	console.log("get balance Using token:", token); 
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -29,6 +30,7 @@ export const GetBalanceApi=() => {
 	const headers = {
 		Authorization: `Bearer ${token}` // 在请求头中添加 token
 	};
+	console.log('here')
 
 	return http.get<ResultData>(PORT3 + "/Ledger/balance", undefined, { headers });
 }

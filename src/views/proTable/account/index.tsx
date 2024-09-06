@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Table, DatePicker, Button, Space } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
+// import {TransactionDetail} from "@/api/interface"
 // import { HOME_URL } from "@/config/config";
 // import { useNavigate, NavLink } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 
-const formatDate = (dateString) => {
+const formatDate = (dateString:string) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
@@ -19,11 +20,20 @@ const formatDate = (dateString) => {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+interface FormattedTransaction {
+  key: string;
+  transactionType: string;
+  dynamicAccountType: string;
+  amount: string;
+  currency: string;
+  time: string;
+  transactionDetail: string;
+}
+
 const Account = () => {
 	// 按钮权限
 	const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-	const [dataSource, setDataSource] = useState([]);
+	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
 	const [totalAmount, setTotalAmount] = useState(0);
 
 	useEffect(() => {
@@ -31,19 +41,27 @@ const Account = () => {
 		const fetchData = async () => {
 			try {
 				const response = await UserTransfersApi();
-				const formattedData = response.map(transaction => ({
-					key: transaction.id,
-					transactionType: transaction.type, //"交易类型"
-					dynamicAccountType: transaction.origin, //"动帐类型"
-					amount: transaction.amount,//"金额"
-					currency: "USD",//"币种"
-					time: formatDate(transaction.processedAt),//"时间"
-					transactionDetail: transaction.externalId //"交易明细"
-				}));
-				setDataSource(formattedData);
-				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.amount) || 0), 0);
+					if (Array.isArray(response)) {
+						// 格式化每个交易
+						const formattedData = response.map((transaction) => ({
+							key: transaction.id,
+							transactionType: transaction.type, 
+							dynamicAccountType: transaction.origin || 'N/A', 
+							amount: transaction.amount, 
+							currency: "USD", 
+							time: formatDate(transaction.processedAt), 
+							transactionDetail: transaction.externalId 
+						}));
+					
+						setDataSource(formattedData);
+					
+						const total = formattedData.reduce((sum, transaction) => {
+							return sum + (parseFloat(transaction.amount) || 0);
+						}, 0);
 
-				setTotalAmount(total);
+						setTotalAmount(total);
+					}
+					
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}

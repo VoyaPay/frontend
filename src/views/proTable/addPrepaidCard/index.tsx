@@ -39,10 +39,9 @@ const AddPrepaidCard = () => {
 				transaction: response.transaction,
 			};
 			
-			console.log("transaction is "+formattedData.transaction.status)
+			console.log("transaction is "+formattedData.transaction?.status)
 
-			if (response && formattedData.transaction.status) {
-				console.log(formattedData.status)
+			if (response && formattedData.transaction?.status) {
 				navigate("/applySuccess/index");
 			} else {
 				// Show error message

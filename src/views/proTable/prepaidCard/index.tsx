@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { Table, Button, Input, Space } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -11,7 +10,7 @@ import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi} from "@/api/modules/ledger";
 
-const formatDate = (dateString) => {
+const formatDate = (dateString:string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, '0'); 
@@ -22,15 +21,23 @@ const formatDate = (dateString) => {
 
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+interface FormattedCard {
+  key: string,
+	cardName: string,
+	cardOwner: string,
+	cardGroup: string,
+	cardNo: string, 
+	cardStatus: string,
+	banlance: string, 
+	createCardTime: string
+}
 const PrepaidCard = () => {
 	// State to hold the card data
-	const [dataSource, setDataSource] = useState([]);
+	const [dataSource, setDataSource] = useState<FormattedCard[]>([])
 	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
 	const [accountBalance, setAccountBalance]= useState(0);
 
-	// Button permissions
-	// const { BUTTONS } = useAuthButtons();
 	const { Search } = Input;
 
 	// Fetch data from the API on component mount
@@ -39,23 +46,25 @@ const PrepaidCard = () => {
 			try {
 				const response = await UserCardApi();
 				console.log(response);
-				const formattedData = response.map(card => ({
-					key: card.id,
-					cardName: card.type,
-					cardOwner: card.alias,
-					cardGroup: card.network,
-					cardNo: card.last4, 
-					cardStatus: card.status,
-					banlance: card.initialLimit, // Replace with actual balance if available
-					createCardTime: formatDate(card.updatedAt )
-				}));
+				if (Array.isArray(response)) {
+					const formattedData = response.map(card => ({
+						key: card.id,
+						cardName: card.type,
+						cardOwner: card.alias,
+						cardGroup: card.network,
+						cardNo: card.last4, 
+						cardStatus: card.status,
+						banlance: card.initialLimit, // Replace with actual balance if available
+						createCardTime: formatDate(card.updatedAt )
+					}));
 
-				const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
-				const totalcard = 100 - formattedData.length;
-				console.log(total);
-				setTotalCardNumber(totalcard);
-				setDataSource(formattedData); // Adjust based on your API response structure
-				setTotalAmount(total);
+					const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
+					const totalcard = 100 - formattedData.length;
+					console.log(total);
+					setTotalCardNumber(totalcard);
+					setDataSource(formattedData); // Adjust based on your API response structure
+					setTotalAmount(total);
+			}
 			} catch (error) {
 				console.error("Failed to fetch user cards:", error);
 			}
@@ -64,13 +73,10 @@ const PrepaidCard = () => {
 		const getBalance = async () => {
 			try {
 				const response = await GetBalanceApi(); 
-				console.log("Full response:", response); 
-				
-				const formattedData = {
-					account: response.currentBalance, 
-				};
-		
-				setAccountBalance(formattedData.account); 
+				console.log(response)
+				console.log("Full response:", response.currentBalance); 
+				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				setAccountBalance(balance); 
 			} catch (error) {
 				console.log("Cannot get balance of the account:", error);
 			}
@@ -128,13 +134,10 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			render: (_, record) => (
+			render: () => (
 				<Space>
 					<Button type="link" size="small">
-						<NavLink to={{
-							pathname: "/detail/index",
-							state: { card: record } // Passing card details to the detail page
-						}}>查看详情</NavLink>
+						<NavLink to="/detail/index">查看详情</NavLink>
 					</Button>
 					<Button type="link" size="small">
 						<NavLink to="/prepaidRecharge/index">充值</NavLink>
@@ -144,7 +147,7 @@ const PrepaidCard = () => {
 		}
 	];
 
-	const onSearch = value => console.log(value);
+	const onSearch = (value: string) => console.log(value);
 
 	return (
 		<div className="card content-box">
