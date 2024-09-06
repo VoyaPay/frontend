@@ -40,7 +40,8 @@ const LayoutMenu = (props: any) => {
 		key?: React.Key | null,
 		icon?: React.ReactNode,
 		children?: MenuItem[],
-		type?: "group"
+		type?: "group",
+		hide?:boolean
 	): MenuItem => {
 		return {
 			key,
@@ -48,6 +49,7 @@ const LayoutMenu = (props: any) => {
 			children,
 			label,
 			type,
+			hide,
 		} as MenuItem;
 	};
 
@@ -63,7 +65,7 @@ const LayoutMenu = (props: any) => {
 			// 下面判断代码解释 *** !item?.children?.length   ==>   (!item.children || item.children.length === 0)
 			if (item && item.children && item.children.length) {
 				newArr.push(getItem(item.title, item.path, addIcon(item.icon!), deepLoopFloat(item.children)));
-			} else if (item && !item.children ) {
+			} else if (item && !item.children && !item.hide) {
 				return newArr.push(getItem(item.title, item.path, addIcon(item.icon!)));
 			}
 		});
