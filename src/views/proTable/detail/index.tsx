@@ -1,47 +1,67 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Input, Button } from "antd";
+// import { Breadcrumb } from "antd";
+// import useAuthButtons from "@/hooks/useAuthButtons";
+// import { Select } from "antd";
+// import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import "./index.less";
 
 const Detail = () => {
-	
-	const location = useLocation();
-	const { card } = location.state || {}; 
-	console.log(location)
-	
-	const [cardName, setCardName] = useState(card?.cardName || "cardname");
+	// 按钮权限
+	// const { BUTTONS } = useAuthButtons();
+	// const { RangePicker } = DatePicker;
+	// const navigate = useNavigate();
+
+	// useEffect(() => {
+	// 	console.log(BUTTONS);
+	// }, []);
+
+	const [cardName, setCardName] = useState("cardname");
 	const [cardNameStatus, setCardNameStatus] = useState(false);
 
-	const [address, setAddress] = useState(card?.address || "cardname");
+	const [address, setAddress] = useState("cardname");
 	const [addressStatus, setAddressStatus] = useState(false);
 
-	const [cardOwner, setCardOwner] = useState(card?.cardOwner || "cardname");
+	const [cardOwner, setCardOwner] = useState("cardname");
 	const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
 
-	const changeCardName = e => {
+	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log(e);
 		setCardName(e.target.value);
 	};
 
-	const tongleCardName = (status) => {
-		setCardNameStatus(status === "change");
+	const tongleCardName = (status: any) => {
+		if (status == "change") {
+			setCardNameStatus(true);
+		} else {
+			setCardNameStatus(false);
+		}
 	};
 
-	const changeAddress = e => {
+	const changeAddress =  (e: React.ChangeEvent<HTMLInputElement>) => {
 		setAddress(e.target.value);
 	};
 
-	const tongleAddress = (status) => {
-		setAddressStatus(status === "change");
+	const tongleAddress = (status: any) => {
+		if (status == "change") {
+			setAddressStatus(true);
+		} else {
+			setAddressStatus(false);
+		}
 	};
 
-	const changeCardOwner = e => {
+	const changeCardOwner =  (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardOwner(e.target.value);
 	};
 
-	const tongleCardOwner = (status) => {
-		setCardOwnerStatus(status === "change");
+	const tongleCardOwner = (status: any) => {
+		if (status == "change") {
+			setCardOwnerStatus(true);
+		} else {
+			setCardOwnerStatus(false);
+		}
 	};
 
 	return (
@@ -84,20 +104,20 @@ const Detail = () => {
 					</div>
 					<div className="content">
 						<div className="pre">卡组：</div>
-						<div className="text">{card?.cardGroup || "MasterCard"}</div>
+						<div className="text">MasterCard</div>
 					</div>
 					<div className="content">
 						<div className="pre">卡号：</div>
-						<div className="text">{card?.cardNo || "1234344555"}</div>
+						<div className="text">1234344555</div>
 						<span className="action">复制完整卡号</span>
 					</div>
 					<div className="content">
 						<div className="pre">有效期：</div>
-						<div className="text">{card?.expirationDate || "02/28"}</div>
+						<div className="text">02/28</div>
 					</div>
 					<div className="content">
 						<div className="pre">CVV2：</div>
-						<div className="text">{card?.cvv || "122"}</div>
+						<div className="text">122</div>
 					</div>
 					<div className="content">
 						<div className="pre">地址：</div>
@@ -155,15 +175,15 @@ const Detail = () => {
 					</div>
 					<div className="content">
 						<div className="pre">状态：</div>
-						<div className="text">{card?.cardStatus || "Active"}</div>
+						<div className="text">122</div>
 					</div>
 					<div className="content">
 						<div className="pre">余额：</div>
-						<div className="text">{card?.banlance || "122"}</div>
+						<div className="text">122</div>
 					</div>
 					<div className="content">
 						<div className="pre">开卡时间：</div>
-						<div className="text">{card?.createCardTime || "2024/09/05"}</div>
+						<div className="text">122</div>
 					</div>
 				</div>
 				<div className="right">

@@ -20,8 +20,9 @@ const PrepaidRecharge = () => {
 
 	const [amount, setAmount] = useState(0);
 
-	const changeAmount = e => {
-		setAmount(e.target.value);
+	const changeAmount =  (e: React.ChangeEvent<HTMLInputElement>) => {
+		const valueAsNumber = Number(e.target.value);  
+    setAmount(valueAsNumber);
 	};
 
 	return (
