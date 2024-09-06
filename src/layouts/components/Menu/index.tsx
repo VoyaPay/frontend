@@ -47,7 +47,7 @@ const LayoutMenu = (props: any) => {
 			icon,
 			children,
 			label,
-			type
+			type,
 		} as MenuItem;
 	};
 
@@ -63,7 +63,7 @@ const LayoutMenu = (props: any) => {
 			// 下面判断代码解释 *** !item?.children?.length   ==>   (!item.children || item.children.length === 0)
 			if (item && item.children && item.children.length) {
 				newArr.push(getItem(item.title, item.path, addIcon(item.icon!), deepLoopFloat(item.children)));
-			} else if (item && !item.children && !item.hide) {
+			} else if (item && !item.children ) {
 				return newArr.push(getItem(item.title, item.path, addIcon(item.icon!)));
 			}
 		});
