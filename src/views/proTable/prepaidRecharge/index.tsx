@@ -2,22 +2,38 @@ import { useState } from "react";
 // import { Breadcrumb } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 // import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import "./index.less";
 
+interface CardData {
+  key: string,
+	cardName: string,
+	cardOwner: string,
+	cardGroup: string,
+	cardNo: string, 
+	cardStatus: string,
+	banlance: string, 
+	createCardTime: string,
+	address?:string,
+	expirationDate?:string,
+	cvv2?:string,
+}
 const PrepaidRecharge = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
-
+	const location = useLocation();
+	const defaultCardData: CardData = {
+    key: '',
+    cardName: "defaultCardName",
+    cardOwner: "defaultOwner",
+    cardGroup: "defaultGroup",
+    cardNo: "0000",
+    cardStatus: "defaultStatus",
+    banlance: "0",
+    createCardTime: "2023-01-01 00:00:00"
+  };
+	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState(0);
 
 	const changeAmount =  (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,11 +53,11 @@ const PrepaidRecharge = () => {
 				<div className="basicInfo">
 					<div className="content">
 						<div className="pre">扣款账户：</div>
-						<div className="text">沃易卡账户 $100</div>
+						<div className="text">{cardData.cardOwner}</div>
 					</div>
 					<div className="content">
 						<div className="pre">待充值预付卡：</div>
-						<div className="text">广告2（485643***2345）</div>
+						<div className="text">{cardData.cardName}</div>
 					</div>
 					<div className="content">
 						<div className="pre">充值金额：</div>
@@ -52,7 +68,7 @@ const PrepaidRecharge = () => {
 						<Button type="primary" className="actionBtn">
 							充值
 						</Button>
-						<Button type="text" className="return">
+						<Button type="primary" className="actionBtn">
 							<NavLink to="/proTable/prepaidCard" className="myAccount">
 								返回
 							</NavLink>

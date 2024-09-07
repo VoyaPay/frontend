@@ -19,7 +19,9 @@ export interface Result{
 	card?: object;
 	transaction?: NewTransaction;
 	currentBalance?: string;
-	
+	cvc?:string;
+	expiration?: string;
+	pan?:string;
 }
 
 // * 请求响应参数(包含data)

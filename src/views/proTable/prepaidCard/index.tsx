@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { Table, Button, Input, Space } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import { NavLink } from "react-router-dom";
+import { PlusOutlined,  } from "@ant-design/icons";
+import { NavLink , useNavigate  } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
 import accountextra from "@/assets/images/accountbanlace.png";
 import canuse from "@/assets/images/canuse.png";
@@ -21,6 +21,7 @@ const formatDate = (dateString:string) => {
 
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
 interface FormattedCard {
   key: string,
 	cardName: string,
@@ -39,6 +40,7 @@ const PrepaidCard = () => {
 	const [accountBalance, setAccountBalance]= useState(0);
 
 	const { Search } = Input;
+	const navigate = useNavigate();
 
 	// Fetch data from the API on component mount
 	useEffect(() => {
@@ -134,19 +136,48 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			render: () => (
+			render: (text: string, record: FormattedCard) => (
 				<Space>
-					<Button type="link" size="small">
-						<NavLink to="/detail/index">查看详情</NavLink>
+					<Button
+						type="link"
+						size="small"
+						onClick={() => handleViewDetails(record)} 
+					>
+						查看详情
 					</Button>
-					<Button type="link" size="small">
-						<NavLink to="/prepaidRecharge/index">充值</NavLink>
+					<Button
+						type="link"
+						size="small"
+						onClick={() =>  handlerRechargeDetails(record)} 
+					>
+						充值
 					</Button>
 				</Space>
 			)
 		}
 	];
-
+	const handleViewDetails = (record: FormattedCard) => {
+		console.log("navigation: "+ record.key)
+		navigate("/detail/index", { state: { key:record.key, 
+			cardName: record.cardName,
+			cardOwner: record.cardOwner,
+			cardGroup: record.cardGroup,
+			cardNo:record.cardNo, 
+			cardStatus: record.cardStatus,
+			banlance: record.banlance, 
+			createCardTime: record.createCardTime} });
+	};
+	const handlerRechargeDetails = (record: FormattedCard) => {
+		console.log("navigation: "+ record.key)
+		navigate("/prepaidRecharge/index", { state: { key:record.key, 
+			cardName: record.cardName,
+			cardOwner: record.cardOwner,
+			cardGroup: record.cardGroup,
+			cardNo:record.cardNo, 
+			cardStatus: record.cardStatus,
+			banlance: record.banlance, 
+			createCardTime: record.createCardTime} });
+	};
 	const onSearch = (value: string) => console.log(value);
 
 	return (

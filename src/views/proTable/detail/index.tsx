@@ -1,69 +1,106 @@
-import { useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { useState,useEffect } from "react";
+import { NavLink ,useNavigate} from "react-router-dom";
 import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
+import { useLocation } from "react-router-dom";
 import "./index.less";
+import {CardInformationApi} from  "@/api/modules/card"
+interface CardData {
+  key: string,
+	cardName: string,
+	cardOwner: string,
+	cardGroup: string,
+	cardNo: string, 
+	cardStatus: string,
+	banlance: string, 
+	createCardTime: string,
+	address?:string,
+	expirationDate?:string,
+	cvv2?:string,
+}
+const fetchCardInformation = async (id: string, setCardData: React.Dispatch<React.SetStateAction<CardData>>) => {
+  try {
+    const information = await CardInformationApi(id);
+    console.log(information);
+    
+    if (information) {
+      setCardData((prevData) => ({
+        ...prevData,
+        expirationDate: information.expiration||"",  
+				cvv2: information.cvc||"", 
+				cardNo: information.pan||"",
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching card information:", error);
+  }
+};
 
 const Detail = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
+	const navigate = useNavigate();
+	const location = useLocation();
+	const defaultCardData: CardData = {
+    key: '',
+    cardName: "defaultCardName",
+    cardOwner: "defaultOwner",
+    cardGroup: "defaultGroup",
+    cardNo: "0000",
+    cardStatus: "defaultStatus",
+    banlance: "0",
+    createCardTime: "2023-01-01 00:00:00"
+  };
+	const [cardData, setCardData] = useState<CardData>((location.state as CardData) ?? defaultCardData);
 
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
+	useEffect(() => {
+    if (cardData.key) {
+      fetchCardInformation(cardData.key, setCardData);
+    }
+  }, [cardData.key]);
 
-	const [cardName, setCardName] = useState("cardname");
-	const [cardNameStatus, setCardNameStatus] = useState(false);
+	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
+  const [cardNameStatus, setCardNameStatus] = useState(false);
 
-	const [address, setAddress] = useState("cardname");
-	const [addressStatus, setAddressStatus] = useState(false);
+  const [address, setAddress] = useState(cardData.address || "address");
+  const [addressStatus, setAddressStatus] = useState(false);
 
-	const [cardOwner, setCardOwner] = useState("cardname");
-	const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
+  const [cardOwner, setCardOwner] = useState(cardData.cardOwner || "cardOwner");
+  const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
-		console.log(e);
 		setCardName(e.target.value);
 	};
 
-	const tongleCardName = (status: any) => {
-		if (status == "change") {
-			setCardNameStatus(true);
-		} else {
-			setCardNameStatus(false);
-		}
+	const toggleCardName = (status: any) => {
+		setCardNameStatus(status === "change");
 	};
 
-	const changeAddress =  (e: React.ChangeEvent<HTMLInputElement>) => {
+	const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setAddress(e.target.value);
 	};
 
-	const tongleAddress = (status: any) => {
-		if (status == "change") {
-			setAddressStatus(true);
-		} else {
-			setAddressStatus(false);
-		}
+	const toggleAddress = (status: any) => {
+		setAddressStatus(status === "change");
 	};
 
-	const changeCardOwner =  (e: React.ChangeEvent<HTMLInputElement>) => {
+	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardOwner(e.target.value);
 	};
 
-	const tongleCardOwner = (status: any) => {
-		if (status == "change") {
-			setCardOwnerStatus(true);
-		} else {
-			setCardOwnerStatus(false);
-		}
+	const toggleCardOwner = (status: any) => {
+		setCardOwnerStatus(status === "change");
 	};
-
+	const handlerRechargeDetails = (record: CardData ) => {
+		console.log("navigation: "+ record.key)
+		navigate("/prepaidRecharge/index", { state: { key:record.key, 
+			cardName: record.cardName,
+			cardOwner: record.cardOwner,
+			cardGroup: record.cardGroup,
+			cardNo:record.cardNo, 
+			cardStatus: record.cardStatus,
+			banlance: record.banlance, 
+			createCardTime: record.createCardTime} });
+	};
+	
 	return (
 		<div className="detail-wrap">
 			<div className="nav">
@@ -86,7 +123,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									tongleCardName("finish");
+									toggleCardName("finish");
 								}}
 							>
 								修改完成
@@ -95,7 +132,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									tongleCardName("change");
+									toggleCardName("change");
 								}}
 							>
 								修改
@@ -104,20 +141,20 @@ const Detail = () => {
 					</div>
 					<div className="content">
 						<div className="pre">卡组：</div>
-						<div className="text">MasterCard</div>
+						<div className="text">{cardData.cardGroup || "N/A"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">卡号：</div>
-						<div className="text">1234344555</div>
+						<div className="text">{cardData.cardNo || "1234"}</div>
 						<span className="action">复制完整卡号</span>
 					</div>
 					<div className="content">
 						<div className="pre">有效期：</div>
-						<div className="text">02/28</div>
+						<div className="text">{cardData.expirationDate || "N/A"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">CVV2：</div>
-						<div className="text">122</div>
+						<div className="text">{cardData.cvv2 || "N/A"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">地址：</div>
@@ -130,7 +167,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									tongleAddress("finish");
+									toggleAddress("finish");
 								}}
 							>
 								修改完成
@@ -139,7 +176,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									tongleAddress("change");
+									toggleAddress("change");
 								}}
 							>
 								修改
@@ -157,7 +194,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									tongleCardOwner("finish");
+									toggleCardOwner("finish");
 								}}
 							>
 								修改完成
@@ -166,7 +203,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									tongleCardOwner("change");
+									toggleCardOwner("change");
 								}}
 							>
 								修改
@@ -175,20 +212,22 @@ const Detail = () => {
 					</div>
 					<div className="content">
 						<div className="pre">状态：</div>
-						<div className="text">122</div>
+						<div className="text">{cardData.cardStatus || "N/A"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">余额：</div>
-						<div className="text">122</div>
+						<div className="text">{cardData.banlance || "N/A"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">开卡时间：</div>
-						<div className="text">122</div>
+						<div className="text">{cardData.createCardTime || "N/A"}</div>
 					</div>
 				</div>
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
-					<Button type="primary" className="actionBtn">
+					<Button type="primary" className="actionBtn"
+						onClick={() =>  handlerRechargeDetails(cardData)} 
+					>
 						充值
 					</Button>
 					<Button type="primary" className="actionBtn">

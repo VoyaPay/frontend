@@ -8,6 +8,12 @@ import { Select } from "antd";
 // import { NavLink } from "react-router-dom";
 import filter from "@/assets/images/filter.png";
 import "./index.less";
+// import {UserTransactionApi} from "@/api/modules/transactions"
+
+// const FetchTransactionInformation = async () =>{
+// 	const response = await UserTransactionApi();
+// 	console.log(response);
+// }
 
 const TradeQuery = () => {
 	const createOptions = [
@@ -19,23 +25,15 @@ const TradeQuery = () => {
 		{ value: "cardGroup", label: "卡组" }
 	];
 	const authOptions = [
-		{ value: "authTime", label: "授权时间" },
-		{ value: "authNum", label: "授权单号" },
+		{ value: "authTime", label: "时间" },
+		{ value: "authNum", label: "单号" },
 		{ value: "cardNum", label: "卡号" },
 		{ value: "cardType", label: "卡片类型" },
 		{ value: "shopName", label: "商户名称" },
-		{ value: "authStatus", label: "授权状态" },
+		{ value: "authStatus", label: "支付状态" },
 		{ value: "tradeCurrency", label: "交易币种" },
-		{ value: "tradeAmount", label: "交易金额" }
-	];
-	const settleOptions = [
-		{ value: "settleTime", label: "结算时间" },
-		{ value: "settleNum", label: "结算单号" },
-		{ value: "cardNum", label: "卡号" },
-		{ value: "cardType", label: "卡片类型" },
-		{ value: "shopName", label: "商户名称" },
-		{ value: "entryCurrency", label: "入账币种" },
-		{ value: "settleAmount", label: "结算金额" }
+		{ value: "tradeAmount", label: "交易金额" },
+		{ value: "wrongReason", label: "失败原因" }
 	];
 
 	const createColumns: any[] = [
@@ -77,15 +75,15 @@ const TradeQuery = () => {
 		}
 	];
 
-	const authColumns: any[] = [
+	const transactionColumns: any[] = [
 		{
-			title: "授权时间",
+			title: "时间",
 			dataIndex: "authTime",
 			key: "authTime",
 			align: "center"
 		},
 		{
-			title: "授权单号",
+			title: "单号",
 			dataIndex: "authNum",
 			key: "authNum",
 			align: "center"
@@ -109,7 +107,7 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
-			title: "授权状态",
+			title: "支付状态",
 			dataIndex: "authStatus",
 			key: "authStatus",
 			align: "center"
@@ -125,50 +123,11 @@ const TradeQuery = () => {
 			dataIndex: "tradeAmount",
 			key: "tradeAmount",
 			align: "center"
-		}
-	];
-
-	const settleColumns: any[] = [
-		{
-			title: "结算时间",
-			dataIndex: "settleTime",
-			key: "authTime",
-			align: "center"
 		},
 		{
-			title: "结算单号",
-			dataIndex: "settleNum",
-			key: "authNum",
-			align: "center"
-		},
-		{
-			title: "卡号",
-			dataIndex: "cardNum",
-			key: "cardNum",
-			align: "center"
-		},
-		{
-			title: "卡片类型",
-			dataIndex: "cardType",
-			key: "cardType",
-			align: "center"
-		},
-		{
-			title: "商户名称",
-			dataIndex: "shopName",
-			key: "shopName",
-			align: "center"
-		},
-		{
-			title: "入账币种",
-			dataIndex: "entryCurrency",
-			key: "entryCurrency",
-			align: "center"
-		},
-		{
-			title: "结算金额",
-			dataIndex: "settleAmount",
-			key: "settleAmount",
+			title: "失败原因",
+			dataIndex: "wrongReason",
+			key: "wrongReason",
 			align: "center"
 		}
 	];
@@ -184,6 +143,7 @@ const TradeQuery = () => {
 
 	useEffect(() => {
 		console.log(BUTTONS);
+
 	}, []);
 
 	const handleChange = (value: string) => {
@@ -200,13 +160,9 @@ const TradeQuery = () => {
 		if (type == "auth") {
 			setOptions(authOptions);
 			setDefaultOptions("authTime");
-			setColumns(authColumns);
+			setColumns(transactionColumns);
 		}
-		if (type == "settle") {
-			setOptions(settleOptions);
-			setDefaultOptions("settleTime");
-			setColumns(settleColumns);
-		}
+		
 	};
 	const dataSource:any=[];
 
@@ -228,16 +184,9 @@ const TradeQuery = () => {
 						changeTradeType("auth");
 					}}
 				>
-					授权明细
+					消费明细
 				</div>
-				<div
-					className={tradeType == "settle" ? "tradeType selected" : "tradeType"}
-					onClick={() => {
-						changeTradeType("settle");
-					}}
-				>
-					结算明细
-				</div>
+				
 			</div>
 		
 			<div className="actionWrap">

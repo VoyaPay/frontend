@@ -100,6 +100,9 @@ class RequestHttp {
 	delete<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
 		return this.service.delete(url, { params, ..._object });
 	}
+	patch<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
+		return this.service.delete(url, { params, ..._object });
+	}
 }
 
 export default new RequestHttp(config);
