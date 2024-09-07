@@ -1,9 +1,9 @@
 FROM node:20-alpine AS build-stage
 WORKDIR /app
 COPY package.json .
-RUN yarn install
+RUN npm install --legacy-peer-deps
 COPY . .
-RUN yarn run build
+RUN npm run build:pro
 
 FROM busybox:1.35
 RUN adduser -D static

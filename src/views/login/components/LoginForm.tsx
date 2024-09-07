@@ -24,23 +24,23 @@ const LoginForm = (props: any) => {
 	const onFinish = async (loginForm: Login.ReqLoginForm) => {
 		try {
 			setLoading(true);
-			console.log('loginForm', loginForm);
+			console.log("loginForm", loginForm);
 			// loginForm.password = md5(loginForm.password);
 			const response = await loginApi(loginForm);
-			console.log(response.data)
-			
-			const access_token= response.data?.access_token
+			console.log(response.data);
+
+			const access_token = response.data?.access_token;
 			// const access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsI…yMjN9.ZHJadrstMseAP76F2OmxQBxfyZe2Pk9TlvwoobFE5bo'
-			console.log(access_token)
+			console.log(access_token);
 			if (!access_token) {
-				throw new Error('No access token received');
+				throw new Error("No access token received");
 			}
-			
-			console.log('Received token:', access_token);
+
+			console.log("Received token:", access_token);
 			setToken("access token is " + access_token);
 			setTabsList([]);
 			message.success("登录成功！");
-			localStorage.setItem('access_token', access_token);
+			localStorage.setItem("access_token", access_token);
 			navigate(HOME_URL);
 		} finally {
 			setLoading(false);
@@ -62,9 +62,14 @@ const LoginForm = (props: any) => {
 	return (
 		<div className="loginform-container">
 			<div className="login-type">
-				<span className={`text ${loginType == 0 ? 'selected' : ''}`} onClick={changeToPhone}>手机 </span>
+				<span className={`text ${loginType == 0 ? "selected" : ""}`} onClick={changeToPhone}>
+					手机{" "}
+				</span>
 				<span className="text">|</span>
-				<span className={`text ${loginType == 1 ? 'selected' : ''}`} onClick={changeToEmail}> 邮箱</span>
+				<span className={`text ${loginType == 1 ? "selected" : ""}`} onClick={changeToEmail}>
+					{" "}
+					邮箱
+				</span>
 			</div>
 			<Form
 				form={form}
@@ -76,15 +81,15 @@ const LoginForm = (props: any) => {
 				size="large"
 				autoComplete="off"
 			>
-				{
-					loginType == 0 ?
-						<Form.Item name="username" rules={[{ required: true, message: `请输入手机号` }]}>
-							<Input placeholder="手机号" prefix={<UserOutlined />} />
-						</Form.Item> :
-						<Form.Item name="email" rules={[{ required: true, message: `请输入邮箱` }]}>
-							<Input placeholder="邮箱" prefix={<UserOutlined />} />
-						</Form.Item>
-				}
+				{loginType == 0 ? (
+					<Form.Item name="username" rules={[{ required: true, message: `请输入手机号` }]}>
+						<Input placeholder="手机号" prefix={<UserOutlined />} />
+					</Form.Item>
+				) : (
+					<Form.Item name="email" rules={[{ required: true, message: `请输入邮箱` }]}>
+						<Input placeholder="邮箱" prefix={<UserOutlined />} />
+					</Form.Item>
+				)}
 				<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 					<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 				</Form.Item>

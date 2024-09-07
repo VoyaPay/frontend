@@ -17,7 +17,7 @@ const config = {
 	// 设置超时时间（10s）
 	timeout: 10000,
 	// 跨域时候允许携带凭证
-	withCredentials: true
+	// withCredentials: true
 };
 
 class RequestHttp {
@@ -98,6 +98,9 @@ class RequestHttp {
 		return this.service.put(url, params, _object);
 	}
 	delete<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
+		return this.service.delete(url, { params, ..._object });
+	}
+	patch<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
 		return this.service.delete(url, { params, ..._object });
 	}
 }

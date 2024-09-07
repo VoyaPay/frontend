@@ -1,61 +1,54 @@
-
-
-	.prepaidCardInfo {
-		width: 100%;
-		height: 60px;
+.prepaidCardInfo {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	width: 100%;
+	height: 60px;
+	.banlanceWrap {
 		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-	
-		.banlanceWrap {
-			display: flex;
-			flex-direction: column;
-			align-items: flex-start;
-			justify-content: space-between;
-			border-right: 2px solid #1890ff;
-			padding-right: 20px;
-			margin-right: 20px;
-
-			&:last-child {
-				border-right: none;
-			}
-			.pre {
-				font-size: 15px;
-				font-weight: bold;
-			}
-
-			.amountWrap {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-
-				.amount {
-					margin-left: 10px;
-				}
-
-				.accountIcons {
-					width: 30px;
-					height: 30px;
-				}
-			}
-		}
-	}
-
-	.actionWrap {
-		display: flex;
-		align-items: center;
+		flex-direction: column;
+		align-items: flex-start;
 		justify-content: space-between;
-		margin-top: 40px;
-		margin-bottom: 15px;
-
-		.title {
+		padding-right: 20px;
+		margin-right: 20px;
+		border-right: 2px solid #1890ff;
+		&:last-child {
+			border-right: none;
+		}
+		.pre {
 			font-size: 15px;
 			font-weight: bold;
-			margin-right: 10px;
 		}
-
-		.left {
+		.amountWrap {
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
+			.amount {
+				margin-left: 10px;
+			}
+			.accountIcons {
+				width: 30px;
+				height: 30px;
+			}
 		}
 	}
+}
+.actionWrap {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 40px;
+	margin-bottom: 15px;
+	.title {
+		margin-right: 10px;
+		font-size: 15px;
+		font-weight: bold;
+	}
+	.left {
+		display: flex;
+		align-items: center;
+	}
+	.addPrepaidCard {
+		color: #ffffff;
+	}
+}
