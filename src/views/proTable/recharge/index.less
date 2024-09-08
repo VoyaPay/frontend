@@ -1,6 +1,6 @@
 .recharge-wrap {
 	.nav {
-		padding: 15px;
+		padding: 15px 20px;
 		font-size: 15px;
 		font-weight: bold;
 		color: #000000;
@@ -8,6 +8,11 @@
 		border-radius: 8px;
 		.myAccount {
 			color: #000000;
+			.returnIcon {
+				position: relative;
+				top: -2px;
+				width: 15px;
+			}
 		}
 	}
 	.firstCol {
@@ -15,9 +20,9 @@
 		align-items: center;
 	}
 	.userInfo {
-		width: 30%;
-		height: 170px;
-		padding: 15px;
+		width: 48%;
+		height: 331px;
+		padding: 15px 20px;
 		margin-top: 10px;
 		margin-right: 10px;
 		background-color: #ffffff;
@@ -31,13 +36,37 @@
 			flex-direction: column;
 			align-items: flex-start;
 			margin-top: 10px;
+			margin-left: 15px;
 			font-size: 14px;
-			
+		}
+	}
+	.enPre {
+		margin-bottom: 10px;
+	}
+	.charge {
+		width: 48%;
+		height: 331px;
+		padding: 15px 20px;
+		margin-top: 10px;
+		margin-right: 10px;
+		background-color: #ffffff;
+		border-radius: 8px;
+		.title {
+			font-size: 15px;
+			font-weight: bold;
+		}
+		.content {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			margin-top: 10px;
+			margin-left: 15px;
+			font-size: 14px;
 		}
 	}
 	.accountInfo {
 		flex: 1;
-		padding: 15px;
+		padding: 15px 20px;
 		margin-top: 10px;
 		background-color: #ffffff;
 		border-radius: 8px;
@@ -50,13 +79,13 @@
 			flex-direction: column;
 			align-items: flex-start;
 			margin-top: 10px;
+			margin-left: 15px;
 			font-size: 14px;
-			
 		}
 	}
 	.chargeTips {
 		width: 100%;
-		padding: 15px;
+		padding: 15px 20px;
 		margin-top: 10px;
 		background-color: #ffffff;
 		border-radius: 8px;
@@ -70,7 +99,6 @@
 			align-items: flex-start;
 			margin-top: 10px;
 			font-size: 14px;
-			
 		}
 	}
 }

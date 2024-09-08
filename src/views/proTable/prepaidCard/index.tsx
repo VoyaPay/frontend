@@ -1,43 +1,43 @@
 import { useEffect, useState } from "react";
 
 import { Table, Button, Input, Space } from "antd";
-import { PlusOutlined,  } from "@ant-design/icons";
-import { NavLink , useNavigate  } from "react-router-dom";
+import { PlusOutlined } from "@ant-design/icons";
+import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
 import accountextra from "@/assets/images/accountbanlace.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
-import { GetBalanceApi} from "@/api/modules/ledger";
+import { GetBalanceApi } from "@/api/modules/ledger";
 
-const formatDate = (dateString:string) => {
+const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, '0'); 
-	const day = String(date.getDate()).padStart(2, '0');
-	const hours = String(date.getHours()).padStart(2, '0');
-	const minutes = String(date.getMinutes()).padStart(2, '0');
-	const seconds = String(date.getSeconds()).padStart(2, '0');
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+	const seconds = String(date.getSeconds()).padStart(2, "0");
 
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
 interface FormattedCard {
-  key: string,
-	cardName: string,
-	cardOwner: string,
-	cardGroup: string,
-	cardNo: string, 
-	cardStatus: string,
-	banlance: string, 
-	createCardTime: string
+	key: string;
+	cardName: string;
+	cardOwner: string;
+	cardGroup: string;
+	cardNo: string;
+	cardStatus: string;
+	banlance: string;
+	createCardTime: string;
 }
 const PrepaidCard = () => {
 	// State to hold the card data
-	const [dataSource, setDataSource] = useState<FormattedCard[]>([])
+	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
-	const [accountBalance, setAccountBalance]= useState(0);
+	const [accountBalance, setAccountBalance] = useState(0);
 
 	const { Search } = Input;
 	const navigate = useNavigate();
@@ -54,10 +54,10 @@ const PrepaidCard = () => {
 						cardName: card.type,
 						cardOwner: card.alias,
 						cardGroup: card.network,
-						cardNo: card.last4, 
+						cardNo: card.last4,
 						cardStatus: card.status,
 						banlance: card.initialLimit, // Replace with actual balance if available
-						createCardTime: formatDate(card.updatedAt )
+						createCardTime: formatDate(card.updatedAt)
 					}));
 
 					const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
@@ -66,7 +66,7 @@ const PrepaidCard = () => {
 					setTotalCardNumber(totalcard);
 					setDataSource(formattedData); // Adjust based on your API response structure
 					setTotalAmount(total);
-			}
+				}
 			} catch (error) {
 				console.error("Failed to fetch user cards:", error);
 			}
@@ -74,23 +74,23 @@ const PrepaidCard = () => {
 
 		const getBalance = async () => {
 			try {
-				const response = await GetBalanceApi(); 
-				console.log(response)
-				console.log("Full response:", response.currentBalance); 
+				const response = await GetBalanceApi();
+				console.log(response);
+				console.log("Full response:", response.currentBalance);
 				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
-				setAccountBalance(balance); 
+				setAccountBalance(balance);
 			} catch (error) {
 				console.log("Cannot get balance of the account:", error);
 			}
 		};
-		
+
 		getBalance();
 		fetchUserCards();
 	}, []);
 
 	const columns: any[] = [
 		{
-			title: "卡片名称",
+			title: "卡昵称",
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center"
@@ -123,13 +123,17 @@ const PrepaidCard = () => {
 			title: "余额",
 			dataIndex: "banlance",
 			key: "banlance",
-			align: "center"
+			align: "center",
+			defaultSortOrder: "descend",
+			sorter: (a, b) => a.banlance - b.banlance
 		},
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
 			key: "createCardTime",
-			align: "center"
+			align: "center",
+			defaultSortOrder: "descend",
+			sorter: (a, b) => a.createCardTime - b.createCardTime
 		},
 		{
 			title: "操作",
@@ -138,18 +142,10 @@ const PrepaidCard = () => {
 			align: "center",
 			render: (text: string, record: FormattedCard) => (
 				<Space>
-					<Button
-						type="link"
-						size="small"
-						onClick={() => handleViewDetails(record)} 
-					>
+					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
 						查看详情
 					</Button>
-					<Button
-						type="link"
-						size="small"
-						onClick={() =>  handlerRechargeDetails(record)} 
-					>
+					<Button type="link" size="small" onClick={() => handlerRechargeDetails(record)}>
 						充值
 					</Button>
 				</Space>
@@ -157,26 +153,34 @@ const PrepaidCard = () => {
 		}
 	];
 	const handleViewDetails = (record: FormattedCard) => {
-		console.log("navigation: "+ record.key)
-		navigate("/detail/index", { state: { key:record.key, 
-			cardName: record.cardName,
-			cardOwner: record.cardOwner,
-			cardGroup: record.cardGroup,
-			cardNo:record.cardNo, 
-			cardStatus: record.cardStatus,
-			banlance: record.banlance, 
-			createCardTime: record.createCardTime} });
+		console.log("navigation: " + record.key);
+		navigate("/detail/index", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
 	};
 	const handlerRechargeDetails = (record: FormattedCard) => {
-		console.log("navigation: "+ record.key)
-		navigate("/prepaidRecharge/index", { state: { key:record.key, 
-			cardName: record.cardName,
-			cardOwner: record.cardOwner,
-			cardGroup: record.cardGroup,
-			cardNo:record.cardNo, 
-			cardStatus: record.cardStatus,
-			banlance: record.banlance, 
-			createCardTime: record.createCardTime} });
+		console.log("navigation: " + record.key);
+		navigate("/prepaidRecharge/index", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
 	};
 	const onSearch = (value: string) => console.log(value);
 

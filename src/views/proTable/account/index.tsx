@@ -9,25 +9,25 @@ import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 
-const formatDate = (dateString:string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+	const day = String(date.getDate()).padStart(2, "0");
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+	const seconds = String(date.getSeconds()).padStart(2, "0");
 
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 interface FormattedTransaction {
-  key: string;
-  transactionType: string;
-  dynamicAccountType: string;
-  amount: string;
-  currency: string;
-  time: string;
-  transactionDetail: string;
+	key: string;
+	transactionType: string;
+	dynamicAccountType: string;
+	amount: string;
+	currency: string;
+	time: string;
+	transactionDetail: string;
 }
 
 const Account = () => {
@@ -37,31 +37,29 @@ const Account = () => {
 	const [totalAmount, setTotalAmount] = useState(0);
 
 	useEffect(() => {
-
 		const fetchData = async () => {
 			try {
 				const response = await UserTransfersApi();
-					if (Array.isArray(response)) {
-						// 格式化每个交易
-						const formattedData = response.map((transaction) => ({
-							key: transaction.id,
-							transactionType: transaction.type, 
-							dynamicAccountType: transaction.origin || 'N/A', 
-							amount: transaction.amount, 
-							currency: "USD", 
-							time: formatDate(transaction.processedAt), 
-							transactionDetail: transaction.externalId 
-						}));
-					
-						setDataSource(formattedData);
-					
-						const total = formattedData.reduce((sum, transaction) => {
-							return sum + (parseFloat(transaction.amount) || 0);
-						}, 0);
+				if (Array.isArray(response)) {
+					// 格式化每个交易
+					const formattedData = response.map(transaction => ({
+						key: transaction.id,
+						transactionType: transaction.type,
+						dynamicAccountType: transaction.origin || "N/A",
+						amount: transaction.amount,
+						currency: "USD",
+						time: formatDate(transaction.processedAt),
+						transactionDetail: transaction.externalId
+					}));
 
-						setTotalAmount(total);
-					}
-					
+					setDataSource(formattedData);
+
+					const total = formattedData.reduce((sum, transaction) => {
+						return sum + (parseFloat(transaction.amount) || 0);
+					}, 0);
+
+					setTotalAmount(total);
+				}
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
@@ -75,12 +73,6 @@ const Account = () => {
 			title: "交易类型",
 			dataIndex: "transactionType",
 			key: "transactionType",
-			align: "center"
-		},
-		{
-			title: "动帐类型",
-			dataIndex: "dynamicAccountType",
-			key: "dynamicAccountType",
 			align: "center"
 		},
 		{
@@ -132,18 +124,16 @@ const Account = () => {
 					<Space>
 						<RangePicker />
 						<Select
-							defaultValue="transactionType"
+							defaultValue="entry"
 							style={{ width: 120 }}
 							onChange={handleChange}
 							options={[
-								{ value: "transactionType", label: "交易类型" },
-								{ value: "dynamicAccountType", label: "动帐类型" },
-								{ value: "amount", label: "金额" },
-								{ value: "currency", label: "币种" },
-								{ value: "time", label: "时间" },
-								{ value: "transactionDetail", label: "交易明细" }
+								{ value: "entry", label: "转入" },
+								{ value: "out", label: "转出" },
+								{ value: "recharge", label: "充值" }
 							]}
 						/>
+						<Button type="primary">查询</Button>
 					</Space>
 				</div>
 				<Button type="primary">导出账单明细</Button>

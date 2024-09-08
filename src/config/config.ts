@@ -17,7 +17,7 @@ export const menu: any = [
 		path: "/home/index"
 	},
 	{
-		icon: "AreaChartOutlined",
+		icon: "CreditCardOutlined",
 		title: "沃易卡账户",
 		path: "/proTable/account"
 	},
@@ -53,18 +53,24 @@ export const menu: any = [
 	},
 	{
 		icon: "AreaChartOutlined",
+		title: "账户设置",
+		path: "/accountSetting/index",
+		hide: true
+	},
+	{
+		icon: "ShoppingOutlined",
 		title: "预付卡",
 		path: "/proTable/prepaidCard"
 	},
 	{
-		icon: "AreaChartOutlined",
-		title: "账户查询",
+		icon: "BugOutlined",
+		title: "交易查询",
 		path: "/proTable/tradeQuery"
-	},
+	}
 	// {
 	// 	icon: "AreaChartOutlined",
 	// 	title: "数据大屏",
-	// 	path: "/dataScreen/index"
+	// 	path: "/dataScreen/index",
 	// },
 	// {
 	// 	icon: "TableOutlined",
@@ -74,12 +80,12 @@ export const menu: any = [
 	// 		{
 	// 			icon: "AppstoreOutlined",
 	// 			path: "/proTable/useHooks",
-	// 			title: "使用 Hooks"
+	// 			title: "使用 Hooks",
 	// 		},
 	// 		{
 	// 			icon: "AppstoreOutlined",
 	// 			path: "/proTable/useComponent",
-	// 			title: "使用 Component"
+	// 			title: "使用 Component",
 	// 		}
 	// 	]
 	// },

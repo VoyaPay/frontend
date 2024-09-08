@@ -1,13 +1,13 @@
 import { useRef } from "react";
 import { Avatar, Modal, Menu, Dropdown, message } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import PasswordModal from "./PasswordModal";
 import InfoModal from "./InfoModal";
-import avatar from "@/assets/images/avatar.png";
+// import avatar from "@/assets/images/avatar.png";
 
 const AvatarIcon = (props: any) => {
 	const { setToken } = props;
@@ -47,7 +47,7 @@ const AvatarIcon = (props: any) => {
 				{
 					key: "2",
 					label: <span className="dropdown-item">个人信息</span>,
-					onClick: () => infoRef.current!.showModal({ name: 11 })
+					onClick: () => navigate("accountSetting/index")
 				},
 				{
 					key: "3",
@@ -68,7 +68,7 @@ const AvatarIcon = (props: any) => {
 	return (
 		<>
 			<Dropdown overlay={menu} placement="bottom" arrow trigger={["click"]}>
-				<Avatar size="large" src={avatar} />
+				<Avatar icon={<UserOutlined />} />
 			</Dropdown>
 			<InfoModal innerRef={infoRef}></InfoModal>
 			<PasswordModal innerRef={passRef}></PasswordModal>
