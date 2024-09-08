@@ -7,13 +7,14 @@ import { loginApi } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import "./index.less";
+import logo from "@/assets/images/voya.png";
 
 const LoginForm = (props: any) => {
-	const { t } = useTranslation();
+	// const { t } = useTranslation();
 	const { setToken, setTabsList } = props;
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
@@ -61,6 +62,7 @@ const LoginForm = (props: any) => {
 
 	return (
 		<div className="loginform-container">
+			<img src={logo} alt="logo" className="logo-img" />
 			<div className="login-type">
 				<span className={`text ${loginType == 0 ? "selected" : ""}`} onClick={changeToPhone}>
 					手机{" "}
@@ -101,17 +103,19 @@ const LoginForm = (props: any) => {
 							}}
 							icon={<CloseCircleOutlined />}
 						>
-							{t("login.reset")}
+							{/* {t("login.reset")} */}
+							重置
 						</Button>
 						<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
-							{t("login.confirm")}
+							{/* {t("login.confirm")} */}
+							登录
 						</Button>
 					</Space>
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
 				<span>立即注册</span>
-				<span>忘记密码</span>
+				{/* <span>忘记密码</span> */}
 			</div>
 		</div>
 	);

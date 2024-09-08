@@ -52,7 +52,7 @@ const PrepaidCard = () => {
 
 	const columns: any[] = [
 		{
-			title: "卡片名称",
+			title: "卡昵称",
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center"
@@ -85,13 +85,17 @@ const PrepaidCard = () => {
 			title: "余额",
 			dataIndex: "banlance",
 			key: "banlance",
-			align: "center"
+			align: "center",
+			defaultSortOrder: "descend",
+			sorter: (a, b) => a.banlance - b.banlance
 		},
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
 			key: "createCardTime",
-			align: "center"
+			align: "center",
+			defaultSortOrder: "descend",
+			sorter: (a, b) => a.createCardTime - b.createCardTime
 		},
 		{
 			title: "操作",

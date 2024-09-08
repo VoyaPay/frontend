@@ -2,18 +2,20 @@ import { useState } from "react";
 // import { Breadcrumb } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 // import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button } from "antd";
+import { Input, Button, message, Modal } from "antd";
+
 import bankcard from "@/assets/images/bankcard.png";
+import back from "@/assets/images/return.png";
 import "./index.less";
 
 const Detail = () => {
 	// 按钮权限
 	// const { BUTTONS } = useAuthButtons();
 	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-
+	const navigate = useNavigate();
+	const [messageApi, contextHolder] = message.useMessage();
 	// useEffect(() => {
 	// 	console.log(BUTTONS);
 	// }, []);
@@ -26,6 +28,9 @@ const Detail = () => {
 
 	const [cardOwner, setCardOwner] = useState("cardname");
 	const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
+
+	const [open, setOpen] = useState(false);
+	const [confirmLoading, setConfirmLoading] = useState(false);
 
 	const changeCardName = e => {
 		console.log(e);
@@ -64,11 +69,36 @@ const Detail = () => {
 		}
 	};
 
+	const goCheck = () => {
+		navigate("/proTable/tradeQuery");
+	};
+
+	const gotologout = () => {
+		messageApi.info("该卡片未满足注销条件！（注销条件：卡片近30天内需无任何授权交易）");
+		setOpen(true);
+	};
+
+	const handleOk = () => {
+		setConfirmLoading(true);
+		setTimeout(() => {
+			setOpen(false);
+			setConfirmLoading(false);
+		}, 2000);
+	};
+
+	const handleCancel = () => {
+		setOpen(false);
+	};
+
 	return (
 		<div className="detail-wrap">
+			{contextHolder}
+			<Modal title="注销提示" open={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
+				<p>确认要注销该卡片吗？</p>
+			</Modal>
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					预付卡{" "}
+					<img src={back} alt="" className="returnIcon" /> 预付卡{" "}
 				</NavLink>
 				-&gt; 查看详情
 			</div>
@@ -180,6 +210,9 @@ const Detail = () => {
 					<div className="content">
 						<div className="pre">余额：</div>
 						<div className="text">122</div>
+						<div className="check" onClick={goCheck}>
+							查看消费记录
+						</div>
 					</div>
 					<div className="content">
 						<div className="pre">开卡时间：</div>
@@ -188,13 +221,13 @@ const Detail = () => {
 				</div>
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
-					<Button type="primary" className="actionBtn">
+					<Button type="primary" size="large" className="actionBtn">
 						充值
 					</Button>
-					<Button type="primary" className="actionBtn">
+					<Button type="primary" size="large" className="actionBtn">
 						冻结
 					</Button>
-					<Button type="primary" className="actionBtn">
+					<Button type="primary" size="large" className="actionBtn" onClick={gotologout}>
 						注销
 					</Button>
 				</div>

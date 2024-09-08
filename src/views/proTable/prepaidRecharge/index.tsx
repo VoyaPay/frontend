@@ -6,6 +6,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
+import back from "@/assets/images/return.png";
 import "./index.less";
 
 const PrepaidRecharge = () => {
@@ -28,6 +29,7 @@ const PrepaidRecharge = () => {
 		<div className="prepaidRecharge-wrap">
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<img src={back} alt="" className="returnIcon" />
 					预付卡{" "}
 				</NavLink>
 				-&gt; 充值

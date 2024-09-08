@@ -50,12 +50,6 @@ const Account = () => {
 			align: "center"
 		},
 		{
-			title: "动帐类型",
-			dataIndex: "dynamicAccountType",
-			key: "dynamicAccountType",
-			align: "center"
-		},
-		{
 			title: "金额",
 			dataIndex: "amount",
 			key: "amount",
@@ -104,18 +98,16 @@ const Account = () => {
 					<Space>
 						<RangePicker />
 						<Select
-							defaultValue="transactionType"
+							defaultValue="entry"
 							style={{ width: 120 }}
 							onChange={handleChange}
 							options={[
-								{ value: "transactionType", label: "交易类型" },
-								{ value: "dynamicAccountType", label: "动帐类型" },
-								{ value: "amount", label: "金额" },
-								{ value: "currency", label: "币种" },
-								{ value: "time", label: "时间" },
-								{ value: "transactionDetail", label: "交易明细" }
+								{ value: "entry", label: "转入" },
+								{ value: "out", label: "转出" },
+								{ value: "recharge", label: "充值" }
 							]}
 						/>
+						<Button type="primary">查询</Button>
 					</Space>
 				</div>
 				<Button type="primary">导出账单明细</Button>

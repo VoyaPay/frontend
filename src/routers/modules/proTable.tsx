@@ -75,6 +75,15 @@ const proTableRouter: Array<RouteObject> = [
 				}
 			},
 			{
+				path: "/accountSetting/index",
+				element: lazyLoad(React.lazy(() => import("@/layouts/components/Header/components/accountSetting/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "账户设置",
+					key: "accountSetting"
+				}
+			},
+			{
 				path: "/proTable/prepaidCard",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/prepaidCard/index"))),
 				meta: {

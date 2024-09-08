@@ -346,6 +346,7 @@ const TradeQuery = () => {
 					<Space>
 						<RangePicker />
 						<Select defaultValue={defaultOptions} style={{ width: 120 }} onChange={handleChange} options={options} />
+						<Button type="primary">查询</Button>
 					</Space>
 				</div>
 				<Button type="primary">导出账单明细</Button>
