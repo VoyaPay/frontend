@@ -47,7 +47,7 @@ const AvatarIcon = (props: any) => {
 				{
 					key: "2",
 					label: <span className="dropdown-item">个人信息</span>,
-					onClick: () => infoRef.current!.showModal({ name: 11 })
+					onClick: () => navigate("accountSetting/index")
 				},
 				{
 					key: "3",
@@ -68,7 +68,8 @@ const AvatarIcon = (props: any) => {
 	return (
 		<>
 			<Dropdown overlay={menu} placement="bottom" arrow trigger={["click"]}>
-				<Avatar size="large" src={avatar} />
+				<Avatar src={avatar} className="avatar" />
+				{/* <Avatar icon={<UserOutlined />} /> */}
 			</Dropdown>
 			<InfoModal innerRef={infoRef}></InfoModal>
 			<PasswordModal innerRef={passRef}></PasswordModal>

@@ -6,45 +6,47 @@ import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
+import back from "@/assets/images/return.png";
 import "./index.less";
 
 interface CardData {
-  key: string,
-	cardName: string,
-	cardOwner: string,
-	cardGroup: string,
-	cardNo: string, 
-	cardStatus: string,
-	banlance: string, 
-	createCardTime: string,
-	address?:string,
-	expirationDate?:string,
-	cvv2?:string,
+	key: string;
+	cardName: string;
+	cardOwner: string;
+	cardGroup: string;
+	cardNo: string;
+	cardStatus: string;
+	banlance: string;
+	createCardTime: string;
+	address?: string;
+	expirationDate?: string;
+	cvv2?: string;
 }
 const PrepaidRecharge = () => {
 	const location = useLocation();
 	const defaultCardData: CardData = {
-    key: '',
-    cardName: "defaultCardName",
-    cardOwner: "defaultOwner",
-    cardGroup: "defaultGroup",
-    cardNo: "0000",
-    cardStatus: "defaultStatus",
-    banlance: "0",
-    createCardTime: "2023-01-01 00:00:00"
-  };
+		key: "",
+		cardName: "defaultCardName",
+		cardOwner: "defaultOwner",
+		cardGroup: "defaultGroup",
+		cardNo: "0000",
+		cardStatus: "defaultStatus",
+		banlance: "0",
+		createCardTime: "2023-01-01 00:00:00"
+	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState(0);
 
-	const changeAmount =  (e: React.ChangeEvent<HTMLInputElement>) => {
-		const valueAsNumber = Number(e.target.value);  
-    setAmount(valueAsNumber);
+	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const valueAsNumber = Number(e.target.value);
+		setAmount(valueAsNumber);
 	};
 
 	return (
 		<div className="prepaidRecharge-wrap">
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<img src={back} alt="" className="returnIcon" />
 					预付卡{" "}
 				</NavLink>
 				-&gt; 充值
