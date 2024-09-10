@@ -50,3 +50,27 @@ export const AddCardApi = async (params: object): Promise<ResultData<any>> => {
 			throw error; // 记录错误后重新抛出
 	}
 };
+
+export const RechargeCardApi= async (id:string,params:object): Promise<ResultData<any>> => {
+	const token = localStorage.getItem("access_token");
+	console.log("recharge card")
+	console.log("add Using token:", token); // 确认是否正确获取了token
+	if (!token) {
+			throw new Error("No token found. Please login first.");
+	}
+
+	// 定义请求头
+	const config: AxiosRequestConfig = {
+			headers: {
+					Authorization: `Bearer ${token}`, 
+					'Content-Type': 'application/json' 
+			}
+	};
+	try {
+			const response = await http.post(PORT3 + `/cards/recharge/`+id, params, config);
+			return response; // 返回请求结果
+	} catch (error) {
+			console.error("API request failed:", error);
+			throw error; // 记录错误后重新抛出
+	}
+};

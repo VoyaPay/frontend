@@ -8,6 +8,7 @@ import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
+import {RechargeCardApi } from "@/api/modules/prepaid"
 
 interface CardData {
 	key: string;
@@ -36,7 +37,10 @@ const PrepaidRecharge = () => {
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState(0);
-
+	const recharge = async  ()=>{
+		const response= await RechargeCardApi (cardData.key, {"amount": amount})
+		console.log(response);
+	}
 	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const valueAsNumber = Number(e.target.value);
 		setAmount(valueAsNumber);
@@ -67,7 +71,7 @@ const PrepaidRecharge = () => {
 					</div>
 					<div className="tips">注意：充值金额不能大于沃易卡账户的余额</div>
 					<div className="btns">
-						<Button type="primary" className="actionBtn">
+						<Button type="primary" className="actionBtn" onClick={recharge}>
 							充值
 						</Button>
 						<Button type="primary" className="actionBtn">

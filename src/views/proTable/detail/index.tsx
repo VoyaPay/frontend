@@ -9,7 +9,7 @@ import { Input, Button, message, Modal } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
-import { CardInformationApi } from "@/api/modules/card";
+import { CardInformationApi,ChangeCardInformationApi } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
 interface CardData {
 	key: string;
@@ -41,6 +41,16 @@ const fetchCardInformation = async (id: string, setCardData: React.Dispatch<Reac
 		console.error("Error fetching card information:", error);
 	}
 };
+
+const updateCardInformation = async (id: string, newDate:any)=>{
+	try{
+		const response= await ChangeCardInformationApi(id, newDate)
+		console.log(response)
+		
+	}catch(error){
+		console.error("Error updating card information:", error);
+	}
+}
 
 const Detail = () => {
 	const navigate = useNavigate();
@@ -115,6 +125,21 @@ const Detail = () => {
 		});
 	};
 
+	const saveChanges = async () => {
+	try {
+		const updatedData = {
+			status: cardData.cardStatus ==="Active" ? "Inactive" : "Active",
+			alias: cardOwner                   
+		  };
+		const response:any = await updateCardInformation(cardData.key, updatedData);	
+		if (response?.id) {  
+			message.success('Card information updated successfully');
+		}
+	} catch (error) {
+		console.error('Error updating card information:', error);
+	}
+};
+
 	const goCheck = () => {
 		navigate("/proTable/tradeQuery");
 	};
@@ -144,7 +169,7 @@ const Detail = () => {
 	return (
 		<div className="detail-wrap">
 			{contextHolder}
-			<Modal title="注销提示" open={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
+			<Modal title="注销提示" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>确认要注销该卡片吗？</p>
 			</Modal>
 			<div className="nav">
@@ -274,6 +299,9 @@ const Detail = () => {
 				</div>
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
+					<Button type="primary" className="actionBtn" size="large" onClick={() => {saveChanges()}}>
+						完成修改
+					</Button>
 					<Button type="primary" className="actionBtn" size="large" onClick={() => handlerRechargeDetails(cardData)}>
 						充值
 					</Button>

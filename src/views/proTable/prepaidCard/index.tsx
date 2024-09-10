@@ -125,7 +125,7 @@ const PrepaidCard = () => {
 			key: "banlance",
 			align: "center",
 			defaultSortOrder: "descend",
-			sorter: (a, b) => a.banlance - b.banlance
+			sorter: (a:any, b:any) => a.banlance - b.banlance
 		},
 		{
 			title: "开卡时间",
@@ -133,7 +133,7 @@ const PrepaidCard = () => {
 			key: "createCardTime",
 			align: "center",
 			defaultSortOrder: "descend",
-			sorter: (a, b) => a.createCardTime - b.createCardTime
+			sorter: (a:any, b:any) => a.createCardTime - b.createCardTime
 		},
 		{
 			title: "操作",

@@ -75,7 +75,7 @@ const AddPrepaidCard = () => {
 
 	return (
 		<div className="addPrepaidCard-wrap">
-			<Modal title="申请" open={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
+			<Modal title="申请" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>充值金额XX， 开卡费1USD，总计XX，继续申请？</p>
 			</Modal>
 			<div className="nav">
