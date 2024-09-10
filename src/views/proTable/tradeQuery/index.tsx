@@ -143,7 +143,6 @@ const TradeQuery = () => {
 
 	useEffect(() => {
 		console.log(BUTTONS);
-
 	}, []);
 
 	const handleChange = (value: string) => {
@@ -162,9 +161,8 @@ const TradeQuery = () => {
 			setDefaultOptions("authTime");
 			setColumns(transactionColumns);
 		}
-		
 	};
-	const dataSource:any=[];
+	const dataSource: any = [];
 
 	return (
 		<div className="card content-box tradeQueryWrap">
@@ -186,15 +184,15 @@ const TradeQuery = () => {
 				>
 					消费明细
 				</div>
-				
 			</div>
-		
+
 			<div className="actionWrap">
 				<div>
 					<img src={filter} alt="" className="filterIcon" />
 					<Space>
 						<RangePicker />
 						<Select defaultValue={defaultOptions} style={{ width: 120 }} onChange={handleChange} options={options} />
+						<Button type="primary">查询</Button>
 					</Space>
 				</div>
 				<Button type="primary">导出账单明细</Button>

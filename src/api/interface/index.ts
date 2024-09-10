@@ -22,6 +22,12 @@ export interface Result{
 	cvc?:string;
 	expiration?: string;
 	pan?:string;
+	id?: number,
+	fullname?: string,
+	email?: string,
+	companyName?: string
+	
+
 }
 
 // * 请求响应参数(包含data)

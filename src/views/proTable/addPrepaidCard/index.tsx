@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, message } from "antd";
+import { Input, Button, Modal, message } from "antd";
+import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
 
@@ -31,33 +32,55 @@ const AddPrepaidCard = () => {
 		};
 
 		try {
-			
 			const response = await AddCardApi(payload);
-			console.log(response)
+			console.log(response);
 			const formattedData = {
 				card: response.card,
-				transaction: response.transaction,
+				transaction: response.transaction
 			};
-			
-			console.log("transaction is "+formattedData.transaction?.status)
+
+			console.log("transaction is " + formattedData.transaction?.status);
 
 			if (response && formattedData.transaction?.status) {
 				navigate("/applySuccess/index");
 			} else {
 				// Show error message
-				console.log("failed")
-				message.error('卡片申请失败');
+				console.log("failed");
+				message.error("卡片申请失败");
 			}
 		} catch (error) {
 			// Handle any errors
-			message.error('提交过程中发生错误');
+			message.error("提交过程中发生错误");
 		}
+	};
+
+	const [open, setOpen] = useState(false);
+	const [confirmLoading, setConfirmLoading] = useState(false);
+
+	// const apply = () => {
+	// 	setOpen(true);
+	// };
+
+	const handleOk = () => {
+		setConfirmLoading(true);
+		setTimeout(() => {
+			setOpen(false);
+			setConfirmLoading(false);
+		}, 2000);
+	};
+
+	const handleCancel = () => {
+		setOpen(false);
 	};
 
 	return (
 		<div className="addPrepaidCard-wrap">
+			<Modal title="申请" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
+				<p>充值金额XX， 开卡费1USD，总计XX，继续申请？</p>
+			</Modal>
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<img src={back} alt="" className="returnIcon" />
 					预付卡{" "}
 				</NavLink>
 				-&gt; 新增预付卡
@@ -72,15 +95,17 @@ const AddPrepaidCard = () => {
 			<div className="contentWrap">
 				<div className="title">2.自定义卡信息</div>
 				<div className="content">
-					<div className="pre">卡片名称：</div>
+					<div className="pre">
+						<span className="require">*</span>卡昵称：
+					</div>
 					<Input value={cardName} onChange={changeCardName} className="edit" />
 				</div>
 				<div className="content">
-					<div className="pre">持卡人名称：</div>
+					<div className="pre">持卡人：</div>
 					<Input value={cardOwner} onChange={changeCardOwner} className="edit" />
 				</div>
 				<div className="content">
-					<div className="pre">地址：</div>
+					<div className="pre">账单地址：</div>
 					<div className="text">默认地址，不允许修改</div>
 				</div>
 			</div>
@@ -88,7 +113,7 @@ const AddPrepaidCard = () => {
 				<div className="title">2.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户 $100</div>
+					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;$100</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>

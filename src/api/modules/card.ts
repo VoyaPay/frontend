@@ -32,7 +32,8 @@ export const CardInformationApi = (id: string) => {
 	return http.get<ResultData>(PORT3 + "/Cards/"+id+ "/details", undefined, { headers });
 };
 
-export const ChangeCardInformation= (id:string,params:CardData) =>{
+export const ChangeCardInformationApi= (id:string, params:CardData) =>{
+	console.log(params);
 	const token = localStorage.getItem("access_token"); 
 	console.log("Using token:", token); 
 	if (!token) {
@@ -43,7 +44,7 @@ export const ChangeCardInformation= (id:string,params:CardData) =>{
 		Authorization: `Bearer ${token}` 
 	};
 
-	return http.patch<ResultData>(PORT3 + "/Cards/"+id, undefined, { headers, params });
+	return http.patch<ResultData>(PORT3 + "/Cards/"+id, params, { headers});
 
 }
 

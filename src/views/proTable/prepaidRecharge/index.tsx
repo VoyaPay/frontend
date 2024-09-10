@@ -6,45 +6,51 @@ import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
+import back from "@/assets/images/return.png";
 import "./index.less";
+import {RechargeCardApi } from "@/api/modules/prepaid"
 
 interface CardData {
-  key: string,
-	cardName: string,
-	cardOwner: string,
-	cardGroup: string,
-	cardNo: string, 
-	cardStatus: string,
-	banlance: string, 
-	createCardTime: string,
-	address?:string,
-	expirationDate?:string,
-	cvv2?:string,
+	key: string;
+	cardName: string;
+	cardOwner: string;
+	cardGroup: string;
+	cardNo: string;
+	cardStatus: string;
+	banlance: string;
+	createCardTime: string;
+	address?: string;
+	expirationDate?: string;
+	cvv2?: string;
 }
 const PrepaidRecharge = () => {
 	const location = useLocation();
 	const defaultCardData: CardData = {
-    key: '',
-    cardName: "defaultCardName",
-    cardOwner: "defaultOwner",
-    cardGroup: "defaultGroup",
-    cardNo: "0000",
-    cardStatus: "defaultStatus",
-    banlance: "0",
-    createCardTime: "2023-01-01 00:00:00"
-  };
+		key: "",
+		cardName: "defaultCardName",
+		cardOwner: "defaultOwner",
+		cardGroup: "defaultGroup",
+		cardNo: "0000",
+		cardStatus: "defaultStatus",
+		banlance: "0",
+		createCardTime: "2023-01-01 00:00:00"
+	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState(0);
-
-	const changeAmount =  (e: React.ChangeEvent<HTMLInputElement>) => {
-		const valueAsNumber = Number(e.target.value);  
-    setAmount(valueAsNumber);
+	const recharge = async  ()=>{
+		const response= await RechargeCardApi (cardData.key, {"amount": amount})
+		console.log(response);
+	}
+	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const valueAsNumber = Number(e.target.value);
+		setAmount(valueAsNumber);
 	};
 
 	return (
 		<div className="prepaidRecharge-wrap">
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<img src={back} alt="" className="returnIcon" />
 					预付卡{" "}
 				</NavLink>
 				-&gt; 充值
@@ -65,7 +71,7 @@ const PrepaidRecharge = () => {
 					</div>
 					<div className="tips">注意：充值金额不能大于沃易卡账户的余额</div>
 					<div className="btns">
-						<Button type="primary" className="actionBtn">
+						<Button type="primary" className="actionBtn" onClick={recharge}>
 							充值
 						</Button>
 						<Button type="primary" className="actionBtn">

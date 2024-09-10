@@ -30,7 +30,6 @@ export const GetBalanceApi=() => {
 	const headers = {
 		Authorization: `Bearer ${token}` // 在请求头中添加 token
 	};
-	console.log('here')
 
 	return http.get<ResultData>(PORT3 + "/Ledger/balance", undefined, { headers });
 }
