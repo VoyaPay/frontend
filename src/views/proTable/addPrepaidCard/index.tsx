@@ -120,7 +120,7 @@ const AddPrepaidCard = () => {
 					<Input value={amount} onChange={changeAmount} className="edit" />
 				</div>
 				<div className="content">
-					<div className="pre">服务费：</div>
+					<div className="pre">开卡费：</div>
 					<div className="text">1 USD</div>
 				</div>
 			</div>

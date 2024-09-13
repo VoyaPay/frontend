@@ -4,11 +4,11 @@ import { useState } from "react";
 // import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button } from "antd";
+import { Input, Button, Modal } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
-import {RechargeCardApi } from "@/api/modules/prepaid"
+import { RechargeCardApi } from "@/api/modules/prepaid";
 
 interface CardData {
 	key: string;
@@ -37,13 +37,35 @@ const PrepaidRecharge = () => {
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState(0);
-	const recharge = async  ()=>{
-		const response= await RechargeCardApi (cardData.key, {"amount": amount})
-		console.log(response);
-	}
+	const recharge = () => {
+		setOpen(true);
+	};
 	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const valueAsNumber = Number(e.target.value);
 		setAmount(valueAsNumber);
+	};
+
+	const [open, setOpen] = useState(false);
+	const [confirmLoading, setConfirmLoading] = useState(false);
+
+	const handleOk = async () => {
+		try {
+			setConfirmLoading(true);
+			const response = await RechargeCardApi(cardData.key, { amount: amount });
+			console.log(response);
+			setOpen(false);
+			setConfirmLoading(false);
+		} catch (e) {
+			const { response } = e;
+			if (response && response.data && response.data.message && response.data.message == "Insufficient balance") {
+				console.log(e);
+				setConfirmLoading(false);
+			}
+		}
+	};
+
+	const handleCancel = () => {
+		setOpen(false);
 	};
 
 	return (
@@ -55,6 +77,9 @@ const PrepaidRecharge = () => {
 				</NavLink>
 				-&gt; 充值
 			</div>
+			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
+				<p>充值金额{amount}，继续充值？</p>
+			</Modal>
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<div className="content">

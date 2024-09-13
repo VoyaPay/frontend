@@ -14,7 +14,8 @@ export const menu: any = [
 	{
 		icon: "HomeOutlined",
 		title: "首页",
-		path: "/home/index"
+		path: "/home/index",
+		hide: true
 	},
 	{
 		icon: "CreditCardOutlined",

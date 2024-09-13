@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Input, Space } from "antd";
+import { Table, Button, Space, DatePicker, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -39,8 +39,8 @@ const PrepaidCard = () => {
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
 	const [accountBalance, setAccountBalance] = useState(0);
 
-	const { Search } = Input;
 	const navigate = useNavigate();
+	const { RangePicker } = DatePicker;
 
 	// Fetch data from the API on component mount
 	useEffect(() => {
@@ -93,47 +93,54 @@ const PrepaidCard = () => {
 			title: "卡昵称",
 			dataIndex: "cardName",
 			key: "cardName",
-			align: "center"
+			align: "center",
+			width: 100
 		},
 		{
 			title: "持卡人",
 			dataIndex: "cardOwner",
 			key: "cardOwner",
-			align: "center"
+			align: "center",
+			width: 120
 		},
 		{
 			title: "卡组",
 			dataIndex: "cardGroup",
 			key: "cardGroup",
-			align: "center"
+			align: "center",
+			width: 80
 		},
 		{
 			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
-			align: "center"
+			align: "center",
+			width: 120
 		},
 		{
 			title: "状态",
 			dataIndex: "cardStatus",
 			key: "cardStatus",
-			align: "center"
+			align: "center",
+			width: 80
 		},
 		{
 			title: "余额",
 			dataIndex: "banlance",
 			key: "banlance",
 			align: "center",
+			width: 120,
 			defaultSortOrder: "descend",
-			sorter: (a:any, b:any) => a.banlance - b.banlance
+			sorter: (a: any, b: any) => a.banlance - b.banlance
 		},
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
 			key: "createCardTime",
 			align: "center",
+			width: 160,
 			defaultSortOrder: "descend",
-			sorter: (a:any, b:any) => a.createCardTime - b.createCardTime
+			sorter: (a: any, b: any) => a.createCardTime - b.createCardTime
 		},
 		{
 			title: "操作",
@@ -182,7 +189,10 @@ const PrepaidCard = () => {
 			}
 		});
 	};
-	const onSearch = (value: string) => console.log(value);
+
+	const handleChange = e => {
+		console.log(e);
+	};
 
 	return (
 		<div className="card content-box">
@@ -211,8 +221,30 @@ const PrepaidCard = () => {
 			</div>
 			<div className="actionWrap">
 				<div className="left">
-					<span className="title">动帐明细</span>
-					<Search placeholder="Search" onSearch={onSearch} style={{ width: 200 }} />
+					<span className="title">预存卡列表</span>
+					<Space>
+						<RangePicker />
+						<Select
+							placeholder="请选择卡组"
+							mode="multiple"
+							allowClear
+							style={{ width: 150 }}
+							onChange={handleChange}
+							options={[{ value: "VISA", label: "VISA" }]}
+						/>
+						<Select
+							placeholder="请选择状态"
+							mode="multiple"
+							allowClear
+							style={{ width: 150 }}
+							onChange={handleChange}
+							options={[
+								{ value: "Active", label: "Active" },
+								{ value: "Inactive", label: "Inactive" }
+							]}
+						/>
+						<Button type="primary">查询</Button>
+					</Space>
 				</div>
 				<Button type="primary" icon={<PlusOutlined />}>
 					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">

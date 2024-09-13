@@ -9,7 +9,7 @@ import { Input, Button, message, Modal } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
-import { CardInformationApi,ChangeCardInformationApi } from "@/api/modules/card";
+import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
 interface CardData {
 	key: string;
@@ -42,15 +42,14 @@ const fetchCardInformation = async (id: string, setCardData: React.Dispatch<Reac
 	}
 };
 
-const updateCardInformation = async (id: string, newDate:any)=>{
-	try{
-		const response= await ChangeCardInformationApi(id, newDate)
-		console.log(response)
-		
-	}catch(error){
+const updateCardInformation = async (id: string, newDate: any) => {
+	try {
+		const response = await ChangeCardInformationApi(id, newDate);
+		console.log(response);
+	} catch (error) {
 		console.error("Error updating card information:", error);
 	}
-}
+};
 
 const Detail = () => {
 	const navigate = useNavigate();
@@ -74,7 +73,7 @@ const Detail = () => {
 		}
 	}, [cardData.key]);
 
-	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
+	const [cardName, setCardName] = useState(cardData.cardOwner || "cardname");
 	const [cardNameStatus, setCardNameStatus] = useState(false);
 
 	const [address, setAddress] = useState(cardData.address || "address");
@@ -86,12 +85,31 @@ const Detail = () => {
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 
+	const saveChanges = async () => {
+		try {
+			const updatedData = {
+				status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
+				alias: cardOwner
+			};
+			const response: any = await updateCardInformation(cardData.key, updatedData);
+			if (response?.id) {
+				message.success("Card information updated successfully");
+			}
+			navigate("/proTable/prepaidCard");
+		} catch (error) {
+			console.error("Error updating card information:", error);
+		}
+	};
+
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardName(e.target.value);
 	};
 
 	const toggleCardName = (status: any) => {
 		setCardNameStatus(status === "change");
+		if (status === "finish") {
+			saveChanges(); 
+		}
 	};
 
 	const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +118,9 @@ const Detail = () => {
 
 	const toggleAddress = (status: any) => {
 		setAddressStatus(status === "change");
+		if (status === "finish") {
+			saveChanges(); 
+		}
 	};
 
 	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +129,9 @@ const Detail = () => {
 
 	const toggleCardOwner = (status: any) => {
 		setCardOwnerStatus(status === "change");
+		if (status === "finish") {
+			saveChanges();
+		}
 	};
 	const handlerRechargeDetails = (record: CardData) => {
 		console.log("navigation: " + record.key);
@@ -124,21 +148,6 @@ const Detail = () => {
 			}
 		});
 	};
-
-	const saveChanges = async () => {
-	try {
-		const updatedData = {
-			status: cardData.cardStatus ==="Active" ? "Inactive" : "Active",
-			alias: cardOwner                   
-		  };
-		const response:any = await updateCardInformation(cardData.key, updatedData);	
-		if (response?.id) {  
-			message.success('Card information updated successfully');
-		}
-	} catch (error) {
-		console.error('Error updating card information:', error);
-	}
-};
 
 	const goCheck = () => {
 		navigate("/proTable/tradeQuery");
@@ -180,9 +189,9 @@ const Detail = () => {
 			</div>
 			<div className="contentWrap">
 				<div className="basicInfo">
-					<span className="title">基本信息</span>
+					<span className="title">卡片信息</span>
 					<div className="content">
-						<div className="pre">卡片名称：</div>
+						<div className="pre">卡昵称：</div>
 						{cardNameStatus ? (
 							<Input value={cardName} onChange={changeCardName} className="edit" />
 						) : (
@@ -228,7 +237,7 @@ const Detail = () => {
 						<div className="text">{cardData.cvv2 || "N/A"}</div>
 					</div>
 					<div className="content">
-						<div className="pre">地址：</div>
+						<div className="pre">账单地址：</div>
 						{addressStatus ? (
 							<Input value={address} onChange={changeAddress} className="edit" />
 						) : (
@@ -255,7 +264,7 @@ const Detail = () => {
 						)}
 					</div>
 					<div className="content">
-						<div className="pre">持卡人名称：</div>
+						<div className="pre">持卡人：</div>
 						{cardOwnerStatus ? (
 							<Input value={cardOwner} onChange={changeCardOwner} className="edit" />
 						) : (
@@ -282,7 +291,7 @@ const Detail = () => {
 						)}
 					</div>
 					<div className="content">
-						<div className="pre">状态：</div>
+						<div className="pre">卡状态：</div>
 						<div className="text">{cardData.cardStatus || "N/A"}</div>
 					</div>
 					<div className="content">
@@ -299,13 +308,17 @@ const Detail = () => {
 				</div>
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
-					<Button type="primary" className="actionBtn" size="large" onClick={() => {saveChanges()}}>
-						完成修改
-					</Button>
 					<Button type="primary" className="actionBtn" size="large" onClick={() => handlerRechargeDetails(cardData)}>
 						充值
 					</Button>
-					<Button type="primary" size="large" className="actionBtn">
+					<Button
+						type="primary"
+						className="actionBtn"
+						size="large"
+						onClick={() => {
+							saveChanges();
+						}}
+					>
 						冻结
 					</Button>
 					<Button type="primary" size="large" className="actionBtn" onClick={gotologout}>
