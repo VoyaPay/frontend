@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Input, Space, DatePicker } from "antd";
+import { Table, Button, Space, DatePicker, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -39,7 +39,6 @@ const PrepaidCard = () => {
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
 	const [accountBalance, setAccountBalance] = useState(0);
 
-	const { Search } = Input;
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
 
@@ -190,7 +189,10 @@ const PrepaidCard = () => {
 			}
 		});
 	};
-	const onSearch = (value: string) => console.log(value);
+
+	const handleChange = e => {
+		console.log(e);
+	};
 
 	return (
 		<div className="card content-box">
@@ -222,7 +224,25 @@ const PrepaidCard = () => {
 					<span className="title">预存卡列表</span>
 					<Space>
 						<RangePicker />
-						<Search placeholder="Search" onSearch={onSearch} style={{ width: 200 }} />
+						<Select
+							placeholder="请选择卡组"
+							mode="multiple"
+							allowClear
+							style={{ width: 150 }}
+							onChange={handleChange}
+							options={[{ value: "VISA", label: "VISA" }]}
+						/>
+						<Select
+							placeholder="请选择状态"
+							mode="multiple"
+							allowClear
+							style={{ width: 150 }}
+							onChange={handleChange}
+							options={[
+								{ value: "Active", label: "Active" },
+								{ value: "Inactive", label: "Inactive" }
+							]}
+						/>
 						<Button type="primary">查询</Button>
 					</Space>
 				</div>
