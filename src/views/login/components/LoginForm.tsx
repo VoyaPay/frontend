@@ -115,7 +115,10 @@ const LoginForm = (props: any) => {
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
-				<span>立即注册</span>
+			<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
+				立即注册
+			</a>
+		
 				{/* <span>忘记密码</span> */}
 			</div>
 		</div>

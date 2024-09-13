@@ -73,7 +73,7 @@ const Detail = () => {
 		}
 	}, [cardData.key]);
 
-	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
+	const [cardName, setCardName] = useState(cardData.cardOwner || "cardname");
 	const [cardNameStatus, setCardNameStatus] = useState(false);
 
 	const [address, setAddress] = useState(cardData.address || "address");
@@ -85,12 +85,31 @@ const Detail = () => {
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 
+	const saveChanges = async () => {
+		try {
+			const updatedData = {
+				status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
+				alias: cardOwner
+			};
+			const response: any = await updateCardInformation(cardData.key, updatedData);
+			if (response?.id) {
+				message.success("Card information updated successfully");
+			}
+			navigate("/proTable/prepaidCard");
+		} catch (error) {
+			console.error("Error updating card information:", error);
+		}
+	};
+
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardName(e.target.value);
 	};
 
 	const toggleCardName = (status: any) => {
 		setCardNameStatus(status === "change");
+		if (status === "finish") {
+			saveChanges(); 
+		}
 	};
 
 	const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,6 +118,9 @@ const Detail = () => {
 
 	const toggleAddress = (status: any) => {
 		setAddressStatus(status === "change");
+		if (status === "finish") {
+			saveChanges(); 
+		}
 	};
 
 	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +129,9 @@ const Detail = () => {
 
 	const toggleCardOwner = (status: any) => {
 		setCardOwnerStatus(status === "change");
+		if (status === "finish") {
+			saveChanges();
+		}
 	};
 	const handlerRechargeDetails = (record: CardData) => {
 		console.log("navigation: " + record.key);
@@ -122,21 +147,6 @@ const Detail = () => {
 				createCardTime: record.createCardTime
 			}
 		});
-	};
-
-	const saveChanges = async () => {
-		try {
-			const updatedData = {
-				status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
-				alias: cardOwner
-			};
-			const response: any = await updateCardInformation(cardData.key, updatedData);
-			if (response?.id) {
-				message.success("Card information updated successfully");
-			}
-		} catch (error) {
-			console.error("Error updating card information:", error);
-		}
 	};
 
 	const goCheck = () => {
@@ -298,6 +308,9 @@ const Detail = () => {
 				</div>
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
+					<Button type="primary" className="actionBtn" size="large" onClick={() => handlerRechargeDetails(cardData)}>
+						充值
+					</Button>
 					<Button
 						type="primary"
 						className="actionBtn"
@@ -306,12 +319,6 @@ const Detail = () => {
 							saveChanges();
 						}}
 					>
-						完成修改
-					</Button>
-					<Button type="primary" className="actionBtn" size="large" onClick={() => handlerRechargeDetails(cardData)}>
-						充值
-					</Button>
-					<Button type="primary" size="large" className="actionBtn">
 						冻结
 					</Button>
 					<Button type="primary" size="large" className="actionBtn" onClick={gotologout}>
