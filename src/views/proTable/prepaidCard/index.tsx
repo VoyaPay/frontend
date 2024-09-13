@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Input, Space } from "antd";
+import { Table, Button, Input, Space, DatePicker } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -41,6 +41,7 @@ const PrepaidCard = () => {
 
 	const { Search } = Input;
 	const navigate = useNavigate();
+	const { RangePicker } = DatePicker;
 
 	// Fetch data from the API on component mount
 	useEffect(() => {
@@ -93,47 +94,54 @@ const PrepaidCard = () => {
 			title: "卡昵称",
 			dataIndex: "cardName",
 			key: "cardName",
-			align: "center"
+			align: "center",
+			width: 100
 		},
 		{
 			title: "持卡人",
 			dataIndex: "cardOwner",
 			key: "cardOwner",
-			align: "center"
+			align: "center",
+			width: 120
 		},
 		{
 			title: "卡组",
 			dataIndex: "cardGroup",
 			key: "cardGroup",
-			align: "center"
+			align: "center",
+			width: 80
 		},
 		{
 			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
-			align: "center"
+			align: "center",
+			width: 120
 		},
 		{
 			title: "状态",
 			dataIndex: "cardStatus",
 			key: "cardStatus",
-			align: "center"
+			align: "center",
+			width: 80
 		},
 		{
 			title: "余额",
 			dataIndex: "banlance",
 			key: "banlance",
 			align: "center",
+			width: 120,
 			defaultSortOrder: "descend",
-			sorter: (a:any, b:any) => a.banlance - b.banlance
+			sorter: (a: any, b: any) => a.banlance - b.banlance
 		},
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
 			key: "createCardTime",
 			align: "center",
+			width: 160,
 			defaultSortOrder: "descend",
-			sorter: (a:any, b:any) => a.createCardTime - b.createCardTime
+			sorter: (a: any, b: any) => a.createCardTime - b.createCardTime
 		},
 		{
 			title: "操作",
@@ -211,8 +219,12 @@ const PrepaidCard = () => {
 			</div>
 			<div className="actionWrap">
 				<div className="left">
-					<span className="title">动帐明细</span>
-					<Search placeholder="Search" onSearch={onSearch} style={{ width: 200 }} />
+					<span className="title">预存卡列表</span>
+					<Space>
+						<RangePicker />
+						<Search placeholder="Search" onSearch={onSearch} style={{ width: 200 }} />
+						<Button type="primary">查询</Button>
+					</Space>
 				</div>
 				<Button type="primary" icon={<PlusOutlined />}>
 					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">

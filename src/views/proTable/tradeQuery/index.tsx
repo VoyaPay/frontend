@@ -16,25 +16,25 @@ import "./index.less";
 // }
 
 const TradeQuery = () => {
-	const createOptions = [
-		{ value: "cardNum", label: "卡号" },
-		{ value: "cardType", label: "卡片类型" },
-		{ value: "applyId", label: "申请ID" },
-		{ value: "createTime", label: "开卡时间" },
-		{ value: "cardName", label: "卡片名称" },
-		{ value: "cardGroup", label: "卡组" }
-	];
-	const authOptions = [
-		{ value: "authTime", label: "时间" },
-		{ value: "authNum", label: "单号" },
-		{ value: "cardNum", label: "卡号" },
-		{ value: "cardType", label: "卡片类型" },
-		{ value: "shopName", label: "商户名称" },
-		{ value: "authStatus", label: "支付状态" },
-		{ value: "tradeCurrency", label: "交易币种" },
-		{ value: "tradeAmount", label: "交易金额" },
-		{ value: "wrongReason", label: "失败原因" }
-	];
+	// const createOptions = [
+	// 	{ value: "cardNum", label: "卡号" },
+	// 	{ value: "cardType", label: "卡片类型" },
+	// 	{ value: "applyId", label: "申请ID" },
+	// 	{ value: "createTime", label: "开卡时间" },
+	// 	{ value: "cardName", label: "卡片名称" },
+	// 	{ value: "cardGroup", label: "卡组" }
+	// ];
+	// const authOptions = [
+	// 	{ value: "authTime", label: "时间" },
+	// 	{ value: "authNum", label: "单号" },
+	// 	{ value: "cardNum", label: "卡号" },
+	// 	{ value: "cardType", label: "卡片类型" },
+	// 	{ value: "shopName", label: "商户名称" },
+	// 	{ value: "authStatus", label: "支付状态" },
+	// 	{ value: "tradeCurrency", label: "交易币种" },
+	// 	{ value: "tradeAmount", label: "交易金额" },
+	// 	{ value: "wrongReason", label: "失败原因" }
+	// ];
 
 	const createColumns: any[] = [
 		{
@@ -137,8 +137,8 @@ const TradeQuery = () => {
 	const { RangePicker } = DatePicker;
 	// const navigate = useNavigate();
 	const [tradeType, setTradeType] = useState("create");
-	const [options, setOptions] = useState(createOptions);
-	const [defaultOptions, setDefaultOptions] = useState("cardNum");
+	// const [options, setOptions] = useState(createOptions);
+	// const [defaultOptions, setDefaultOptions] = useState("cardNum");
 	const [columns, setColumns] = useState(createColumns);
 
 	useEffect(() => {
@@ -152,13 +152,13 @@ const TradeQuery = () => {
 	const changeTradeType = (type: any) => {
 		setTradeType(type);
 		if (type == "create") {
-			setOptions(createOptions);
-			setDefaultOptions("cardNum");
+			// setOptions(createOptions);
+			// setDefaultOptions("cardNum");
 			setColumns(createColumns);
 		}
 		if (type == "auth") {
-			setOptions(authOptions);
-			setDefaultOptions("authTime");
+			// setOptions(authOptions);
+			// setDefaultOptions("authTime");
 			setColumns(transactionColumns);
 		}
 	};
@@ -189,11 +189,87 @@ const TradeQuery = () => {
 			<div className="actionWrap">
 				<div>
 					<img src={filter} alt="" className="filterIcon" />
-					<Space>
-						<RangePicker />
-						<Select defaultValue={defaultOptions} style={{ width: 120 }} onChange={handleChange} options={options} />
-						<Button type="primary">查询</Button>
-					</Space>
+					{tradeType === "auth" ? (
+						<Space>
+							<RangePicker />
+							<Select
+								placeholder="卡片类型"
+								mode="multiple"
+								allowClear
+								style={{ width: 120 }}
+								onChange={handleChange}
+								options={[
+									{ value: "prepaid", label: "预付卡" },
+									{ value: "share", label: "共享卡" }
+								]}
+								className="transactionType"
+							/>
+							<Select
+								placeholder="商户名称"
+								mode="multiple"
+								allowClear
+								style={{ width: 120 }}
+								onChange={handleChange}
+								options={[
+									{ value: "Meta", label: "Meta" },
+									{ value: "Amazon", label: "Amazon" }
+								]}
+								className="transactionType"
+							/>
+							<Select
+								placeholder="支付状态"
+								mode="multiple"
+								allowClear
+								style={{ width: 120 }}
+								onChange={handleChange}
+								options={[
+									{ value: "auth", label: "已授权" },
+									{ value: "settled", label: "已结算" },
+									{ value: "fail", label: "失败" }
+								]}
+								className="transactionType"
+							/>
+							<Select
+								placeholder="交易币种"
+								mode="multiple"
+								allowClear
+								style={{ width: 120 }}
+								onChange={handleChange}
+								options={[{ value: "USD", label: "USD" }]}
+								className="transactionType"
+							/>
+							<Button type="primary">查询</Button>
+						</Space>
+					) : (
+						<Space>
+							<RangePicker />
+							<Select
+								placeholder="卡片类型"
+								mode="multiple"
+								allowClear
+								style={{ width: 120 }}
+								onChange={handleChange}
+								options={[
+									{ value: "prepaid", label: "预付卡" },
+									{ value: "share", label: "共享卡" }
+								]}
+								className="transactionType"
+							/>
+							<Select
+								placeholder="卡组"
+								mode="multiple"
+								allowClear
+								style={{ width: 120 }}
+								onChange={handleChange}
+								options={[
+									{ value: "visa", label: "visa" },
+									{ value: "masterCard", label: "masterCard" }
+								]}
+								className="transactionType"
+							/>
+							<Button type="primary">查询</Button>
+						</Space>
+					)}
 				</div>
 				<Button type="primary">导出账单明细</Button>
 			</div>

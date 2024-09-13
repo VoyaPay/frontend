@@ -120,11 +120,13 @@ const Account = () => {
 			</div>
 			<div className="actionWrap">
 				<div>
-					<span className="title">动帐明细</span>
+					<span className="title">动账明细</span>
 					<Space>
 						<RangePicker />
 						<Select
-							defaultValue="entry"
+							placeholder="请选择交易类型"
+							mode="multiple"
+							allowClear
 							style={{ width: 120 }}
 							onChange={handleChange}
 							options={[
@@ -132,6 +134,7 @@ const Account = () => {
 								{ value: "out", label: "转出" },
 								{ value: "recharge", label: "充值" }
 							]}
+							className="transactionType"
 						/>
 						<Button type="primary">查询</Button>
 					</Space>

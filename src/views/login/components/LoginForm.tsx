@@ -4,7 +4,7 @@ import { Button, Form, Input, message, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
-import { HOME_URL } from "@/config/config";
+// import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 // import { useTranslation } from "react-i18next";
@@ -19,7 +19,8 @@ const LoginForm = (props: any) => {
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
-	const [loginType, setLoginType] = useState<Number>(0); //0: 手机号登录  1：邮箱登录
+	const loginType = 1;
+	// const [loginType, setLoginType] = useState<Number>(0); //0: 手机号登录  1：邮箱登录
 
 	// 登录
 	const onFinish = async (loginForm: Login.ReqLoginForm) => {
@@ -42,7 +43,7 @@ const LoginForm = (props: any) => {
 			setTabsList([]);
 			message.success("登录成功！");
 			localStorage.setItem("access_token", access_token);
-			navigate(HOME_URL);
+			navigate("/proTable/account");
 		} finally {
 			setLoading(false);
 		}
@@ -52,18 +53,18 @@ const LoginForm = (props: any) => {
 		console.log("Failed:", errorInfo);
 	};
 
-	const changeToEmail = () => {
-		setLoginType(1);
-	};
+	// const changeToEmail = () => {
+	// 	setLoginType(1);
+	// };
 
-	const changeToPhone = () => {
-		setLoginType(0);
-	};
+	// const changeToPhone = () => {
+	// 	setLoginType(0);
+	// };
 
 	return (
 		<div className="loginform-container">
 			<img src={logo} alt="logo" className="logo-img" />
-			<div className="login-type">
+			{/* <div className="login-type">
 				<span className={`text ${loginType == 0 ? "selected" : ""}`} onClick={changeToPhone}>
 					手机{" "}
 				</span>
@@ -72,7 +73,7 @@ const LoginForm = (props: any) => {
 					{" "}
 					邮箱
 				</span>
-			</div>
+			</div> */}
 			<Form
 				form={form}
 				name="basic"
