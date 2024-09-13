@@ -190,7 +190,7 @@ const PrepaidCard = () => {
 		});
 	};
 
-	const handleChange = e => {
+	const handleChange = (e:any) => {
 		console.log(e);
 	};
 

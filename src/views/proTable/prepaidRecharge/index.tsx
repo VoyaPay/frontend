@@ -55,11 +55,10 @@ const PrepaidRecharge = () => {
 			console.log(response);
 			setOpen(false);
 			setConfirmLoading(false);
-		} catch (e) {
-			const { response } = e;
-			if (response && response.data && response.data.message && response.data.message == "Insufficient balance") {
-				console.log(e);
-				setConfirmLoading(false);
+		} catch (error: any) {
+			if (error.response && error.response.data && error.response.data.message === "Insufficient balance") {
+			  console.log(error);
+			  setConfirmLoading(false);
 			}
 		}
 	};
