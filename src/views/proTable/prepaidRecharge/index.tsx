@@ -77,17 +77,19 @@ const PrepaidRecharge = () => {
 				-&gt; 充值
 			</div>
 			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
-				<p>充值金额{amount}，继续充值？</p>
+				<p>充值金额${amount}，继续充值？</p>
 			</Modal>
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<div className="content">
 						<div className="pre">扣款账户：</div>
 						<div className="text">{cardData.cardOwner}</div>
+						<div className="text">&nbsp;&nbsp;$100</div>
 					</div>
 					<div className="content">
 						<div className="pre">待充值预付卡：</div>
 						<div className="text">{cardData.cardName}</div>
+						<div className="text">&nbsp;(485643*****53242523)</div>
 					</div>
 					<div className="content">
 						<div className="pre">充值金额：</div>

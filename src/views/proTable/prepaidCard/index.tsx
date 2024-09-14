@@ -4,7 +4,7 @@ import { Table, Button, Space, DatePicker, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
-import accountextra from "@/assets/images/accountbanlace.png";
+import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
@@ -159,6 +159,7 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
+			width: 160,
 			render: (text: string, record: FormattedCard) => (
 				<Space>
 					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
@@ -265,7 +266,7 @@ const PrepaidCard = () => {
 			</div>
 			<div className="actionWrap">
 				<div className="left">
-					<span className="title">预存卡列表</span>
+					<span className="title">预充卡</span>
 					<Space>
 						<RangePicker onChange={handleTimeChange} />
 						<Select

@@ -64,7 +64,9 @@ const LoginForm = (props: any) => {
 
 	return (
 		<div className="loginform-container">
-			<img src={logo} alt="logo" className="logo-img" />
+			<a href="https://www.voyapay.com/zh" target="_blank" rel="noopener noreferrer">
+				<img src={logo} alt="logo" className="logo-img" />
+			</a>
 			{/* <div className="login-type">
 				<span className={`text ${loginType == 0 ? "selected" : ""}`} onClick={changeToPhone}>
 					手机{" "}
@@ -116,10 +118,10 @@ const LoginForm = (props: any) => {
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
-			<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
-				立即注册
-			</a>
-		
+				<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
+					立即注册
+				</a>
+
 				{/* <span>忘记密码</span> */}
 			</div>
 		</div>
