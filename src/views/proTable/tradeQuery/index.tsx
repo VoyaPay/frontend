@@ -8,12 +8,21 @@ import { Select } from "antd";
 // import { NavLink } from "react-router-dom";
 import filter from "@/assets/images/filter.png";
 import "./index.less";
+import {TransactionsCSVApi} from "@/api/modules/transactions"
 // import {UserTransactionApi} from "@/api/modules/transactions"
 
 // const FetchTransactionInformation = async () =>{
 // 	const response = await UserTransactionApi();
 // 	console.log(response);
 // }
+const getCSV = async (): Promise<void> => {
+	try {
+		const response = await TransactionsCSVApi()
+		console.log(response)
+	}catch(e:any){
+		console.log(e)
+		}
+	};
 
 const TradeQuery = () => {
 	// const createOptions = [
@@ -271,7 +280,7 @@ const TradeQuery = () => {
 						</Space>
 					)}
 				</div>
-				<Button type="primary">导出账单明细</Button>
+				<Button type="primary" onClick={getCSV}>导出账单明细</Button>
 			</div>
 			<Table bordered={true} dataSource={dataSource} columns={columns} />
 		</div>
