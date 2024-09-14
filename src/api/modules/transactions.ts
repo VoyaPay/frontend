@@ -58,5 +58,3 @@ export const TransactionsCSVApi = async (): Promise<void> => {
 	  throw new Error('Failed to download CSV file.');
 	}
   };
-
-
