@@ -19,7 +19,8 @@ const LoginForm = (props: any) => {
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
-	let loginType: number = 1; 
+	let loginType: number | string = "1"; 
+	loginType = Number(loginType);
 	// const [loginType, setLoginType] = useState<Number>(0); //0: 手机号登录  1：邮箱登录
 
 	// 登录
