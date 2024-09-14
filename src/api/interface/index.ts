@@ -33,7 +33,7 @@ export interface Result{
 	email?: string,
 	companyName?: string
 	recharges?: NewRecharge
-	
+	headers?: string
 
 }
 

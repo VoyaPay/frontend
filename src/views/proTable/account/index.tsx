@@ -4,7 +4,7 @@ import { Select } from "antd";
 import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
-import { GetBalanceApi } from "@/api/modules/ledger";
+import { GetBalanceApi,LedgerCSVApi  } from "@/api/modules/ledger";
 import { AccountApi } from "@/api/modules/user";
 
 interface FormattedTransaction {
@@ -83,6 +83,14 @@ const Account = () => {
 		}
 	};
 
+	const getCSV = async (): Promise<void> => {
+	try {
+		const response = await LedgerCSVApi()
+		console.log(response)
+	}catch(e:any){
+		console.log(e)
+		}
+	};
 	const columns: any[] = [
 		{ title: "交易类型", dataIndex: "transactionType", key: "transactionType", align: "center" },
 		{ title: "金额", dataIndex: "amount", key: "amount", align: "center" },
@@ -164,7 +172,7 @@ const Account = () => {
 						<Button type="primary" onClick={applyFilters}>查询</Button>
 					</Space>
 				</div>
-				<Button type="primary">导出账单明细</Button>
+				<Button type="primary" onClick={getCSV}>导出账单明细</Button>
 			</div>
 			<Table
 				bordered={true}
