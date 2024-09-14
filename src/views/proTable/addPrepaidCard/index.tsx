@@ -6,18 +6,24 @@ import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
 
+const Authname = localStorage.getItem("username");
 const AddPrepaidCard = () => {
-	const [cardName, setCardName] = useState("masterCard");
-	const [cardOwner, setCardOwner] = useState("张三");
+	const [cardName, setCardName] = useState("my business card");
 	const [amount, setAmount] = useState(0);
+	const [firstName, setFirstName] = useState("FirstName");
+	const [lastName, setLastName] = useState("LastName");
 	const navigate = useNavigate();
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardName(e.target.value);
 	};
 
-	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCardOwner(e.target.value);
+	const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setFirstName(e.target.value);
+	};
+	
+	const changeLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setLastName(e.target.value);
 	};
 
 	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,9 +32,9 @@ const AddPrepaidCard = () => {
 
 	const handleSubmit = async () => {
 		const payload = {
-			type: cardName,
+			type: "PrePaid",
 			initialLimit: amount,
-			alias: cardOwner
+			alias:cardName
 		};
 
 		try {
@@ -101,9 +107,23 @@ const AddPrepaidCard = () => {
 					<Input value={cardName} onChange={changeCardName} className="edit" />
 				</div>
 				<div className="content">
-					<div className="pre">持卡人：</div>
-					<Input value={cardOwner} onChange={changeCardOwner} className="edit" />
-				</div>
+					<div className="pre">名字:</div>
+					<div className="name-group">
+						<Input
+						value={firstName}
+						onChange={changeFirstName}
+						className="edit"
+						placeholder="First Name"
+						/>
+						<Input
+						value={lastName}
+						onChange={changeLastName}
+						className="edit"
+						placeholder="Last Name"
+						/>
+					</div>
+					</div>
+
 				<div className="content">
 					<div className="pre">账单地址：</div>
 					<div className="text">默认地址，不允许修改</div>
@@ -113,7 +133,7 @@ const AddPrepaidCard = () => {
 				<div className="title">2.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;$100</div>
+					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{Authname}</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>
@@ -131,11 +151,6 @@ const AddPrepaidCard = () => {
 				<Button type="text" className="return">
 					<NavLink to="/proTable/prepaidCard" className="myAccount">
 						返回
-					</NavLink>
-				</Button>
-				<Button type="text" className="return">
-					<NavLink to="/applySuccess/index" className="myAccount">
-						申请成功
 					</NavLink>
 				</Button>
 			</div>
