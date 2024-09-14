@@ -7,6 +7,10 @@ import { NavLink } from "react-router-dom";
 import back from "@/assets/images/return.png";
 import "./index.less";
 
+const Authid = localStorage.getItem("userid");
+const Authemail = localStorage.getItem("useremail");
+const AuthCompany= localStorage.getItem("companyName");
+
 const Recharge = () => {
 	// 按钮权限
 	// const { BUTTONS } = useAuthButtons();
@@ -33,9 +37,9 @@ const Recharge = () => {
 					<span className="title">当前登录账户</span>
 					<div className="content">
 						<span>&nbsp;&nbsp;&nbsp;&nbsp;登录手机号：17131354267</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;登录邮箱: 223232323@gmail.com</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;账户ID: 666777777</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;公司名称: xxxxxxx</span>
+						<span>&nbsp;&nbsp;&nbsp;&nbsp;登录邮箱: {Authemail}</span>
+						<span>&nbsp;&nbsp;&nbsp;&nbsp;账户ID: {Authid }</span>
+						<span>&nbsp;&nbsp;&nbsp;&nbsp;公司名称:{AuthCompany}</span>
 					</div>
 				</div>
 				<div className="accountInfo">

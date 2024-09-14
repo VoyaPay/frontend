@@ -73,23 +73,49 @@ const Detail = () => {
 		}
 	}, [cardData.key]);
 
-	const [cardName, setCardName] = useState(cardData.cardOwner || "cardname");
+	const [cardName, setCardName] = useState(cardData.cardName|| "cardname");
 	const [cardNameStatus, setCardNameStatus] = useState(false);
-
-	const [address, setAddress] = useState(cardData.address || "address");
-	const [addressStatus, setAddressStatus] = useState(false);
-
-	const [cardOwner, setCardOwner] = useState(cardData.cardOwner || "cardOwner");
-	const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
 
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 
-	const saveChanges = async () => {
+	const saveChanges1 = async () => {
 		try {
 			const updatedData = {
 				status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
-				alias: cardOwner
+				alias: cardName
+			};
+			const response: any = await updateCardInformation(cardData.key, updatedData);
+			if (response?.id) {
+				message.success("Card information updated successfully");
+			}
+			navigate("/proTable/prepaidCard");
+		} catch (error) {
+			console.error("Error updating card information:", error);
+		}
+	};
+
+	const saveChanges2 = async () => {
+		try {
+			const updatedData = {
+				status: cardData.cardStatus,
+				alias: cardName
+			};
+			const response: any = await updateCardInformation(cardData.key, updatedData);
+			if (response?.id) {
+				message.success("Card information updated successfully");
+			}
+			navigate("/proTable/prepaidCard");
+		} catch (error) {
+			console.error("Error updating card information:", error);
+		}
+	};
+
+	const saveChanges3 = async () => {
+		try {
+			const updatedData = {
+				status: "Closed",
+				alias: cardName
 			};
 			const response: any = await updateCardInformation(cardData.key, updatedData);
 			if (response?.id) {
@@ -108,29 +134,7 @@ const Detail = () => {
 	const toggleCardName = (status: any) => {
 		setCardNameStatus(status === "change");
 		if (status === "finish") {
-			saveChanges(); 
-		}
-	};
-
-	const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setAddress(e.target.value);
-	};
-
-	const toggleAddress = (status: any) => {
-		setAddressStatus(status === "change");
-		if (status === "finish") {
-			saveChanges(); 
-		}
-	};
-
-	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCardOwner(e.target.value);
-	};
-
-	const toggleCardOwner = (status: any) => {
-		setCardOwnerStatus(status === "change");
-		if (status === "finish") {
-			saveChanges();
+			saveChanges2(); 
 		}
 	};
 	const handlerRechargeDetails = (record: CardData) => {
@@ -153,10 +157,6 @@ const Detail = () => {
 		navigate("/proTable/tradeQuery");
 	};
 
-	const gotologout = () => {
-		messageApi.info("该卡片未满足注销条件！（注销条件：卡片近30天内需无任何授权交易）");
-		setOpen(true);
-	};
 	const handleOk = () => {
 		setConfirmLoading(true);
 		setTimeout(() => {
@@ -237,59 +237,14 @@ const Detail = () => {
 						<div className="text">{cardData.cvv2 || "N/A"}</div>
 					</div>
 					<div className="content">
-						<div className="pre">账单地址：</div>
-						{addressStatus ? (
-							<Input value={address} onChange={changeAddress} className="edit" />
-						) : (
-							<div className="text">{address}</div>
-						)}
-						{addressStatus ? (
-							<span
-								className="action"
-								onClick={() => {
-									toggleAddress("finish");
-								}}
-							>
-								修改完成
-							</span>
-						) : (
-							<span
-								className="action"
-								onClick={() => {
-									toggleAddress("change");
-								}}
-							>
-								修改
-							</span>
-						)}
+						<div className="pre">账单地址</div>
+						<div className="text">{cardData.address || "address"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">持卡人：</div>
-						{cardOwnerStatus ? (
-							<Input value={cardOwner} onChange={changeCardOwner} className="edit" />
-						) : (
-							<div className="text">{cardOwner}</div>
-						)}
-						{cardOwnerStatus ? (
-							<span
-								className="action"
-								onClick={() => {
-									toggleCardOwner("finish");
-								}}
-							>
-								修改完成
-							</span>
-						) : (
-							<span
-								className="action"
-								onClick={() => {
-									toggleCardOwner("change");
-								}}
-							>
-								修改
-							</span>
-						)}
+						<div className="text">{cardData.cardOwner || "N/A"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">卡状态：</div>
 						<div className="text">{cardData.cardStatus || "N/A"}</div>
@@ -316,12 +271,14 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => {
-							saveChanges();
+							saveChanges1();
 						}}
 					>
 						冻结
 					</Button>
-					<Button type="primary" size="large" className="actionBtn" onClick={gotologout}>
+					<Button type="primary" size="large" className="actionBtn" onClick={() => {
+							saveChanges3();
+						}}>
 						注销
 					</Button>
 				</div>

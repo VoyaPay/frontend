@@ -10,6 +10,8 @@ import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 
+const Auth = localStorage.getItem("username");
+console.log("AUTH IS " + Auth)
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
@@ -51,12 +53,12 @@ const PrepaidCard = () => {
 				if (Array.isArray(response)) {
 					const formattedData = response.map(card => ({
 						key: card.id,
-						cardName: card.type,
-						cardOwner: card.alias,
+						cardName: card.alias,
+						cardOwner: Auth ? Auth : "NA",
 						cardGroup: card.network,
 						cardNo: card.last4,
 						cardStatus: card.status,
-						banlance: card.initialLimit, // Replace with actual balance if available
+						banlance: card.initialLimit, 
 						createCardTime: formatDate(card.updatedAt)
 					}));
 
@@ -64,7 +66,7 @@ const PrepaidCard = () => {
 					const totalcard = 100 - formattedData.length;
 					console.log(total);
 					setTotalCardNumber(totalcard);
-					setDataSource(formattedData); // Adjust based on your API response structure
+					setDataSource(formattedData); 
 					setTotalAmount(total);
 				}
 			} catch (error) {
@@ -165,7 +167,7 @@ const PrepaidCard = () => {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
-				cardOwner: record.cardOwner,
+				cardOwner: Auth  ? Auth: "NA",
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
