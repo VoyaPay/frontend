@@ -23,7 +23,7 @@ export interface Result{
 	expiration?: string;
 	pan?:string;
 	id?: number,
-	fullname?: string,
+	fullName?: string,
 	email?: string,
 	companyName?: string
 	

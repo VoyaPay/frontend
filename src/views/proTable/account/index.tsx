@@ -4,6 +4,37 @@ import { Select } from "antd";
 import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
+import { GetBalanceApi } from "@/api/modules/ledger";
+import { AccountApi } from "@/api/modules/user";
+interface UserData {
+	id: number;
+	fullName: string;
+	email: string;
+	companyName: string;
+  }
+
+const userInformation = async () => {
+try {
+	const response = await AccountApi(); // Fetch user data from API
+	console.log(response);
+
+	// Format the response data and set it to the state
+	const formattedData: UserData = {
+	id: response.id || 0,  // Default to 0 if undefined
+	fullName: response.fullName || "N/A",  // Default to "N/A" if undefined
+	email: response.email || "N/A",  // Default to "N/A" if undefined
+	companyName: response.companyName || "N/A",  // Default to "N/A" if undefined
+	};
+	console.log(JSON.stringify(formattedData))
+	localStorage.setItem("userid", String(formattedData.id));
+	localStorage.setItem("username", formattedData.fullName);
+	localStorage.setItem("useremail", formattedData.email);
+	localStorage.setItem("companyName", formattedData.companyName);
+
+} catch (error) {
+	console.log("Error fetching user information: " + error);
+}
+};
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
@@ -31,11 +62,25 @@ const Account = () => {
 	const { RangePicker } = DatePicker;
 	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
 	const [filteredDataSource, setFilteredDataSource] = useState<FormattedTransaction[]>([]);
-	const [totalAmount, setTotalAmount] = useState(0);
 	const [selectedTransactionTypes, setSelectedTransactionTypes] = useState<string[]>([]);
-	const [selectedDateRange, setSelectedDateRange] = useState<[string, string] | null>(null); // Track selected date range
+	const [selectedDateRange, setSelectedDateRange] = useState<[string, string] | null>(null);
+	const [accountBalance, setAccountBalance] = useState(0);
 
 	useEffect(() => {
+		userInformation()
+		const getBalance = async () => {
+			try {
+				const response = await GetBalanceApi();
+				console.log(response);
+				console.log("Full response:", response.currentBalance);
+				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				setAccountBalance(balance);
+			} catch (error) {
+				console.log("Cannot get balance of the account:", error);
+			}
+		};
+
+		getBalance();
 		const fetchData = async () => {
 			try {
 				const response = await UserTransfersApi();
@@ -49,24 +94,32 @@ const Account = () => {
 							? "充值" 
 							: transaction.type === "deposit"
 							? "转入"
+							: transaction.type === "fee"
+							? "手续费"
 							: transaction.type === "other"
 							? "其他"
 							: transaction.type,
 						dynamicAccountType: transaction.origin || "N/A",
-						amount: transaction.amount,
+						amount: String(Math.abs(parseFloat(transaction.amount))),
 						currency: "USD",
 						time: formatDate(transaction.processedAt),
-						transactionDetail: transaction.externalId
+						transactionDetail: transaction.type === "cardPurchase" 
+						? "“预付卡”转出至 “沃易卡账户”" 
+						: transaction.type === "cardTopup"
+						? "充值至 “沃易卡账户”" 
+						: transaction.type === "deposit"
+						? "“沃易卡账户”转出至“预付卡”"
+						: transaction.type === "fee"
+						? "开卡手续费"
+						: transaction.type === "other"
+						? "其他"
+						: transaction.type,
 					}));
 
 					setDataSource(formattedData);
-					setFilteredDataSource(formattedData); // Default to show all data initially
+					setFilteredDataSource(formattedData); 
+					getBalance()
 
-					const total = formattedData.reduce((sum, transaction) => {
-						return sum + (parseFloat(transaction.amount) || 0);
-					}, 0);
-
-					setTotalAmount(total);
 				}
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -149,7 +202,7 @@ const Account = () => {
 			<div className="accountInfo">
 				<div className="accountBlanceWrap">
 					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">$ {totalAmount}</span>
+					<span className="amount">$ {accountBalance}</span>
 				</div>
 				<Button>
 					<NavLink to="/recharge/index">充值</NavLink>

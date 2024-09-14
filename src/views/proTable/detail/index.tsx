@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, message, Modal } from "antd";
-
 import bankcard from "@/assets/images/bankcard.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
+
 interface CardData {
 	key: string;
 	cardName: string;
@@ -24,11 +21,10 @@ interface CardData {
 	expirationDate?: string;
 	cvv2?: string;
 }
+
 const fetchCardInformation = async (id: string, setCardData: React.Dispatch<React.SetStateAction<CardData>>) => {
 	try {
 		const information = await CardInformationApi(id);
-		console.log(information);
-
 		if (information) {
 			setCardData(prevData => ({
 				...prevData,
@@ -45,7 +41,7 @@ const fetchCardInformation = async (id: string, setCardData: React.Dispatch<Reac
 const updateCardInformation = async (id: string, newDate: any) => {
 	try {
 		const response = await ChangeCardInformationApi(id, newDate);
-		console.log(response);
+		return response;
 	} catch (error) {
 		console.error("Error updating card information:", error);
 	}
@@ -66,6 +62,11 @@ const Detail = () => {
 		createCardTime: "2023-01-01 00:00:00"
 	};
 	const [cardData, setCardData] = useState<CardData>((location.state as CardData) ?? defaultCardData);
+	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
+	const [cardNameStatus, setCardNameStatus] = useState(false);
+	const [openFreezeModal, setOpenFreezeModal] = useState(false);
+	const [openCloseModal, setOpenCloseModal] = useState(false);
+	const [confirmLoading, setConfirmLoading] = useState(false);
 
 	useEffect(() => {
 		if (cardData.key) {
@@ -73,68 +74,50 @@ const Detail = () => {
 		}
 	}, [cardData.key]);
 
-	const [cardName, setCardName] = useState(cardData.cardOwner || "cardname");
-	const [cardNameStatus, setCardNameStatus] = useState(false);
-
-	const [address, setAddress] = useState(cardData.address || "address");
-	const [addressStatus, setAddressStatus] = useState(false);
-
-	const [cardOwner, setCardOwner] = useState(cardData.cardOwner || "cardOwner");
-	const [cardOwnerStatus, setCardOwnerStatus] = useState(false);
-
-	const [open, setOpen] = useState(false);
-	const [confirmLoading, setConfirmLoading] = useState(false);
-
-	const saveChanges = async () => {
-		try {
-			const updatedData = {
-				status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
-				alias: cardOwner
-			};
-			const response: any = await updateCardInformation(cardData.key, updatedData);
-			if (response?.id) {
-				message.success("Card information updated successfully");
-			}
+	const saveChanges1 = async () => {
+		const updatedData = {
+			status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
+			alias: cardName
+		};
+		const response: any = await updateCardInformation(cardData.key, updatedData);
+		if (response?.id) {
+			message.success("Card information updated successfully");
 			navigate("/proTable/prepaidCard");
-		} catch (error) {
-			console.error("Error updating card information:", error);
 		}
 	};
 
-	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCardName(e.target.value);
+	const saveChanges2 = async () => {
+		const updatedData = {
+			status: cardData.cardStatus,
+			alias: cardName
+		};
+		const response: any = await updateCardInformation(cardData.key, updatedData);
+		if (response?.id) {
+			message.success("Card information updated successfully");
+			navigate("/proTable/prepaidCard");
+		}
+	};
+
+	const saveChanges3 = async () => {
+		const updatedData = {
+			status: "Closed",
+			alias: cardName
+		};
+		const response: any = await updateCardInformation(cardData.key, updatedData);
+		if (response?.id) {
+			message.success("Card information updated successfully");
+			navigate("/proTable/prepaidCard");
+		}
 	};
 
 	const toggleCardName = (status: any) => {
 		setCardNameStatus(status === "change");
 		if (status === "finish") {
-			saveChanges(); 
+			saveChanges2();
 		}
 	};
 
-	const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setAddress(e.target.value);
-	};
-
-	const toggleAddress = (status: any) => {
-		setAddressStatus(status === "change");
-		if (status === "finish") {
-			saveChanges(); 
-		}
-	};
-
-	const changeCardOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCardOwner(e.target.value);
-	};
-
-	const toggleCardOwner = (status: any) => {
-		setCardOwnerStatus(status === "change");
-		if (status === "finish") {
-			saveChanges();
-		}
-	};
 	const handlerRechargeDetails = (record: CardData) => {
-		console.log("navigation: " + record.key);
 		navigate("/prepaidRecharge/index", {
 			state: {
 				key: record.key,
@@ -153,20 +136,38 @@ const Detail = () => {
 		navigate("/proTable/tradeQuery");
 	};
 
-	const gotologout = () => {
-		messageApi.info("该卡片未满足注销条件！（注销条件：卡片近30天内需无任何授权交易）");
-		setOpen(true);
+	// Freeze modal handler
+	const showFreezeModal = () => {
+		setOpenFreezeModal(true);
 	};
-	const handleOk = () => {
+
+	const handleFreezeOk = () => {
 		setConfirmLoading(true);
-		setTimeout(() => {
-			setOpen(false);
-			setConfirmLoading(false);
-		}, 2000);
+		saveChanges1();
+		setConfirmLoading(false);
+		setOpenFreezeModal(false);
 	};
-	const handleCancel = () => {
-		setOpen(false);
+
+	const handleFreezeCancel = () => {
+		setOpenFreezeModal(false);
 	};
+
+	// Close modal handler
+	const showCloseModal = () => {
+		setOpenCloseModal(true);
+	};
+
+	const handleCloseOk = () => {
+		setConfirmLoading(true);
+		saveChanges3();
+		setConfirmLoading(false);
+		setOpenCloseModal(false);
+	};
+
+	const handleCloseCancel = () => {
+		setOpenCloseModal(false);
+	};
+
 	const toCopy = () => {
 		if (cardData && cardData.cardNo) {
 			copy(cardData.cardNo);
@@ -175,25 +176,47 @@ const Detail = () => {
 			messageApi.info("卡号数据不存在，复制失败！");
 		}
 	};
+
 	return (
 		<div className="detail-wrap">
 			{contextHolder}
-			<Modal title="注销提示" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
-				<p>确认要注销该卡片吗？</p>
+
+			{/* Freeze Confirmation Modal */}
+			<Modal
+				title="确认冻结"
+				visible={openFreezeModal}
+				onOk={handleFreezeOk}
+				confirmLoading={confirmLoading}
+				onCancel={handleFreezeCancel}
+			>
+				<p>确定要冻结此卡片吗？</p>
 			</Modal>
+
+			{/* Close Confirmation Modal */}
+			<Modal
+				title="确认注销"
+				visible={openCloseModal}
+				onOk={handleCloseOk}
+				confirmLoading={confirmLoading}
+				onCancel={handleCloseCancel}
+			>
+				<p>确定要注销此卡片吗？</p>
+			</Modal>
+
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
 					<img src={back} alt="" className="returnIcon" /> 预付卡{" "}
 				</NavLink>
 				-&gt; 查看详情
 			</div>
+
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<span className="title">卡片信息</span>
 					<div className="content">
 						<div className="pre">卡昵称：</div>
 						{cardNameStatus ? (
-							<Input value={cardName} onChange={changeCardName} className="edit" />
+							<Input value={cardName} onChange={e => setCardName(e.target.value)} className="edit" />
 						) : (
 							<div className="text">{cardName}</div>
 						)}
@@ -217,10 +240,12 @@ const Detail = () => {
 							</span>
 						)}
 					</div>
+
 					<div className="content">
 						<div className="pre">卡组：</div>
 						<div className="text">{cardData.cardGroup || "N/A"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">卡号：</div>
 						<div className="text">{cardData.cardNo || "1234"}</div>
@@ -228,72 +253,32 @@ const Detail = () => {
 							复制完整卡号
 						</span>
 					</div>
+
 					<div className="content">
 						<div className="pre">有效期：</div>
 						<div className="text">{cardData.expirationDate || "N/A"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">CVV2：</div>
 						<div className="text">{cardData.cvv2 || "N/A"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">账单地址：</div>
-						{addressStatus ? (
-							<Input value={address} onChange={changeAddress} className="edit" />
-						) : (
-							<div className="text">{address}</div>
-						)}
-						{addressStatus ? (
-							<span
-								className="action"
-								onClick={() => {
-									toggleAddress("finish");
-								}}
-							>
-								修改完成
-							</span>
-						) : (
-							<span
-								className="action"
-								onClick={() => {
-									toggleAddress("change");
-								}}
-							>
-								修改
-							</span>
-						)}
+						<div className="text">{cardData.address || "address"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">持卡人：</div>
-						{cardOwnerStatus ? (
-							<Input value={cardOwner} onChange={changeCardOwner} className="edit" />
-						) : (
-							<div className="text">{cardOwner}</div>
-						)}
-						{cardOwnerStatus ? (
-							<span
-								className="action"
-								onClick={() => {
-									toggleCardOwner("finish");
-								}}
-							>
-								修改完成
-							</span>
-						) : (
-							<span
-								className="action"
-								onClick={() => {
-									toggleCardOwner("change");
-								}}
-							>
-								修改
-							</span>
-						)}
+						<div className="text">{cardData.cardOwner || "N/A"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">卡状态：</div>
 						<div className="text">{cardData.cardStatus || "N/A"}</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">余额：</div>
 						<div className="text">{cardData.banlance || "N/A"}</div>
@@ -301,27 +286,37 @@ const Detail = () => {
 							查看消费记录
 						</div>
 					</div>
+
 					<div className="content">
 						<div className="pre">开卡时间：</div>
 						<div className="text">{cardData.createCardTime || "N/A"}</div>
 					</div>
 				</div>
+
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
-					<Button type="primary" className="actionBtn" size="large" onClick={() => handlerRechargeDetails(cardData)}>
+					<Button
+						type="primary"
+						className="actionBtn"
+						size="large"
+						onClick={() => handlerRechargeDetails(cardData)}
+					>
 						充值
 					</Button>
 					<Button
 						type="primary"
 						className="actionBtn"
 						size="large"
-						onClick={() => {
-							saveChanges();
-						}}
+						onClick={showFreezeModal}
 					>
 						冻结
 					</Button>
-					<Button type="primary" size="large" className="actionBtn" onClick={gotologout}>
+					<Button
+						type="primary"
+						size="large"
+						className="actionBtn"
+						onClick={showCloseModal}
+					>
 						注销
 					</Button>
 				</div>

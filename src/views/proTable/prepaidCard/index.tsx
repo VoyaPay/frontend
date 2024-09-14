@@ -10,6 +10,8 @@ import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 
+const Auth = localStorage.getItem("username");
+console.log("AUTH IS " + Auth)
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
@@ -35,9 +37,14 @@ interface FormattedCard {
 const PrepaidCard = () => {
 	// State to hold the card data
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
+	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
 	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
 	const [accountBalance, setAccountBalance] = useState(0);
+
+	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
+	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
@@ -51,12 +58,12 @@ const PrepaidCard = () => {
 				if (Array.isArray(response)) {
 					const formattedData = response.map(card => ({
 						key: card.id,
-						cardName: card.type,
-						cardOwner: card.alias,
+						cardName: card.alias,
+						cardOwner: Auth ? Auth : "NA",
 						cardGroup: card.network,
 						cardNo: card.last4,
 						cardStatus: card.status,
-						banlance: card.initialLimit, // Replace with actual balance if available
+						banlance: card.initialLimit, 
 						createCardTime: formatDate(card.updatedAt)
 					}));
 
@@ -64,7 +71,8 @@ const PrepaidCard = () => {
 					const totalcard = 100 - formattedData.length;
 					console.log(total);
 					setTotalCardNumber(totalcard);
-					setDataSource(formattedData); // Adjust based on your API response structure
+					setDataSource(formattedData); 
+					setFilteredData(formattedData);
 					setTotalAmount(total);
 				}
 			} catch (error) {
@@ -140,7 +148,11 @@ const PrepaidCard = () => {
 			align: "center",
 			width: 160,
 			defaultSortOrder: "descend",
-			sorter: (a: any, b: any) => a.createCardTime - b.createCardTime
+			sorter: (a: any, b: any) => {
+				const dateA = new Date(a.createCardTime).getTime();
+				const dateB = new Date(b.createCardTime).getTime();
+				return dateA - dateB;
+			  }
 		},
 		{
 			title: "操作",
@@ -165,7 +177,7 @@ const PrepaidCard = () => {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
-				cardOwner: record.cardOwner,
+				cardOwner: Auth  ? Auth: "NA",
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
@@ -189,9 +201,41 @@ const PrepaidCard = () => {
 			}
 		});
 	};
+	const applyFilters = () => {
+		let filtered = [...dataSource];
 
-	const handleChange = e => {
-		console.log(e);
+		// Apply date range filter
+		if (selectedTimeRange.length > 0) {
+			const [start, end] = selectedTimeRange;
+			filtered = filtered.filter(card => {
+				const cardDate = new Date(card.createCardTime).getTime();
+				return cardDate >= start && cardDate <= end;
+			});
+		}
+
+		// Apply card group filter
+		if (selectedGroups.length > 0) {
+			filtered = filtered.filter(card => selectedGroups.includes(card.cardGroup));
+		}
+
+		// Apply card status filter
+		if (selectedStatuses.length > 0) {
+			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
+		}
+
+		setFilteredData(filtered);
+	};
+
+	const handleTimeChange = (dates: any) => {
+		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
+	};
+
+	const handleGroupChange = (values: string[]) => {
+		setSelectedGroups(values);
+	};
+
+	const handleStatusChange = (values: string[]) => {
+		setSelectedStatuses(values);
 	};
 
 	return (
@@ -223,13 +267,13 @@ const PrepaidCard = () => {
 				<div className="left">
 					<span className="title">预存卡列表</span>
 					<Space>
-						<RangePicker />
+						<RangePicker onChange={handleTimeChange} />
 						<Select
 							placeholder="请选择卡组"
 							mode="multiple"
 							allowClear
 							style={{ width: 150 }}
-							onChange={handleChange}
+							onChange={handleGroupChange}
 							options={[{ value: "VISA", label: "VISA" }]}
 						/>
 						<Select
@@ -237,13 +281,14 @@ const PrepaidCard = () => {
 							mode="multiple"
 							allowClear
 							style={{ width: 150 }}
-							onChange={handleChange}
+							onChange={handleStatusChange }
 							options={[
 								{ value: "Active", label: "Active" },
-								{ value: "Inactive", label: "Inactive" }
+								{ value: "Inactive", label: "Inactive" },
+								{ value: "Closed", label: "Closed" }
 							]}
 						/>
-						<Button type="primary">查询</Button>
+						<Button type="primary" onClick={applyFilters}>查询</Button>
 					</Space>
 				</div>
 				<Button type="primary" icon={<PlusOutlined />}>
@@ -252,7 +297,7 @@ const PrepaidCard = () => {
 					</NavLink>
 				</Button>
 			</div>
-			<Table bordered={true} dataSource={dataSource} columns={columns} />
+			<Table bordered={true} dataSource={filteredData} columns={columns} />
 		</div>
 	);
 };

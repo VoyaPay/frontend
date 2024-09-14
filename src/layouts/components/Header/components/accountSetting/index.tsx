@@ -22,7 +22,7 @@ const AccountSetting = () => {
       // Format the response data and set it to the state
       const formattedData: UserData = {
         id: response.id || 0,  // Default to 0 if undefined
-        fullname: response.fullname || "N/A",  // Default to "N/A" if undefined
+        fullname: response.fullName || "N/A",  // Default to "N/A" if undefined
         email: response.email || "N/A",  // Default to "N/A" if undefined
         companyName: response.companyName || "N/A",  // Default to "N/A" if undefined
       };
