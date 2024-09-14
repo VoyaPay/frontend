@@ -60,7 +60,7 @@ export const menu: any = [
 	},
 	{
 		icon: "ShoppingOutlined",
-		title: "预付卡",
+		title: "预充卡",
 		path: "/proTable/prepaidCard"
 	},
 	{
