@@ -1,5 +1,11 @@
 // * 请求响应参数(不包含data)
-export interface NewTransaction {
+export interface NewRecharge {
+	when?: string,
+    amount: number,
+    transactionId: number,
+}
+
+export interface NewTransaction{
 	transferId?: number;
 	newBalance?:number;
 	status?:boolean;
@@ -26,6 +32,7 @@ export interface Result{
 	fullName?: string,
 	email?: string,
 	companyName?: string
+	recharges?: NewRecharge
 	
 
 }

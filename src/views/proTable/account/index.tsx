@@ -6,47 +6,6 @@ import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi } from "@/api/modules/ledger";
 import { AccountApi } from "@/api/modules/user";
-interface UserData {
-	id: number;
-	fullName: string;
-	email: string;
-	companyName: string;
-  }
-
-const userInformation = async () => {
-try {
-	const response = await AccountApi(); // Fetch user data from API
-	console.log(response);
-
-	// Format the response data and set it to the state
-	const formattedData: UserData = {
-	id: response.id || 0,  // Default to 0 if undefined
-	fullName: response.fullName || "N/A",  // Default to "N/A" if undefined
-	email: response.email || "N/A",  // Default to "N/A" if undefined
-	companyName: response.companyName || "N/A",  // Default to "N/A" if undefined
-	};
-	console.log(JSON.stringify(formattedData))
-	localStorage.setItem("userid", String(formattedData.id));
-	localStorage.setItem("username", formattedData.fullName);
-	localStorage.setItem("useremail", formattedData.email);
-	localStorage.setItem("companyName", formattedData.companyName);
-
-} catch (error) {
-	console.log("Error fetching user information: " + error);
-}
-};
-
-const formatDate = (dateString: string) => {
-	const date = new Date(dateString);
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-	const day = String(date.getDate()).padStart(2, "0");
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
-	const seconds = String(date.getSeconds()).padStart(2, "0");
-
-	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
 
 interface FormattedTransaction {
 	key: string;
@@ -67,136 +26,110 @@ const Account = () => {
 	const [accountBalance, setAccountBalance] = useState(0);
 
 	useEffect(() => {
-		userInformation()
-		const getBalance = async () => {
-			try {
-				const response = await GetBalanceApi();
-				console.log(response);
-				console.log("Full response:", response.currentBalance);
-				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
-				setAccountBalance(balance);
-			} catch (error) {
-				console.log("Cannot get balance of the account:", error);
-			}
-		};
-
-		getBalance();
+		// Fetch initial data for balance and transactions
 		const fetchData = async () => {
-			try {
-				const response = await UserTransfersApi();
-				if (Array.isArray(response)) {
-					// 格式化每个交易
-					const formattedData = response.map(transaction => ({
-						key: transaction.id,
-						transactionType: transaction.type === "cardPurchase" 
-							? "转出" 
-							: transaction.type === "cardTopup"
-							? "充值" 
-							: transaction.type === "deposit"
-							? "转入"
-							: transaction.type === "fee"
-							? "手续费"
-							: transaction.type === "other"
-							? "其他"
-							: transaction.type,
-						dynamicAccountType: transaction.origin || "N/A",
-						amount: String(Math.abs(parseFloat(transaction.amount))),
-						currency: "USD",
-						time: formatDate(transaction.processedAt),
-						transactionDetail: transaction.type === "cardPurchase" 
-						? "“预付卡”转出至 “沃易卡账户”" 
-						: transaction.type === "cardTopup"
-						? "充值至 “沃易卡账户”" 
-						: transaction.type === "deposit"
-						? "“沃易卡账户”转出至“预付卡”"
-						: transaction.type === "fee"
-						? "开卡手续费"
-						: transaction.type === "other"
-						? "其他"
-						: transaction.type,
-					}));
-
-					setDataSource(formattedData);
-					setFilteredDataSource(formattedData); 
-					getBalance()
-
-				}
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
+			await userInformation();
+			await getBalance();
+			await fetchTransactions();
 		};
-
 		fetchData();
 	}, []);
 
-	const columns: any[] = [
-		{
-			title: "交易类型",
-			dataIndex: "transactionType",
-			key: "transactionType",
-			align: "center"
-		},
-		{
-			title: "金额",
-			dataIndex: "amount",
-			key: "amount",
-			align: "center"
-		},
-		{
-			title: "币种",
-			dataIndex: "currency",
-			key: "currency",
-			align: "center"
-		},
-		{
-			title: "时间",
-			dataIndex: "time",
-			key: "time",
-			align: "center"
-		},
-		{
-			title: "交易明细",
-			dataIndex: "transactionDetail",
-			key: "transactionDetail",
-			align: "center"
+	const getBalance = async () => {
+		try {
+			const response = await GetBalanceApi();
+			const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+			setAccountBalance(balance);
+		} catch (error) {
+			console.log("Cannot get balance of the account:", error);
 		}
+	};
+
+	const fetchTransactions = async () => {
+		try {
+			const response = await UserTransfersApi();
+			if (Array.isArray(response)) {
+				const formattedData = response.map(transaction => ({
+					key: transaction.id,
+					transactionType: transaction.type === "cardPurchase" 
+						? "转出" 
+						: transaction.type === "cardTopup"
+						? "充值" 
+						: transaction.type === "deposit"
+						? "转入"
+						: transaction.type === "fee"
+						? "手续费"
+						: "其他",
+					dynamicAccountType: transaction.origin || "N/A",
+					amount: "$" + String(Math.abs(parseFloat(transaction.amount))),
+					currency: "USD",
+					time: formatDate(transaction.processedAt),
+					transactionDetail: transaction.type === "cardPurchase" 
+						? "“沃易卡账户”转出至“预付卡”"
+						: transaction.type === "cardTopup"
+						? "充值至 “沃易卡账户”"
+						: transaction.type === "deposit"
+						? "“预付卡”转入至 “沃易卡账户”"
+						: transaction.type === "fee"
+						? "开卡手续费"
+						: "其他",
+				}));
+
+				setDataSource(formattedData);
+				setFilteredDataSource(formattedData); // Default to show all data initially
+			}
+		} catch (error) {
+			console.error("Error fetching transactions:", error);
+		}
+	};
+
+	const columns: any[] = [
+		{ title: "交易类型", dataIndex: "transactionType", key: "transactionType", align: "center" },
+		{ title: "金额", dataIndex: "amount", key: "amount", align: "center" },
+		{ title: "币种", dataIndex: "currency", key: "currency", align: "center" },
+		{ title: "时间", dataIndex: "time", key: "time", align: "center" },
+		{ title: "交易明细", dataIndex: "transactionDetail", key: "transactionDetail", align: "center" },
 	];
 
-	// Handle change in transaction type filter
+	// Update selected transaction types
 	const handleTransactionTypeChange = (selectedTypes: string[]) => {
 		setSelectedTransactionTypes(selectedTypes);
-		applyFilters(selectedTypes, selectedDateRange);
 	};
 
-	// Handle date range filter
+	// Update selected date range
 	const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
 		setSelectedDateRange(dateStrings);
-		applyFilters(selectedTransactionTypes, dateStrings);
 	};
 
-	// Filter data based on both selected types and date range
-	const applyFilters = (selectedTypes: string[], dateRange: [string, string] | null) => {
-		let filteredData = dataSource;
-
-		// Filter by transaction type if any types are selected
-		if (selectedTypes.length > 0) {
-			filteredData = filteredData.filter(transaction => 
-				selectedTypes.includes(transaction.transactionType)
+	// Apply filters based on transaction type and date range when the user clicks "查询"
+	const applyFilters = () => {
+		let filteredData = dataSource; // 初始为所有数据
+	
+		// 只根据 selectedTransactionTypes 进行筛选
+		if (selectedTransactionTypes.length > 0) {
+			filteredData = filteredData.filter(transaction =>
+				selectedTransactionTypes.includes(transaction.transactionType)
 			);
 		}
-
-		// Filter by date range if a date range is selected
-		if (dateRange) {
-			const [startDate, endDate] = dateRange;
+	
+		// 只根据日期范围进行筛选
+		if (selectedDateRange && selectedDateRange.length === 2 && selectedDateRange[0] && selectedDateRange[1]) {
+			const [startDate, endDate] = selectedDateRange;
+	
+			// 转换 endDate 并增加一天
+			const endDateObj = new Date(endDate);
+			endDateObj.setDate(endDateObj.getDate() + 1); // 增加一天，确保包含结束日期当天
+	
 			filteredData = filteredData.filter(transaction => {
 				const transactionDate = new Date(transaction.time);
-				return transactionDate >= new Date(startDate) && transactionDate <= new Date(endDate);
+				return transactionDate >= new Date(startDate) && transactionDate < endDateObj;
 			});
 		}
-
+	
+		// 更新筛选后的数据
 		setFilteredDataSource(filteredData);
 	};
-
+	
 	return (
 		<div className="card content-box accountWrap">
 			<div className="accountInfo">
@@ -220,21 +153,57 @@ const Account = () => {
 							style={{ width: 200 }}
 							onChange={handleTransactionTypeChange}
 							options={[
-								{ value: "转入", label: "转入" },  
-								{ value: "转出", label: "转出" },  
+								{ value: "转入", label: "转入" },
+								{ value: "转出", label: "转出" },
 								{ value: "充值", label: "充值" },
+								{ value: "手续费", label: "手续费" },
 								{ value: "其他", label: "其他" }
 							]}
 							className="transactionType"
 						/>
-						<Button type="primary">查询</Button>
+						<Button type="primary" onClick={applyFilters}>查询</Button>
 					</Space>
 				</div>
 				<Button type="primary">导出账单明细</Button>
 			</div>
-			<Table bordered={true} dataSource={filteredDataSource} columns={columns} />
+			<Table
+				bordered={true}
+				dataSource={filteredDataSource}
+				columns={columns}
+				pagination={{ pageSize: 10, showSizeChanger: false }}  
+				/>
 		</div>
 	);
+};
+
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+	const seconds = String(date.getSeconds()).padStart(2, "0");
+
+	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+const userInformation = async () => {
+	try {
+		const response = await AccountApi();
+		const formattedData = {
+			id: response.id || 0,
+			fullName: response.fullName || "N/A",
+			email: response.email || "N/A",
+			companyName: response.companyName || "N/A",
+		};
+		localStorage.setItem("userid", String(formattedData.id));
+		localStorage.setItem("username", formattedData.fullName);
+		localStorage.setItem("useremail", formattedData.email);
+		localStorage.setItem("companyName", formattedData.companyName);
+	} catch (error) {
+		console.log("Error fetching user information: " + error);
+	}
 };
 
 export default Account;

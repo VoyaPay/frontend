@@ -8,14 +8,6 @@ import back from "@/assets/images/return.png";
 import "./index.less";
 
 const Recharge = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
 
 	return (
 		// <div className="card content-box">

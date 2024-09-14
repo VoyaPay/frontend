@@ -4,11 +4,12 @@ import { useState } from "react";
 // import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal } from "antd";
+import { Input, Button, Modal, message  } from "antd";
 import bankcard from "@/assets/images/bankcard.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
+import { GetBalanceApi } from "@/api/modules/ledger";
 
 interface CardData {
 	key: string;
@@ -47,22 +48,52 @@ const PrepaidRecharge = () => {
 
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
+	const [accountBalance, setAccountBalance] = useState(0);
 
 	const handleOk = async () => {
 		try {
 			setConfirmLoading(true);
 			const response = await RechargeCardApi(cardData.key, { amount: amount });
-			console.log(response);
+			
+			// 检查是否成功并给出提示
+			if (response.id) {
+				message.success("充值成功 !");  // 成功消息
+		
+			}
+	
 			setOpen(false);
 			setConfirmLoading(false);
 		} catch (error: any) {
-			if (error.response && error.response.data && error.response.data.message === "Insufficient balance") {
-			  console.log(error);
-			  setConfirmLoading(false);
+			// 检查错误类型并给出提示
+			if (error.response && error.response.data) {
+				const errorMessage = error.response.data.message;
+	
+				if (errorMessage === "Insufficient balance") {
+					message.error("余额不足");  // 显示余额不足错误
+				} else if (Array.isArray(errorMessage) && errorMessage.includes("amount must be a positive number")) {
+					message.error("金额必须是正数， 请重新输入");  // 显示无效金额错误
+				} else {
+					message.error("其他错误");  // 其他错误的提示
+				}
+			} else {
+				message.error("An unknown error occurred. Please try again later.");
 			}
+			setConfirmLoading(false);
+			setOpen(false);
 		}
 	};
-
+	const getBalance = async () => {
+		try {
+			const response = await GetBalanceApi();
+			console.log(response);
+			console.log("Full response:", response.currentBalance);
+			const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+			setAccountBalance(balance);
+		} catch (error) {
+			console.log("Cannot get balance of the account:", error);
+		}
+	};
+	getBalance();
 	const handleCancel = () => {
 		setOpen(false);
 	};
@@ -77,25 +108,27 @@ const PrepaidRecharge = () => {
 				-&gt; 充值
 			</div>
 			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
-				<p>充值金额${amount}，继续充值？</p>
+				<p>充值金额 ${amount}，继续充值？</p>
 			</Modal>
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<div className="content">
 						<div className="pre">扣款账户：</div>
 						<div className="text">{cardData.cardOwner}</div>
-						<div className="text">&nbsp;&nbsp;$100</div>
+						<div className="text">&nbsp;&nbsp;{" $" + accountBalance}</div>
 					</div>
 					<div className="content">
 						<div className="pre">待充值预付卡：</div>
 						<div className="text">{cardData.cardName}</div>
-						<div className="text">&nbsp;(485643*****53242523)</div>
+						<div className="text">&nbsp;{"  ( "+cardData.cardNo+" )"}</div>
 					</div>
 					<div className="content">
-						<div className="pre">充值金额：</div>
-						<Input value={amount} onChange={changeAmount} className="edit" type="number" />
+						<div className="pre">充值金额:</div>
+						<div className="input-wrapper">
+							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$"  />
+							<div className="input-tips">注意：充值金额不能大于沃易卡账户的余额</div> {/* 提示文字在输入框下方 */}
+						</div>
 					</div>
-					<div className="tips">注意：充值金额不能大于沃易卡账户的余额</div>
 					<div className="btns">
 						<Button type="primary" className="actionBtn" onClick={recharge}>
 							充值

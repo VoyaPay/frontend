@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Space, DatePicker, Select } from "antd";
+import { Table, Button, Space, DatePicker, Select,message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -130,7 +130,15 @@ const PrepaidCard = () => {
 			dataIndex: "cardStatus",
 			key: "cardStatus",
 			align: "center",
-			width: 80
+			width: 80,
+			render: (status: string) =>
+				status === "Active"
+				  ? "活跃"
+				  : status === "Inactive"
+				  ? "非活跃"
+				  : status === "Closed"
+				  ? "已注销"
+				  : "N/A"
 		},
 		{
 			title: "余额",
@@ -139,7 +147,8 @@ const PrepaidCard = () => {
 			align: "center",
 			width: 120,
 			defaultSortOrder: "descend",
-			sorter: (a: any, b: any) => a.banlance - b.banlance
+			sorter: (a: any, b: any) => a.banlance - b.banlance,
+			render: (banlance: string) => `$${banlance}`
 		},
 		{
 			title: "开卡时间",
@@ -188,7 +197,18 @@ const PrepaidCard = () => {
 		});
 	};
 	const handlerRechargeDetails = (record: FormattedCard) => {
-		console.log("navigation: " + record.key);
+		console.log(record);
+		if (record.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法充值已注销的卡片");
+			return;
+		}
+		if (record.cardStatus === "Invaild") {
+			// Display error message and prevent editing
+			message.error("无法充值已冻结的卡片");
+			return;
+		}
+		
 		navigate("/prepaidRecharge/index", {
 			state: {
 				key: record.key,
@@ -284,9 +304,9 @@ const PrepaidCard = () => {
 							style={{ width: 150 }}
 							onChange={handleStatusChange }
 							options={[
-								{ value: "Active", label: "Active" },
-								{ value: "Inactive", label: "Inactive" },
-								{ value: "Closed", label: "Closed" }
+								{ value: "Active", label: "活跃" },
+								{ value: "Inactive", label: "非活跃" },
+								{ value: "Closed", label: "注销" }
 							]}
 						/>
 						<Button type="primary" onClick={applyFilters}>查询</Button>
