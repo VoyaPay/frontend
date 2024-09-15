@@ -154,8 +154,19 @@ const Detail = () => {
 		});
 	};
 
-	const goCheck = () => {
-		navigate("/proTable/tradeQuery");
+	const goCheck = (record: CardData) => {
+		navigate("/proTable/tradeQuery", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
 	};
 
 	// Freeze modal handler
@@ -301,7 +312,7 @@ const Detail = () => {
 						<div className="text">{cardData.cardStatus === "Active"
 							? "活跃"
 							: cardData.cardStatus === "Inactive"
-							? "非活跃"
+							? "已冻结"
 							: cardData.cardStatus === "Closed"
 							? "已注销"
 							: "N/A"}	
@@ -311,7 +322,8 @@ const Detail = () => {
 					<div className="content">
 						<div className="pre">余额：</div>
 						<div className="text"> {cardData.banlance ? `$ ${cardData.banlance}` : "N/A"}</div>
-						<div className="check" onClick={goCheck}>
+
+						<div className="check" onClick={() => goCheck(cardData)}>
 							查看消费记录
 						</div>
 					</div>
@@ -329,6 +341,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
+						disabled={cardData.cardStatus !== "Active"} 
 					>
 						充值
 					</Button>
@@ -337,14 +350,16 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={showFreezeModal}
+						disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Inactive"}
 					>
-						冻结
+						{cardData.cardStatus === "Inactive" ? "解冻" : "冻结"}
 					</Button>
 					<Button
 						type="primary"
 						size="large"
 						className="actionBtn"
 						onClick={showCloseModal}
+						disabled={cardData.cardStatus === "Closed"}
 					>
 						注销
 					</Button>

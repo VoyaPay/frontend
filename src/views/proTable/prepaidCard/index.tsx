@@ -135,7 +135,7 @@ const PrepaidCard = () => {
 				status === "Active"
 				  ? "活跃"
 				  : status === "Inactive"
-				  ? "非活跃"
+				  ? "已冻结"
 				  : status === "Closed"
 				  ? "已注销"
 				  : "N/A"
@@ -146,7 +146,6 @@ const PrepaidCard = () => {
 			key: "banlance",
 			align: "center",
 			width: 120,
-			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => a.banlance - b.banlance,
 			render: (banlance: string) => `$${banlance}`
 		},
@@ -228,9 +227,14 @@ const PrepaidCard = () => {
 		// Apply date range filter
 		if (selectedTimeRange.length > 0) {
 			const [start, end] = selectedTimeRange;
+			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+
+			// Set end time to 23:59:59 for the end date
+			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+
 			filtered = filtered.filter(card => {
 				const cardDate = new Date(card.createCardTime).getTime();
-				return cardDate >= start && cardDate <= end;
+				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
 			});
 		}
 
@@ -305,8 +309,8 @@ const PrepaidCard = () => {
 							onChange={handleStatusChange }
 							options={[
 								{ value: "Active", label: "活跃" },
-								{ value: "Inactive", label: "非活跃" },
-								{ value: "Closed", label: "注销" }
+								{ value: "Inactive", label: "已冻结" },
+								{ value: "Closed", label: "已注销" }
 							]}
 						/>
 						<Button type="primary" onClick={applyFilters}>查询</Button>

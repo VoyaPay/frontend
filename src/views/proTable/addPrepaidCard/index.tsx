@@ -5,8 +5,8 @@ import { Input, Button, Modal, message } from "antd";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
+import { GetBalanceApi  } from "@/api/modules/ledger";
 
-const Authname = localStorage.getItem("username");
 const AddPrepaidCard = () => {
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
@@ -15,6 +15,7 @@ const AddPrepaidCard = () => {
 	const [streetAddress, setStreetAddress] = useState(""); 
 	const [city, setCity] = useState(""); 
 	const [state, setState] = useState(""); 
+	const [accountBalance, setAccountBalance] = useState(0);
 	const navigate = useNavigate();
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +45,16 @@ const AddPrepaidCard = () => {
 	const changeState = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setState(e.target.value);
 	};
+	const getBalance = async () => {
+		try {
+			const response = await GetBalanceApi();
+			const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+			setAccountBalance(balance);
+		} catch (error) {
+			console.log("Cannot get balance of the account:", error);
+		}
+	};
+	getBalance()
 
 	const handleSubmit = async () => {
 		const payload = {
@@ -166,7 +177,7 @@ const AddPrepaidCard = () => {
 				<div className="title">2.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{Authname}</div>
+					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{accountBalance}</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>

@@ -67,9 +67,8 @@ const PrepaidRecharge = () => {
 			// 检查错误类型并给出提示
 			if (error.response && error.response.data) {
 				const errorMessage = error.response.data.message;
-	
 				if (errorMessage === "Insufficient balance") {
-					message.error("余额不足");  // 显示余额不足错误
+					message.error("沃易卡账户余额不足");  // 显示余额不足错误
 				} else if (Array.isArray(errorMessage) && errorMessage.includes("amount must be a positive number")) {
 					message.error("金额必须是正数， 请重新输入");  // 显示无效金额错误
 				} else {
