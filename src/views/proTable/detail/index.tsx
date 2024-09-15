@@ -216,13 +216,13 @@ const Detail = () => {
 
 			{/* Freeze Confirmation Modal */}
 			<Modal
-				title="确认冻结"
+				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"}  // 根据状态动态调整标题
 				visible={openFreezeModal}
 				onOk={handleFreezeOk}
 				confirmLoading={confirmLoading}
 				onCancel={handleFreezeCancel}
 			>
-				<p>确定要冻结此卡片吗？</p>
+				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p>  {/* 根据状态动态调整内容 */}
 			</Modal>
 
 			{/* Close Confirmation Modal */}

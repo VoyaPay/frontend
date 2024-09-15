@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
 // import { Breadcrumb } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 // import { Select } from "antd";
@@ -81,18 +81,18 @@ const PrepaidRecharge = () => {
 			setOpen(false);
 		}
 	};
-	const getBalance = async () => {
-		try {
-			const response = await GetBalanceApi();
-			console.log(response);
-			console.log("Full response:", response.currentBalance);
-			const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
-			setAccountBalance(balance);
-		} catch (error) {
-			console.log("Cannot get balance of the account:", error);
-		}
-	};
-	getBalance();
+	useEffect(() => {
+		const getBalance = async () => {
+			try {
+				const response = await GetBalanceApi();
+				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				setAccountBalance(balance);
+			} catch (error) {
+				console.log("Cannot get balance of the account:", error);
+			}
+		};
+		getBalance();
+	}, []);  // 依赖为空数组，表示只在组件挂载时运行一次
 	const handleCancel = () => {
 		setOpen(false);
 	};
