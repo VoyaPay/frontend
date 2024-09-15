@@ -64,7 +64,7 @@ const PrepaidCard = () => {
 						cardNo: card.last4,
 						cardStatus: card.status,
 						banlance: card.initialLimit, 
-						createCardTime: formatDate(card.updatedAt)
+						createCardTime: formatDate(card.createdAt)
 					}));
 
 					const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
