@@ -19,7 +19,8 @@ const LoginForm = (props: any) => {
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
-	let loginType: number = 1; 
+	let loginType: number | string = "1"; 
+	loginType = Number(loginType);
 	// const [loginType, setLoginType] = useState<Number>(0); //0: 手机号登录  1：邮箱登录
 
 	// 登录
@@ -63,7 +64,9 @@ const LoginForm = (props: any) => {
 
 	return (
 		<div className="loginform-container">
-			<img src={logo} alt="logo" className="logo-img" />
+			<a href="https://www.voyapay.com/zh" target="_blank" rel="noopener noreferrer">
+				<img src={logo} alt="logo" className="logo-img" />
+			</a>
 			{/* <div className="login-type">
 				<span className={`text ${loginType == 0 ? "selected" : ""}`} onClick={changeToPhone}>
 					手机{" "}
@@ -115,10 +118,10 @@ const LoginForm = (props: any) => {
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
-			<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
-				立即注册
-			</a>
-		
+				<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
+					立即注册
+				</a>
+
 				{/* <span>忘记密码</span> */}
 			</div>
 		</div>

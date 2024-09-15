@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Space, DatePicker, Select } from "antd";
+import { Table, Button, Space, DatePicker, Select,message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
-import accountextra from "@/assets/images/accountbanlace.png";
+import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
@@ -64,7 +64,7 @@ const PrepaidCard = () => {
 						cardNo: card.last4,
 						cardStatus: card.status,
 						banlance: card.initialLimit, 
-						createCardTime: formatDate(card.updatedAt)
+						createCardTime: formatDate(card.createdAt)
 					}));
 
 					const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
@@ -130,7 +130,15 @@ const PrepaidCard = () => {
 			dataIndex: "cardStatus",
 			key: "cardStatus",
 			align: "center",
-			width: 80
+			width: 80,
+			render: (status: string) =>
+				status === "Active"
+				  ? "活跃"
+				  : status === "Inactive"
+				  ? "已冻结"
+				  : status === "Closed"
+				  ? "已注销"
+				  : "N/A"
 		},
 		{
 			title: "余额",
@@ -138,8 +146,8 @@ const PrepaidCard = () => {
 			key: "banlance",
 			align: "center",
 			width: 120,
-			defaultSortOrder: "descend",
-			sorter: (a: any, b: any) => a.banlance - b.banlance
+			sorter: (a: any, b: any) => a.banlance - b.banlance,
+			render: (banlance: string) => `$${banlance}`
 		},
 		{
 			title: "开卡时间",
@@ -159,6 +167,7 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
+			width: 160,
 			render: (text: string, record: FormattedCard) => (
 				<Space>
 					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
@@ -187,7 +196,18 @@ const PrepaidCard = () => {
 		});
 	};
 	const handlerRechargeDetails = (record: FormattedCard) => {
-		console.log("navigation: " + record.key);
+		console.log(record);
+		if (record.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法充值已注销的卡片");
+			return;
+		}
+		if (record.cardStatus === "Invaild") {
+			// Display error message and prevent editing
+			message.error("无法充值已冻结的卡片");
+			return;
+		}
+		
 		navigate("/prepaidRecharge/index", {
 			state: {
 				key: record.key,
@@ -207,9 +227,14 @@ const PrepaidCard = () => {
 		// Apply date range filter
 		if (selectedTimeRange.length > 0) {
 			const [start, end] = selectedTimeRange;
+			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+
+			// Set end time to 23:59:59 for the end date
+			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+
 			filtered = filtered.filter(card => {
 				const cardDate = new Date(card.createCardTime).getTime();
-				return cardDate >= start && cardDate <= end;
+				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
 			});
 		}
 
@@ -265,7 +290,7 @@ const PrepaidCard = () => {
 			</div>
 			<div className="actionWrap">
 				<div className="left">
-					<span className="title">预存卡列表</span>
+					<span className="title">预充卡</span>
 					<Space>
 						<RangePicker onChange={handleTimeChange} />
 						<Select
@@ -283,9 +308,9 @@ const PrepaidCard = () => {
 							style={{ width: 150 }}
 							onChange={handleStatusChange }
 							options={[
-								{ value: "Active", label: "Active" },
-								{ value: "Inactive", label: "Inactive" },
-								{ value: "Closed", label: "Closed" }
+								{ value: "Active", label: "活跃" },
+								{ value: "Inactive", label: "已冻结" },
+								{ value: "Closed", label: "已注销" }
 							]}
 						/>
 						<Button type="primary" onClick={applyFilters}>查询</Button>

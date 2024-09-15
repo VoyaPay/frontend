@@ -14,6 +14,7 @@ interface CardData {
 	cardOwner: string;
 	cardGroup: string;
 	cardNo: string;
+	cardTotal:string,
 	cardStatus: string;
 	banlance: string;
 	createCardTime: string;
@@ -30,7 +31,7 @@ const fetchCardInformation = async (id: string, setCardData: React.Dispatch<Reac
 				...prevData,
 				expirationDate: information.expiration || "",
 				cvv2: information.cvc || "",
-				cardNo: information.pan || ""
+				cardTotal: information.pan || ""
 			}));
 		}
 	} catch (error) {
@@ -59,7 +60,8 @@ const Detail = () => {
 		cardNo: "0000",
 		cardStatus: "defaultStatus",
 		banlance: "0",
-		createCardTime: "2023-01-01 00:00:00"
+		createCardTime: "2023-01-01 00:00:00",
+		cardTotal:"00000000000"
 	};
 	const [cardData, setCardData] = useState<CardData>((location.state as CardData) ?? defaultCardData);
 	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
@@ -75,6 +77,11 @@ const Detail = () => {
 	}, [cardData.key]);
 
 	const saveChanges1 = async () => {
+		if (cardData.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法修改已注销的卡片");
+			return;
+		}
 		const updatedData = {
 			status: cardData.cardStatus === "Active" ? "Inactive" : "Active",
 			alias: cardName
@@ -87,6 +94,11 @@ const Detail = () => {
 	};
 
 	const saveChanges2 = async () => {
+		if (cardData.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法修改已注销的卡片");
+			return;
+		}
 		const updatedData = {
 			status: cardData.cardStatus,
 			alias: cardName
@@ -99,6 +111,11 @@ const Detail = () => {
 	};
 
 	const saveChanges3 = async () => {
+		if (cardData.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法修改已注销的卡片");
+			return;
+		}
 		const updatedData = {
 			status: "Closed",
 			alias: cardName
@@ -118,6 +135,11 @@ const Detail = () => {
 	};
 
 	const handlerRechargeDetails = (record: CardData) => {
+		if (cardData.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法充值已注销的卡片");
+			return;
+		}
 		navigate("/prepaidRecharge/index", {
 			state: {
 				key: record.key,
@@ -132,8 +154,19 @@ const Detail = () => {
 		});
 	};
 
-	const goCheck = () => {
-		navigate("/proTable/tradeQuery");
+	const goCheck = (record: CardData) => {
+		navigate("/proTable/tradeQuery", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
 	};
 
 	// Freeze modal handler
@@ -169,8 +202,8 @@ const Detail = () => {
 	};
 
 	const toCopy = () => {
-		if (cardData && cardData.cardNo) {
-			copy(cardData.cardNo);
+		if (cardData && cardData.cardTotal) {
+			copy(cardData.cardTotal);
 			messageApi.info("复制成功！");
 		} else {
 			messageApi.info("卡号数据不存在，复制失败！");
@@ -183,13 +216,13 @@ const Detail = () => {
 
 			{/* Freeze Confirmation Modal */}
 			<Modal
-				title="确认冻结"
+				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"}  // 根据状态动态调整标题
 				visible={openFreezeModal}
 				onOk={handleFreezeOk}
 				confirmLoading={confirmLoading}
 				onCancel={handleFreezeCancel}
 			>
-				<p>确定要冻结此卡片吗？</p>
+				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p>  {/* 根据状态动态调整内容 */}
 			</Modal>
 
 			{/* Close Confirmation Modal */}
@@ -248,7 +281,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">卡号：</div>
-						<div className="text">{cardData.cardNo || "1234"}</div>
+						<div className="text">{cardData.cardTotal || "123456789"}</div>
 						<span className="action" onClick={toCopy}>
 							复制完整卡号
 						</span>
@@ -276,13 +309,21 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">卡状态：</div>
-						<div className="text">{cardData.cardStatus || "N/A"}</div>
+						<div className="text">{cardData.cardStatus === "Active"
+							? "活跃"
+							: cardData.cardStatus === "Inactive"
+							? "已冻结"
+							: cardData.cardStatus === "Closed"
+							? "已注销"
+							: "N/A"}	
+						</div>
 					</div>
 
 					<div className="content">
 						<div className="pre">余额：</div>
-						<div className="text">{cardData.banlance || "N/A"}</div>
-						<div className="check" onClick={goCheck}>
+						<div className="text"> {cardData.banlance ? `$ ${cardData.banlance}` : "N/A"}</div>
+
+						<div className="check" onClick={() => goCheck(cardData)}>
 							查看消费记录
 						</div>
 					</div>
@@ -300,6 +341,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
+						disabled={cardData.cardStatus !== "Active"} 
 					>
 						充值
 					</Button>
@@ -308,14 +350,16 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={showFreezeModal}
+						disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Inactive"}
 					>
-						冻结
+						{cardData.cardStatus === "Inactive" ? "解冻" : "冻结"}
 					</Button>
 					<Button
 						type="primary"
 						size="large"
 						className="actionBtn"
 						onClick={showCloseModal}
+						disabled={cardData.cardStatus === "Closed"}
 					>
 						注销
 					</Button>

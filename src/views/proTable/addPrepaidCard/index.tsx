@@ -1,17 +1,21 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
+import { GetBalanceApi  } from "@/api/modules/ledger";
 
-const Authname = localStorage.getItem("username");
 const AddPrepaidCard = () => {
-	const [cardName, setCardName] = useState("my business card");
+	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
-	const [firstName, setFirstName] = useState("FirstName");
-	const [lastName, setLastName] = useState("LastName");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [streetAddress, setStreetAddress] = useState(""); 
+	const [city, setCity] = useState(""); 
+	const [state, setState] = useState(""); 
+	const [accountBalance, setAccountBalance] = useState(0);
 	const navigate = useNavigate();
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,11 +34,37 @@ const AddPrepaidCard = () => {
 		setAmount(parseInt(e.target.value, 10) || 0);
 	};
 
+	const changeStreetAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setStreetAddress(e.target.value);
+	};
+
+	const changeCity = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCity(e.target.value);
+	};
+
+	const changeState = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setState(e.target.value);
+	};
+	
+	useEffect(() => {
+		const getBalance = async () => {
+			try {
+				const response = await GetBalanceApi();
+				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				setAccountBalance(balance);
+			} catch (error) {
+				console.log("Cannot get balance of the account:", error);
+			}
+		};
+		getBalance();
+	}, []);  // 依赖为空数组，表示只在组件挂载时运行一次
+
 	const handleSubmit = async () => {
 		const payload = {
 			type: "PrePaid",
 			initialLimit: amount,
-			alias:cardName
+			alias:cardName,
+			
 		};
 
 		try {
@@ -104,7 +134,7 @@ const AddPrepaidCard = () => {
 					<div className="pre">
 						<span className="require">*</span>卡昵称：
 					</div>
-					<Input value={cardName} onChange={changeCardName} className="edit" />
+					<Input value={cardName} onChange={changeCardName} className="edit" placeholder="Card Name" />
 				</div>
 				<div className="content">
 					<div className="pre">名字:</div>
@@ -126,14 +156,31 @@ const AddPrepaidCard = () => {
 
 				<div className="content">
 					<div className="pre">账单地址：</div>
-					<div className="text">默认地址，不允许修改</div>
+					<Input
+						value={streetAddress}
+						onChange={changeStreetAddress}
+						className="edit"
+						placeholder="Street Address"
+						/>
+						<Input
+						value={city}
+						onChange={changeCity}
+						className="edit"
+						placeholder="City"
+						/>
+						<Input
+						value={state}
+						onChange={changeState}
+						className="edit"
+						placeholder="State"
+						/>
 				</div>
 			</div>
 			<div className="contentWrap">
 				<div className="title">2.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{Authname}</div>
+					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{accountBalance}</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>
