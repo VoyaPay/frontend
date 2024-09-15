@@ -47,7 +47,7 @@ const LayoutMenu = (props: any) => {
 			icon,
 			children,
 			label,
-			type
+			type,
 		} as MenuItem;
 	};
 
@@ -57,9 +57,13 @@ const LayoutMenu = (props: any) => {
 		return React.createElement(customIcons[name]);
 	};
 
+	interface ExtendedMenuOptions extends Menu.MenuOptions {
+			hide?: boolean;  // 扩展 hide 属性
+	}
+
 	// 处理后台返回菜单 key 值为 antd 菜单需要的 key 值
 	const deepLoopFloat = (menuList: Menu.MenuOptions[], newArr: MenuItem[] = []) => {
-		menuList.forEach((item: Menu.MenuOptions) => {
+		menuList.forEach((item: ExtendedMenuOptions) => {
 			// 下面判断代码解释 *** !item?.children?.length   ==>   (!item.children || item.children.length === 0)
 			if (item && item.children && item.children.length) {
 				newArr.push(getItem(item.title, item.path, addIcon(item.icon!), deepLoopFloat(item.children)));

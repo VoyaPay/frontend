@@ -43,9 +43,9 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// 代理跨域（mock 不需要配置，这里只是个事列）
 			proxy: {
 				"/api": {
-					target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
+					target: viteEnv.VITE_API_URL,
 					changeOrigin: true,
-					rewrite: path => path.replace(/^\/api/, "")
+					rewrite: path => path.replace(/^\/api/, ""), 
 				}
 			}
 		},
@@ -70,13 +70,13 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			viteEnv.VITE_REPORT && visualizer(),
 			// * gzip compress
 			viteEnv.VITE_BUILD_GZIP &&
-				viteCompression({
-					verbose: true,
-					disable: false,
-					threshold: 10240,
-					algorithm: "gzip",
-					ext: ".gz"
-				})
+			viteCompression({
+				verbose: true,
+				disable: false,
+				threshold: 10240,
+				algorithm: "gzip",
+				ext: ".gz"
+			})
 		],
 		esbuild: {
 			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []

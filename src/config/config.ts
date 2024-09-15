@@ -14,7 +14,8 @@ export const menu: any = [
 	{
 		icon: "HomeOutlined",
 		title: "首页",
-		path: "/home/index"
+		path: "/home/index",
+		hide: true
 	},
 	{
 		icon: "CreditCardOutlined",
@@ -59,7 +60,7 @@ export const menu: any = [
 	},
 	{
 		icon: "ShoppingOutlined",
-		title: "预付卡",
+		title: "预充卡",
 		path: "/proTable/prepaidCard"
 	},
 	{
@@ -70,7 +71,7 @@ export const menu: any = [
 	// {
 	// 	icon: "AreaChartOutlined",
 	// 	title: "数据大屏",
-	// 	path: "/dataScreen/index",
+	// 	path: "/dataScreen/index"
 	// },
 	// {
 	// 	icon: "TableOutlined",
@@ -80,12 +81,12 @@ export const menu: any = [
 	// 		{
 	// 			icon: "AppstoreOutlined",
 	// 			path: "/proTable/useHooks",
-	// 			title: "使用 Hooks",
+	// 			title: "使用 Hooks"
 	// 		},
 	// 		{
 	// 			icon: "AppstoreOutlined",
 	// 			path: "/proTable/useComponent",
-	// 			title: "使用 Component",
+	// 			title: "使用 Component"
 	// 		}
 	// 	]
 	// },

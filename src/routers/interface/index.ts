@@ -1,3 +1,5 @@
+import { RouteObject as ReactRouterRouteObject } from "react-router";
+export type Meta = Record<string, any>;
 export interface MetaProps {
 	keepAlive?: boolean;
 	requiresAuth?: boolean;
@@ -5,12 +7,12 @@ export interface MetaProps {
 	key?: string;
 }
 
-export interface RouteObject {
+export type RouteObject = ReactRouterRouteObject & {
 	caseSensitive?: boolean;
 	children?: RouteObject[];
 	element?: React.ReactNode;
-	index?: boolean;
+	index?: false | undefined;
 	path?: string;
 	meta?: MetaProps;
 	isLink?: string;
-}
+};

@@ -6,7 +6,7 @@ import axios, { AxiosResponse } from 'axios';
 import http from "@/api";
 
 // * 获取按钮权限
-export const UserTransfersApi = () => {
+export const UserTransactionApi = () => {
 	const token = localStorage.getItem("access_token"); 
 	console.log("Using token:", token); 
 	if (!token) {
@@ -17,23 +17,10 @@ export const UserTransfersApi = () => {
 		Authorization: `Bearer ${token}` 
 	};
 
-	return http.get<ResultData>(PORT3 + "/ledger", undefined, { headers });}
+	return http.get<ResultData>(PORT3 + "/Transactions", undefined, { headers });
+};
 
-export const GetBalanceApi=() => {
-	const token = localStorage.getItem("access_token"); 
-	console.log("get balance Using token:", token); 
-	if (!token) {
-		throw new Error("No token found. Please login first.");
-	}
-
-	const headers = {
-		Authorization: `Bearer ${token}` // 在请求头中添加 token
-	};
-
-	return http.get<ResultData>(PORT3 + "/Ledger/balance", undefined, { headers });
-}
-
-export const LedgerCSVApi = async (): Promise<void> => {
+export const TransactionsCSVApi = async (): Promise<void> => {
 	const token = localStorage.getItem("access_token");
 	console.log("Using token:", token);
 	

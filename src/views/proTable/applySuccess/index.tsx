@@ -9,14 +9,6 @@ import ApplySuccessImg from "@/assets/images/applySuccess.png";
 import "./index.less";
 
 const ApplySuccess = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
 
 	return (
 		<div className="applySuccess-wrap">

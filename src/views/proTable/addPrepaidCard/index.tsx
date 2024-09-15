@@ -1,47 +1,87 @@
 import { useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal } from "antd";
+import { Input, Button, Modal, message } from "antd";
 import back from "@/assets/images/return.png";
 import "./index.less";
+import { AddCardApi } from "@/api/modules/prepaid";
 
+const Authname = localStorage.getItem("username");
 const AddPrepaidCard = () => {
-	// 按钮权限
-	// const { BUTTONS } = useAuthButtons();
-	// const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
+	const [cardName, setCardName] = useState("");
+	const [amount, setAmount] = useState(0);
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [streetAddress, setStreetAddress] = useState(""); 
+	const [city, setCity] = useState(""); 
+	const [state, setState] = useState(""); 
+	const navigate = useNavigate();
 
-	// useEffect(() => {
-	// 	console.log(BUTTONS);
-	// }, []);
-
-	const [cardName, setCardName] = useState("masterCard");
-
-	const changeCardName = e => {
+	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCardName(e.target.value);
 	};
 
-	const [cardOwner, setCardOwner] = useState("张三");
-
-	const changeCardOwner = e => {
-		setCardOwner(e.target.value);
+	const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setFirstName(e.target.value);
+	};
+	
+	const changeLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setLastName(e.target.value);
 	};
 
-	const [amount, setAmount] = useState(0);
+	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setAmount(parseInt(e.target.value, 10) || 0);
+	};
 
-	const changeAmount = e => {
-		setAmount(e.target.value);
+	const changeStreetAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setStreetAddress(e.target.value);
+	};
+
+	const changeCity = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCity(e.target.value);
+	};
+
+	const changeState = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setState(e.target.value);
+	};
+
+	const handleSubmit = async () => {
+		const payload = {
+			type: "PrePaid",
+			initialLimit: amount,
+			alias:cardName,
+			
+		};
+
+		try {
+			const response = await AddCardApi(payload);
+			console.log(response);
+			const formattedData = {
+				card: response.card,
+				transaction: response.transaction
+			};
+
+			console.log("transaction is " + formattedData.transaction?.status);
+
+			if (response && formattedData.transaction?.status) {
+				navigate("/applySuccess/index");
+			} else {
+				// Show error message
+				console.log("failed");
+				message.error("卡片申请失败");
+			}
+		} catch (error) {
+			// Handle any errors
+			message.error("提交过程中发生错误");
+		}
 	};
 
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 
-	const apply = () => {
-		setOpen(true);
-	};
+	// const apply = () => {
+	// 	setOpen(true);
+	// };
 
 	const handleOk = () => {
 		setConfirmLoading(true);
@@ -57,7 +97,7 @@ const AddPrepaidCard = () => {
 
 	return (
 		<div className="addPrepaidCard-wrap">
-			<Modal title="申请" open={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
+			<Modal title="申请" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>充值金额XX， 开卡费1USD，总计XX，继续申请？</p>
 			</Modal>
 			<div className="nav">
@@ -80,44 +120,70 @@ const AddPrepaidCard = () => {
 					<div className="pre">
 						<span className="require">*</span>卡昵称：
 					</div>
-					<Input value={cardName} onChange={changeCardName} className="edit" />
+					<Input value={cardName} onChange={changeCardName} className="edit" placeholder="Card Name" />
 				</div>
 				<div className="content">
-					<div className="pre">持卡人：</div>
-					<Input value={cardOwner} onChange={changeCardOwner} className="edit" />
-				</div>
+					<div className="pre">名字:</div>
+					<div className="name-group">
+						<Input
+						value={firstName}
+						onChange={changeFirstName}
+						className="edit"
+						placeholder="First Name"
+						/>
+						<Input
+						value={lastName}
+						onChange={changeLastName}
+						className="edit"
+						placeholder="Last Name"
+						/>
+					</div>
+					</div>
+
 				<div className="content">
 					<div className="pre">账单地址：</div>
-					<div className="text">默认地址，不允许修改</div>
+					<Input
+						value={streetAddress}
+						onChange={changeStreetAddress}
+						className="edit"
+						placeholder="Street Address"
+						/>
+						<Input
+						value={city}
+						onChange={changeCity}
+						className="edit"
+						placeholder="City"
+						/>
+						<Input
+						value={state}
+						onChange={changeState}
+						className="edit"
+						placeholder="State"
+						/>
 				</div>
 			</div>
 			<div className="contentWrap">
 				<div className="title">2.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;$100</div>
+					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{Authname}</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>
 					<Input value={amount} onChange={changeAmount} className="edit" />
 				</div>
 				<div className="content">
-					<div className="pre">服务费：</div>
+					<div className="pre">开卡费：</div>
 					<div className="text">1 USD</div>
 				</div>
 			</div>
 			<div className="btns">
-				<Button type="primary" className="actionBtn" onClick={apply}>
+				<Button type="primary" className="actionBtn" onClick={handleSubmit}>
 					立即申请
 				</Button>
 				<Button type="text" className="return">
 					<NavLink to="/proTable/prepaidCard" className="myAccount">
 						返回
-					</NavLink>
-				</Button>
-				<Button type="text" className="return">
-					<NavLink to="/applySuccess/index" className="myAccount">
-						申请成功
 					</NavLink>
 				</Button>
 			</div>

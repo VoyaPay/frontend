@@ -1,7 +1,40 @@
 // * 请求响应参数(不包含data)
-export interface Result {
+export interface NewRecharge {
+	when?: string,
+    amount: number,
+    transactionId: number,
+}
+
+export interface NewTransaction{
+	transferId?: number;
+	newBalance?:number;
+	status?:boolean;
+}
+export interface TransactionDetail {
+  id: string;
+  type: string;
+  origin: string;
+  amount: string;
+  processedAt: string;
+  externalId: string;
+	
+}
+export interface Result{
 	code: string;
 	msg: string;
+	card?: object;
+	transaction?: NewTransaction;
+	currentBalance?: string;
+	cvc?:string;
+	expiration?: string;
+	pan?:string;
+	id?: number,
+	fullName?: string,
+	email?: string,
+	companyName?: string
+	recharges?: NewRecharge
+	headers?: string
+
 }
 
 // * 请求响应参数(包含data)
