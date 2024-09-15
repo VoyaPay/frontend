@@ -6,6 +6,10 @@
 import { NavLink } from "react-router-dom";
 import back from "@/assets/images/return.png";
 import "./index.less";
+// const Authname = localStorage.getItem("username");
+const Authemail = localStorage.getItem("useremail");
+const Authid= localStorage.getItem("userid");
+const Authcompany= localStorage.getItem("companyName");
 
 const Recharge = () => {
 
@@ -25,9 +29,9 @@ const Recharge = () => {
 					<span className="title">当前登录账户</span>
 					<div className="content">
 						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;登录手机号：17131354267</span>
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;登录邮箱: 223232323@gmail.com</span>
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;账户ID: 666777777</span>
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;公司名称: xxxxxxx</span>
+						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;登录邮箱: {Authemail}</span>
+						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;账户ID: {Authid}</span>
+						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;公司名称: {Authcompany}</span>
 					</div>
 				</div>
 				<div className="accountInfo">
