@@ -123,15 +123,18 @@ const Account = () => {
 	
 		// 只根据日期范围进行筛选
 		if (selectedDateRange && selectedDateRange.length === 2 && selectedDateRange[0] && selectedDateRange[1]) {
-			const [startDate, endDate] = selectedDateRange;
+			let [startDate, endDate] = selectedDateRange;
+			
+			// 将选定的日期转换为 UTC 格式
+			const startDateUTC = new Date(startDate).toISOString(); // 转换为 UTC 格式
+			const endDateUTC = new Date(endDate);
+			endDateUTC.setDate(endDateUTC.getDate() + 1); // 增加一天以包含结束日期
+			const endDateUTCString = endDateUTC.toISOString(); // 转换为 UTC 格式
 	
-			// 转换 endDate 并增加一天
-			const endDateObj = new Date(endDate);
-			endDateObj.setDate(endDateObj.getDate() + 1); // 增加一天，确保包含结束日期当天
-	
+			// 过滤符合日期范围的数据
 			filteredData = filteredData.filter(transaction => {
-				const transactionDate = new Date(transaction.time);
-				return transactionDate >= new Date(startDate) && transactionDate < endDateObj;
+				const transactionDateUTC = new Date(transaction.time).toISOString();
+				return transactionDateUTC >= startDateUTC && transactionDateUTC < endDateUTCString;
 			});
 		}
 	
@@ -187,13 +190,16 @@ const Account = () => {
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const day = String(date.getDate()).padStart(2, "0");
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
-	const seconds = String(date.getSeconds()).padStart(2, "0");
 
+	// 将时间转换为 UTC
+	const year = date.getUTCFullYear();
+	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+	const day = String(date.getUTCDate()).padStart(2, "0");
+	const hours = String(date.getUTCHours()).padStart(2, "0");
+	const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+	const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+
+	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 

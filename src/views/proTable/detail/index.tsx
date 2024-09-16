@@ -89,7 +89,10 @@ const Detail = () => {
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
 			message.success("Card information updated successfully");
-			navigate("/proTable/prepaidCard");
+			setCardData(prevData => ({
+				...prevData,
+				cardStatus: updatedData.status,  // 更新状态
+			}));
 		}
 	};
 
@@ -106,7 +109,7 @@ const Detail = () => {
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
 			message.success("Card information updated successfully");
-			navigate("/proTable/prepaidCard");
+			fetchCardInformation(cardData.key, setCardData);
 		}
 	};
 
@@ -123,7 +126,10 @@ const Detail = () => {
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
 			message.success("Card information updated successfully");
-			navigate("/proTable/prepaidCard");
+			setCardData(prevData => ({
+				...prevData,
+				cardStatus: updatedData.status,  // 更新状态
+			}));
 		}
 	};
 
