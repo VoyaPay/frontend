@@ -207,7 +207,7 @@ const TradeQuery = () => {
 								style={{ width: 120 }}
 								onChange={handleChange}
 								options={[
-									{ value: "prepaid", label: "预付卡" },
+									{ value: "prepaid", label: "预充卡" },
 									{ value: "share", label: "共享卡" }
 								]}
 								className="transactionType"
@@ -258,7 +258,7 @@ const TradeQuery = () => {
 								style={{ width: 120 }}
 								onChange={handleChange}
 								options={[
-									{ value: "prepaid", label: "预付卡" },
+									{ value: "prepaid", label: "预充卡" },
 									{ value: "share", label: "共享卡" }
 								]}
 								className="transactionType"

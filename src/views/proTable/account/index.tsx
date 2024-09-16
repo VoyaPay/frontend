@@ -54,7 +54,7 @@ const Account = () => {
 					transactionType: transaction.type === "cardPurchase" 
 						? "转出" 
 						: transaction.type === "cardTopup"
-						? "充值" 
+						? "转出"  
 						: transaction.type === "deposit"
 						? "转入"
 						: transaction.type === "fee"
@@ -65,11 +65,11 @@ const Account = () => {
 					currency: "USD",
 					time: formatDate(transaction.processedAt),
 					transactionDetail: transaction.type === "cardPurchase" 
-						? "“沃易卡账户”转出至“预付卡”"
+						? "“沃易卡账户”转出至“预充卡”"
 						: transaction.type === "cardTopup"
-						? "充值至 “沃易卡账户”"
+						? "“沃易卡账户”转出至“预充卡”"
 						: transaction.type === "deposit"
-						? "“预付卡”转入至 “沃易卡账户”"
+						? "“预充卡”转入至 “沃易卡账户”"
 						: transaction.type === "fee"
 						? "开卡手续费"
 						: "其他",

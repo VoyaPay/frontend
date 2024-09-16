@@ -238,7 +238,7 @@ const Detail = () => {
 
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" /> 预付卡{" "}
+					<img src={back} alt="" className="returnIcon" /> 预充卡{" "}
 				</NavLink>
 				-&gt; 查看详情
 			</div>

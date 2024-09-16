@@ -274,7 +274,7 @@ const PrepaidCard = () => {
 					</div>
 				</div>
 				<div className="banlanceWrap">
-					<span className="pre">预付卡内总余额</span>
+					<span className="pre">预充卡内总余额</span>
 					<div className="amountWrap">
 						<img src={accountextra} className="accountIcons" />
 						<span className="amount">${totalAmount}</span>
@@ -318,7 +318,7 @@ const PrepaidCard = () => {
 				</div>
 				<Button type="primary" icon={<PlusOutlined />}>
 					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
-						新增预付卡
+						新增预充卡
 					</NavLink>
 				</Button>
 			</div>
