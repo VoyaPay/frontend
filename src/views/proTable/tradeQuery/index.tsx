@@ -2,19 +2,24 @@ import { useEffect, useState } from "react";
 import { Table, DatePicker, Button, Space } from "antd";
 import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
-// import { UserTransactionApi } from "@/api/modules/transactions";
-// import { HOME_URL } from "@/config/config";
-// import { useNavigate, NavLink } from "react-router-dom";
-// import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import filter from "@/assets/images/filter.png";
 import "./index.less";
 import {TransactionsCSVApi} from "@/api/modules/transactions"
-// import {UserTransactionApi} from "@/api/modules/transactions"
 
-// const FetchTransactionInformation = async () =>{
-// 	const response = await UserTransactionApi();
-// 	console.log(response);
-// }
+interface CardData {
+	key: string;
+	cardName: string;
+	cardOwner: string;
+	cardGroup: string;
+	cardNo: string;
+	cardStatus: string;
+	banlance: string;
+	createCardTime: string;
+	address?: string;
+	expirationDate?: string;
+	cvv2?: string;
+}
 const getCSV = async (): Promise<void> => {
 	try {
 		const response = await TransactionsCSVApi()
@@ -25,25 +30,19 @@ const getCSV = async (): Promise<void> => {
 	};
 
 const TradeQuery = () => {
-	// const createOptions = [
-	// 	{ value: "cardNum", label: "卡号" },
-	// 	{ value: "cardType", label: "卡片类型" },
-	// 	{ value: "applyId", label: "申请ID" },
-	// 	{ value: "createTime", label: "开卡时间" },
-	// 	{ value: "cardName", label: "卡片名称" },
-	// 	{ value: "cardGroup", label: "卡组" }
-	// ];
-	// const authOptions = [
-	// 	{ value: "authTime", label: "时间" },
-	// 	{ value: "authNum", label: "单号" },
-	// 	{ value: "cardNum", label: "卡号" },
-	// 	{ value: "cardType", label: "卡片类型" },
-	// 	{ value: "shopName", label: "商户名称" },
-	// 	{ value: "authStatus", label: "支付状态" },
-	// 	{ value: "tradeCurrency", label: "交易币种" },
-	// 	{ value: "tradeAmount", label: "交易金额" },
-	// 	{ value: "wrongReason", label: "失败原因" }
-	// ];
+	const location = useLocation();
+	const defaultCardData: CardData = {
+		key: "",
+		cardName: "defaultCardName",
+		cardOwner: "defaultOwner",
+		cardGroup: "defaultGroup",
+		cardNo: "0000",
+		cardStatus: "defaultStatus",
+		banlance: "0",
+		createCardTime: "2023-01-01 00:00:00"
+	};
+	const cardData = (location.state as CardData) ?? defaultCardData;
+	console.log(cardData)
 
 	const createColumns: any[] = [
 		{
@@ -253,7 +252,7 @@ const TradeQuery = () => {
 						<Space>
 							<RangePicker />
 							<Select
-								placeholder="卡片类型"
+								placeholder={cardData.cardNo}
 								mode="multiple"
 								allowClear
 								style={{ width: 120 }}
@@ -264,18 +263,7 @@ const TradeQuery = () => {
 								]}
 								className="transactionType"
 							/>
-							<Select
-								placeholder="卡组"
-								mode="multiple"
-								allowClear
-								style={{ width: 120 }}
-								onChange={handleChange}
-								options={[
-									{ value: "visa", label: "visa" },
-									{ value: "masterCard", label: "masterCard" }
-								]}
-								className="transactionType"
-							/>
+							
 							<Button type="primary">查询</Button>
 						</Space>
 					)}

@@ -89,8 +89,9 @@ const Account = () => {
 		console.log(response)
 	}catch(e:any){
 		console.log(e)
-		}
-	};
+	}
+	}
+
 	const columns: any[] = [
 		{ title: "交易类型", dataIndex: "transactionType", key: "transactionType", align: "center" },
 		{ title: "金额", dataIndex: "amount", key: "amount", align: "center" },
