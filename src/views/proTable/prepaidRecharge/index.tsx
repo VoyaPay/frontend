@@ -102,7 +102,7 @@ const PrepaidRecharge = () => {
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
 					<img src={back} alt="" className="returnIcon" />
-					预付卡{" "}
+					预充卡{" "}
 				</NavLink>
 				-&gt; 充值
 			</div>
@@ -117,7 +117,7 @@ const PrepaidRecharge = () => {
 						<div className="text">&nbsp;&nbsp;{" $" + accountBalance}</div>
 					</div>
 					<div className="content">
-						<div className="pre">待充值预付卡：</div>
+						<div className="pre">待充值预充卡：</div>
 						<div className="text">{cardData.cardName}</div>
 						<div className="text">&nbsp;{"  ( "+cardData.cardNo+" )"}</div>
 					</div>

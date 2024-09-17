@@ -14,9 +14,9 @@ const ApplySuccess = () => {
 		<div className="applySuccess-wrap">
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					预付卡{" "}
+					预充卡{" "}
 				</NavLink>
-				-&gt; 新增预付卡
+				-&gt; 新增预充卡
 			</div>
 			<div className="contentWrap">
 				<div className="tipsWrap">

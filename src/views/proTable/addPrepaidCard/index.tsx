@@ -117,9 +117,9 @@ const AddPrepaidCard = () => {
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
 					<img src={back} alt="" className="returnIcon" />
-					预付卡{" "}
+					预充卡{" "}
 				</NavLink>
-				-&gt; 新增预付卡
+				-&gt; 新增预充卡
 			</div>
 			<div className="contentWrap">
 				<div className="title">1.卡产品选择</div>
