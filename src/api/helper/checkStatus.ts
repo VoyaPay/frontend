@@ -14,7 +14,7 @@ export const checkStatus = (status: number): void => {
 			message.error("密码错误，请修改后重试");
 			break;
 		case 403:
-			message.error("当前账号无权限访问！");
+			// message.error("当前账号无权限访问！");
 			break;
 		case 404:
 			message.error("你所访问的资源不存在！");

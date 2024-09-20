@@ -5,7 +5,7 @@ import {useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message  } from "antd";
-import bankcard from "@/assets/images/bankcard.png";
+import bankcard from "@/assets/images/bluecardwithshadow.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
@@ -113,7 +113,7 @@ const PrepaidRecharge = () => {
 				<div className="basicInfo">
 					<div className="content">
 						<div className="pre">扣款账户：</div>
-						<div className="text">{cardData.cardOwner}</div>
+						<div className="text">沃易卡账户</div>
 						<div className="text">&nbsp;&nbsp;{" $" + accountBalance}</div>
 					</div>
 					<div className="content">

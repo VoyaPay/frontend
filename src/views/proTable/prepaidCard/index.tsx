@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Space, DatePicker, Select,message } from "antd";
+import { Table, Button, Space, DatePicker, Select,message,Tooltip,Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -48,6 +48,9 @@ const PrepaidCard = () => {
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+	const [cardNameSearch, setCardNameSearch] = useState("");
+	const [cardOwnerSearch, setCardOwnerSearch] = useState("");
+	const [cardNoSearch, setCardNoSearch] = useState("");
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
@@ -105,35 +108,45 @@ const PrepaidCard = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: 100
+			width:"10%", // Fixed width for this column
+			render: (cardName: string) => (
+				<Tooltip title={cardName.length > 17 ? cardName : ""}>
+					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+				</Tooltip>
+			),
 		},
 		{
 			title: "持卡人",
 			dataIndex: "cardOwner",
 			key: "cardOwner",
 			align: "center",
-			width: 120
+			width: "10%",
+			render: (cardOwner: string) => (
+				<Tooltip title={cardOwner.length > 17 ? cardOwner : ""}>
+					{cardOwner.length > 17 ? `${cardOwner.substring(0, 17)}...` : cardOwner}
+				</Tooltip>
+			),
 		},
 		{
 			title: "卡组",
 			dataIndex: "cardGroup",
 			key: "cardGroup",
 			align: "center",
-			width: 80
+			width: "10%",
 		},
 		{
 			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
 			align: "center",
-			width: 120
+			width: "10%",
 		},
 		{
 			title: "状态",
 			dataIndex: "cardStatus",
 			key: "cardStatus",
 			align: "center",
-			width: 80,
+			width: "10%",
 			render: (status: string) =>
 				status === "Active"
 				  ? "活跃"
@@ -148,7 +161,7 @@ const PrepaidCard = () => {
 			dataIndex: "banlance",
 			key: "banlance",
 			align: "center",
-			width: 120,
+			width: "10%",
 			sorter: (a: any, b: any) => a.banlance - b.banlance,
 			render: (banlance: string) => `$${banlance}`
 		},
@@ -157,7 +170,7 @@ const PrepaidCard = () => {
 			dataIndex: "createCardTime",
 			key: "createCardTime",
 			align: "center",
-			width: 160,
+			width: "15%",
 			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => {
 				const dateA = new Date(a.createCardTime).getTime();
@@ -170,7 +183,7 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			width: 160,
+			width: "25%",
 			render: (text: string, record: FormattedCard) => (
 				<Space>
 					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
@@ -251,6 +264,16 @@ const PrepaidCard = () => {
 			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
 		}
 
+		if (cardNameSearch) {
+			filtered = filtered.filter(card => card.cardName.toLowerCase().includes(cardNameSearch.toLowerCase()));
+		}
+		if (cardOwnerSearch) {
+			filtered = filtered.filter(card => card.cardOwner.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
+		}
+		if (cardNoSearch) {
+			filtered = filtered.filter(card => card.cardNo.includes(cardNoSearch));
+		}
+
 		setFilteredData(filtered);
 	};
 
@@ -302,7 +325,7 @@ const PrepaidCard = () => {
 							allowClear
 							style={{ width: 150 }}
 							onChange={handleGroupChange}
-							options={[{ value: "VISA", label: "VISA" }]}
+							options={[{ value: "MasterCard", label: "MasterCard" }]}
 						/>
 						<Select
 							placeholder="请选择状态"
@@ -316,9 +339,28 @@ const PrepaidCard = () => {
 								{ value: "Closed", label: "已注销" }
 							]}
 						/>
-						<Button type="primary" onClick={applyFilters}>查询</Button>
+						<Input
+							placeholder="搜索卡昵称"
+							value={cardNameSearch}
+							onChange={(e:any) => setCardNameSearch(e.target.value)}
+						/>
+						<Input
+							placeholder="搜索持卡人"
+							value={cardOwnerSearch}
+							onChange={(e:any) => setCardOwnerSearch(e.target.value)}
+						/>
+						<Input
+							placeholder="搜索卡号"
+							value={cardNoSearch}
+							onChange={(e:any) => setCardNoSearch(e.target.value)}
+						/>
+						
 					</Space>
+					
+					<Button type="primary" onClick={applyFilters}>查询</Button>
+					
 				</div>
+				
 				<Button type="primary" icon={<PlusOutlined />}>
 					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
 						新增预充卡

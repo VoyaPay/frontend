@@ -46,7 +46,7 @@ const AvatarIcon = (props: any) => {
 				},
 				{
 					key: "2",
-					label: <span className="dropdown-item">个人信息</span>,
+					label: <span className="dropdown-item">账户信息</span>,
 					onClick: () => navigate("accountSetting/index")
 				},
 				{

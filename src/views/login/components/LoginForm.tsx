@@ -1,6 +1,6 @@
 // import md5 from "js-md5";
 import { useState } from "react";
-import { Button, Form, Input, message, Space } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
@@ -30,6 +30,7 @@ const LoginForm = (props: any) => {
 			console.log("loginForm", loginForm);
 			// loginForm.password = md5(loginForm.password);
 			const response = await loginApi(loginForm);
+			
 			console.log(response.data);
 
 			const access_token = response.data?.access_token;
@@ -38,13 +39,13 @@ const LoginForm = (props: any) => {
 			if (!access_token) {
 				throw new Error("No access token received");
 			}
-
 			console.log("Received token:", access_token);
 			setToken("access token is " + access_token);
 			setTabsList([]);
 			message.success("登录成功！");
 			localStorage.setItem("access_token", access_token);
 			navigate("/proTable/account");
+			
 		} finally {
 			setLoading(false);
 		}
@@ -53,14 +54,6 @@ const LoginForm = (props: any) => {
 	const onFinishFailed = (errorInfo: any) => {
 		console.log("Failed:", errorInfo);
 	};
-
-	// const changeToEmail = () => {
-	// 	setLoginType(1);
-	// };
-
-	// const changeToPhone = () => {
-	// 	setLoginType(0);
-	// };
 
 	return (
 		<div className="loginform-container">
@@ -100,7 +93,6 @@ const LoginForm = (props: any) => {
 					<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 				</Form.Item>
 				<Form.Item className="login-btn">
-					<Space>
 						<Button
 							onClick={() => {
 								form.resetFields();
@@ -110,11 +102,11 @@ const LoginForm = (props: any) => {
 							{/* {t("login.reset")} */}
 							重置
 						</Button>
+						<span className="space"/>
 						<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
 							{/* {t("login.confirm")} */}
 							登录
 						</Button>
-					</Space>
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">

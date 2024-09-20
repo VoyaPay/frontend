@@ -37,6 +37,7 @@
 		.login-form {
 			padding: 40px 45px 25px;
 			border-radius: 10px;
+			min-width: 40%;
 			.ant-form-item {
 				height: 75px;
 				margin-bottom: 0;
@@ -58,11 +59,15 @@
 				width: 100%;
 				margin-top: 10px;
 				white-space: nowrap;
+				.space {
+					width: 10px
+				}
 				.ant-form-item-control-input-content {
+
 					display: flex;
 					justify-content: space-between;
 					.ant-btn {
-						width: 180px;
+						width: 50%;
 						span {
 							font-size: 14px;
 						}
@@ -71,4 +76,32 @@
 			}
 		}
 	}
+}
+
+
+
+@media (max-width: 768px) {
+  .login-container {
+		min-width: 100%;
+    .login-box {
+      flex-direction: column;
+      padding: 0;
+
+      .login-left {
+				display: none;
+// 				max-width: 20px;
+//         .img {
+// 					max-width: 30px;
+// 					width: 50%;
+// 				}
+      }
+
+      .login-form {
+				padding: 10px 15px;
+        width: 100%;
+				max-width: 80%;
+				margin: 0 auto;
+      }
+    }
+  }
 }

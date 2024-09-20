@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, message, Modal } from "antd";
-import bankcard from "@/assets/images/bankcard.png";
+import bankcard from "@/assets/images/bluecardwithshadow.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
@@ -88,7 +88,7 @@ const Detail = () => {
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
-			message.success("Card information updated successfully");
+			message.success("卡片信息修改成功");
 			setCardData(prevData => ({
 				...prevData,
 				cardStatus: updatedData.status,  // 更新状态
@@ -108,7 +108,7 @@ const Detail = () => {
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
-			message.success("Card information updated successfully");
+			message.success("卡片信息修改成功");
 			fetchCardInformation(cardData.key, setCardData);
 		}
 	};
@@ -125,7 +125,7 @@ const Detail = () => {
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
-			message.success("Card information updated successfully");
+			message.success("卡片信息修改成功");
 			setCardData(prevData => ({
 				...prevData,
 				cardStatus: updatedData.status,  // 更新状态
@@ -215,6 +215,13 @@ const Detail = () => {
 			messageApi.info("卡号数据不存在，复制失败！");
 		}
 	};
+	const formatCardNumber = (cardNumber: string) => {
+		if (cardNumber){
+			return cardNumber.replace(/(\d{4})(?=\d)/g, '$1-');}
+		else{
+			return 1234-5678-9000
+		}
+	  };
 
 	return (
 		<div className="detail-wrap">
@@ -272,7 +279,8 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									toggleCardName("change");
+									cardData.cardStatus !== "Closed" ?
+									toggleCardName("change"):message.error("无法修改已注销的卡片");
 								}}
 							>
 								修改
@@ -287,7 +295,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">卡号：</div>
-						<div className="text">{cardData.cardTotal || "123456789"}</div>
+						<div className="text">{formatCardNumber(cardData.cardTotal) || "123 456 789"}</div>
 						<span className="action" onClick={toCopy}>
 							复制完整卡号
 						</span>
@@ -347,7 +355,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
-						disabled={cardData.cardStatus !== "Active"} 
+						disabled={cardData.cardStatus === "Closed"} 
 					>
 						充值
 					</Button>

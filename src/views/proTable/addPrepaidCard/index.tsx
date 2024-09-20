@@ -17,17 +17,38 @@ const AddPrepaidCard = () => {
 	const [state, setState] = useState(""); 
 	const [accountBalance, setAccountBalance] = useState(0);
 	const navigate = useNavigate();
+	const maxLength = 16;
+	const combinedLength = firstName.length + lastName.length;
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCardName(e.target.value);
+		const value = e.target.value;
+		if (value.length  > maxLength) {
+			message.error("卡昵称长度不能超过16个字符");
+			return;
+		  }
+	  
+		setCardName(value);	
 	};
 
 	const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFirstName(e.target.value);
+		const value = e.target.value;
+    
+		if ( value.length + lastName.length > maxLength) {
+		message.error("名字总长度不能超过16个字符");
+		return;
+		}
+		setFirstName(value);
 	};
 	
 	const changeLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setLastName(e.target.value);
+		const value = e.target.value;
+
+		if ( firstName.length + value.length > maxLength) {
+			message.error("名字总长度不能超过16个字符");
+		return;
+		}
+
+		setLastName(value);
 	};
 
 	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,6 +172,9 @@ const AddPrepaidCard = () => {
 						className="edit"
 						placeholder="Last Name"
 						/>
+						
+						<span>{combinedLength}/{maxLength} </span>
+						
 					</div>
 					</div>
 
@@ -180,11 +204,11 @@ const AddPrepaidCard = () => {
 				<div className="title">2.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp;{accountBalance}</div>
+					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp; $ {accountBalance}</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>
-					<Input value={amount} onChange={changeAmount} className="edit" />
+					<Input value={amount} onChange={changeAmount} className="edit" addonBefore="$"  />
 				</div>
 				<div className="content">
 					<div className="pre">开卡费：</div>
