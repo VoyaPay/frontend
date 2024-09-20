@@ -25,30 +25,61 @@ const Recharge = () => {
 				-&gt; 充值
 			</div>
 			<div className="firstCol">
+			
 				<div className="userInfo">
 					<span className="title">当前登录账户</span>
 					<div className="content">
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;登录手机号：17131354267</span>
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;登录邮箱: {Authemail}</span>
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;账户ID: {Authid}</span>
-						<span className="pre">&nbsp;&nbsp;&nbsp;&nbsp;公司名称: {Authcompany}</span>
+					<div className="left">
+						<div className="pre">登录手机号:</div>
+						<div className="pre">登录邮箱:</div>
+						<div className="pre">账户ID: </div>
+						<div className="pre">公司名称：</div>
 					</div>
+					<div className="middle">
+						<div className="pre">17131354267</div>
+						<div className="pre">{Authemail}</div>
+						<div className="pre">{Authid}</div>
+						<div className="pre">{Authcompany}</div>
+					
+					</div>
+					</div>
+					
 				</div>
 				<div className="accountInfo">
 					<span className="title">Voyapay收款账户</span>
 					<div className="content">
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;银行所在国家/地区：United States</span>
-						<span className="enPre">&nbsp;&nbsp;&nbsp;&nbsp;Bank Location</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;账户持有人姓名：Cara</span>
-						<span className="enPre">&nbsp;&nbsp;&nbsp;&nbsp;Account Holder Name</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;银行名称：JP Mongan</span>
-						<span className="enPre">&nbsp;&nbsp;&nbsp;&nbsp;Bank Name</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;9位汇款路线号码：02800024</span>
-						<span className="enPre">&nbsp;&nbsp;&nbsp;&nbsp;9-Digit Routing Number</span>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp;银行账号：20000043421506</span>
-						<span className="enPre">&nbsp;&nbsp;&nbsp;&nbsp;Bank Account Number</span>
+						<div className="left">
+							<div className="pre">
+								<div className="sub-pre">银行所在国家/地区：</div>
+								<div className="sub-pre">Bank Location:</div>
+							</div>
+							<div className="pre">
+								<div className="sub-pre">账户持有人姓名:</div>
+								<div className="sub-pre">Account Holder Name:</div>
+							</div>
+							<div className="pre">
+								<div className="sub-pre">银行名称:</div>
+								<div className="sub-pre">Bank Name:</div>
+							</div>
+							<div className="pre">
+								<div className="sub-pre">9位汇款路线号码:</div>
+								<div className="sub-pre">9-Digit Routing Number:</div>
+							</div>
+							<div className="pre">
+								<div className="sub-pre">银行账号:</div>
+								<div className="sub-pre">Bank Account Number:</div>
+							</div>
+						</div>
+						<div className="middle">
+							<div className="pre">United States</div>
+							<div className="pre">Cara</div>
+							<div className="pre">JP Mongan</div>
+							<div className="pre">02800024</div>
+							<div className="pre">20000043421506</div>
+						</div>
 					</div>
 				</div>
+
 			</div>
 			<div className="chargeTips">
 				<span className="title">充值说明</span>

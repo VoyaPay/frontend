@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./index.less";
 import { AccountApi } from "@/api/modules/user";
+import PasswordModal from "@/layouts/components/Header/components/PasswordModal";
 
 // Define the UserData interface for a single user
 interface UserData {
@@ -13,6 +14,14 @@ interface UserData {
 const AccountSetting = () => {
   // Set userData as a single UserData object, initialized to null
   const [userData, setUserData] = useState<UserData | null>(null);
+
+  // Define the type of ModalProps for passRef
+  interface ModalProps {
+    showModal: (params: { name: number }) => void;
+  }
+
+  // Create the ref for PasswordModal
+  const passRef = useRef<ModalProps>(null);
 
   const userInformation = async () => {
     try {
@@ -57,11 +66,15 @@ const AccountSetting = () => {
           )}
         </div>
         <div className="right">
-          <div className="action">修改密码</div>
-          <div className="action">修改绑定手机号</div>
-          <div className="action">修改绑定邮箱</div>
+          <div className="action" onClick={() => passRef.current?.showModal({ name: 11 })}>
+            修改密码
+          </div>
+          
         </div>
       </div>
+
+      {/* Add PasswordModal component and attach ref */}
+      <PasswordModal innerRef={passRef} />
     </div>
   );
 };
