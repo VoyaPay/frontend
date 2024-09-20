@@ -1,6 +1,6 @@
 // import md5 from "js-md5";
 import { useState } from "react";
-import { Button, Form, Input, message, Space } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
@@ -100,7 +100,6 @@ const LoginForm = (props: any) => {
 					<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 				</Form.Item>
 				<Form.Item className="login-btn">
-					<Space>
 						<Button
 							onClick={() => {
 								form.resetFields();
@@ -110,11 +109,11 @@ const LoginForm = (props: any) => {
 							{/* {t("login.reset")} */}
 							重置
 						</Button>
+						<span className="space"/>
 						<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
 							{/* {t("login.confirm")} */}
 							登录
 						</Button>
-					</Space>
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
