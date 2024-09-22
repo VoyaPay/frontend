@@ -33,8 +33,7 @@ const LoginForm = (props: any) => {
 			
 			console.log(response.data);
 
-			const access_token = response.data?.access_token;
-			// const access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsI…yMjN9.ZHJadrstMseAP76F2OmxQBxfyZe2Pk9TlvwoobFE5bo'
+			const access_token = response.data?.access_token; 
 			console.log(access_token);
 			if (!access_token) {
 				throw new Error("No access token received");
