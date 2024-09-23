@@ -60,12 +60,10 @@
 		margin-top: 15px;
 	}
 	.basicInfo {
-		width: 70%;
 		padding: 15px 20px;
 		background-color: #ffffff;
 		border-radius: 8px;
 		.title {
-			font-size: 15px;
 			font-weight: bold;
 		}
 		.content {
@@ -99,13 +97,34 @@
 		flex: 1;
 		flex-direction: column;
 		align-items: center;
-		margin-left: 20px;
+// 		margin-left: 20px;
 		.bankCard {
-			width: 100%;
+			width: 50%;
 		}
 		.actionBtn {
 			width: 120px;
 			margin-top: 15px;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.contentWrap {
+		flex-direction: column;
+	}
+	.pre {
+		max-width: 80px;
+	}
+
+	.right {
+		width: 100%;
+		margin-left: 0px;
+		.bankCard {
+			display: none;
+		}
+		.actionBtn {
+			width: 100%;
+			min-width: 90%;
 		}
 	}
 }
