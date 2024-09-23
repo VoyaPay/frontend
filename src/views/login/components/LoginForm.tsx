@@ -12,6 +12,7 @@ import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import "./index.less";
 import logo from "@/assets/images/voya.png";
+import { HOME_URL } from "@/config/config";
 
 const LoginForm = (props: any) => {
 	// const { t } = useTranslation();
@@ -30,10 +31,10 @@ const LoginForm = (props: any) => {
 			console.log("loginForm", loginForm);
 			// loginForm.password = md5(loginForm.password);
 			const response = await loginApi(loginForm);
-			
+
 			console.log(response.data);
 
-			const access_token = response.data?.access_token; 
+			const access_token = response.data?.access_token;
 			console.log(access_token);
 			if (!access_token) {
 				throw new Error("No access token received");
@@ -43,8 +44,8 @@ const LoginForm = (props: any) => {
 			setTabsList([]);
 			message.success("登录成功！");
 			localStorage.setItem("access_token", access_token);
-			navigate("/proTable/account");
-			
+			// navigate("/proTable/account");
+			navigate(HOME_URL);
 		} finally {
 			setLoading(false);
 		}

@@ -157,7 +157,6 @@ const Account = () => {
 							placeholder="请选择交易类型"
 							mode="multiple"
 							allowClear
-							style={{ width: 200 }}
 							onChange={handleTransactionTypeChange}
 							options={[
 								{ value: "转入", label: "转入" },
