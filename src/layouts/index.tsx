@@ -46,10 +46,9 @@ const LayoutIndex = (props: any) => {
 			{!isMobile && (<Sider trigger={null} collapsed={props.isCollapse} width={220} theme="dark">
 				<LayoutMenu></LayoutMenu>					
 			</Sider>)}
-			{isMobile && (<Sider trigger={null} style={{ display: props.isCollapse ? 'none' : 'block' }} width={220} theme="dark">
+			{isMobile && (<Sider trigger={null} style={{ display: props.isCollapse ? 'none' : 'block' }} width={280} theme="dark">
 				<LayoutMenu></LayoutMenu>
 			</Sider>)}
-
 			<Layout>
 				<LayoutHeader></LayoutHeader>
 				<LayoutTabs></LayoutTabs>
