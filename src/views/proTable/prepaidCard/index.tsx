@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Space, DatePicker, Select,message } from "antd";
+import { Table, Button, Space, DatePicker, Select,message,Tooltip,Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
@@ -15,14 +15,12 @@ const Auth = localStorage.getItem("username");
 console.log("AUTH IS " + Auth)
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
-
-	// 将时间转换为 UTC
-	const year = date.getUTCFullYear();
-	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-	const day = String(date.getUTCDate()).padStart(2, "0");
-	const hours = String(date.getUTCHours()).padStart(2, "0");
-	const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-	const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+	const seconds = String(date.getSeconds()).padStart(2, "0");
 
 	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
@@ -50,7 +48,7 @@ const PrepaidCard = () => {
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 	const isMobile = useMediaQuery({ maxWidth: 767 });
-	
+
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
 
@@ -107,35 +105,45 @@ const PrepaidCard = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: 100
+			width:"30px", // Fixed width for this column
+			render: (cardName: string) => (
+				<Tooltip title={cardName.length > 17 ? cardName : ""}>
+					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+				</Tooltip>
+			),
 		},
 		{
 			title: "持卡人",
 			dataIndex: "cardOwner",
 			key: "cardOwner",
 			align: "center",
-			width: 120
+			width: "30px",
+			render: (cardOwner: string) => (
+				<Tooltip title={cardOwner.length > 17 ? cardOwner : ""}>
+					{cardOwner.length > 17 ? `${cardOwner.substring(0, 17)}...` : cardOwner}
+				</Tooltip>
+			),
 		},
 		{
 			title: "卡组",
 			dataIndex: "cardGroup",
 			key: "cardGroup",
 			align: "center",
-			width: 80
+			width: "30px",
 		},
 		{
 			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
 			align: "center",
-			width: 120
+			width: "30px",
 		},
 		{
 			title: "状态",
 			dataIndex: "cardStatus",
 			key: "cardStatus",
 			align: "center",
-			width: 80,
+			width: "30px",
 			render: (status: string) =>
 				status === "Active"
 				  ? "活跃"
@@ -150,7 +158,7 @@ const PrepaidCard = () => {
 			dataIndex: "banlance",
 			key: "banlance",
 			align: "center",
-			width: 120,
+			width: "30px",
 			sorter: (a: any, b: any) => a.banlance - b.banlance,
 			render: (banlance: string) => `$${banlance}`
 		},
@@ -159,7 +167,7 @@ const PrepaidCard = () => {
 			dataIndex: "createCardTime",
 			key: "createCardTime",
 			align: "center",
-			width: 160,
+			width: "30px",
 			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => {
 				const dateA = new Date(a.createCardTime).getTime();
@@ -172,7 +180,7 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			width: 160,
+			width: "100px",
 			render: (text: string, record: FormattedCard) => (
 				<Space>
 					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
@@ -253,6 +261,16 @@ const PrepaidCard = () => {
 			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
 		}
 
+		if (cardNameSearch) {
+			filtered = filtered.filter(card => card.cardName.toLowerCase().includes(cardNameSearch.toLowerCase()));
+		}
+		if (cardOwnerSearch) {
+			filtered = filtered.filter(card => card.cardOwner.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
+		}
+		if (cardNoSearch) {
+			filtered = filtered.filter(card => card.cardNo.includes(cardNoSearch));
+		}
+
 		setFilteredData(filtered);
 	};
 
@@ -294,40 +312,67 @@ const PrepaidCard = () => {
 				</div>
 			</div>
 			<div className="actionWrap">
+					<div className="left">
+						<span className="title">预充卡</span>
+						<Space>
+							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
+							<Select
+								placeholder="请选择卡组"
+								mode="multiple"
+								allowClear
+								{...isMobile ? { style: { width: 100 } } : { style: { width: 250 } }}
+								onChange={handleGroupChange}
+								options={[{ value: "MasterCard", label: "MasterCard" }]}
+							/>
+							<Select
+								placeholder="请选择状态"
+								mode="multiple"
+								allowClear
+								{...isMobile ? { style: { width: 100 } } : { style: { width: 250 } }}
+								onChange={handleStatusChange}
+								options={[
+									{ value: "Active", label: "活跃" },
+									{ value: "Inactive", label: "已冻结" },
+									{ value: "Closed", label: "已注销" }
+								]}
+							/>
+						</Space>
+					</div>
+					<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>查询</Button>
+				</div>
+
+				<div className="actionWrap">
 				<div className="left">
-					<span className="title">预充卡</span>
+					{/* Removed the unnecessary title here */}
 					<Space>
-						<RangePicker onChange={handleTimeChange} />
-						<Select
-							placeholder="请选择卡组"
-							mode="multiple"
-							allowClear
-							{...isMobile ? { style: { width: 100 } } : { style: { width: 150 } }}
-							onChange={handleGroupChange}
-							options={[{ value: "VISA", label: "VISA" }]}
+						<Input
+							placeholder="搜索卡昵称"
+							value={cardNameSearch}
+							onChange={(e:any) => setCardNameSearch(e.target.value)}
+							style={{ width: 250 }}
 						/>
-						<Select
-							placeholder="请选择状态"
-							mode="multiple"
-							allowClear
-							{...isMobile ? { style: { width: 100 } } : { style: { width: 150 } }}
-							onChange={handleStatusChange }
-							options={[
-								{ value: "Active", label: "活跃" },
-								{ value: "Inactive", label: "已冻结" },
-								{ value: "Closed", label: "已注销" }
-							]}
+						<Input
+							placeholder="搜索持卡人"
+							value={cardOwnerSearch}
+							onChange={(e:any) => setCardOwnerSearch(e.target.value)}
+							style={{ width: 250 }}
 						/>
-						<Button type="primary" onClick={applyFilters}>查询</Button>
+						<Input
+							placeholder="搜索卡号"
+							value={cardNoSearch}
+							onChange={(e:any) => setCardNoSearch(e.target.value)}
+							style={{ width: 250 }}
+						/>
 					</Space>
 				</div>
-				<Button type="primary" icon={<PlusOutlined />}>
-					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
-						新增预充卡
-					</NavLink>
-				</Button>
-			</div>
-			<Table bordered={true} dataSource={filteredData} columns={columns} />
+  <Button type="primary" icon={<PlusOutlined  /> } style={{ width: 150 }}>
+    <NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
+      新增预充卡
+    </NavLink>
+  </Button>
+				</div>
+
+			<Table bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed"/>
 		</div>
 	);
 };

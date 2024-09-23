@@ -22,7 +22,7 @@ const Account = () => {
 	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
 	const [filteredDataSource, setFilteredDataSource] = useState<FormattedTransaction[]>([]);
 	const [selectedTransactionTypes, setSelectedTransactionTypes] = useState<string[]>([]);
-	const [selectedDateRange, setSelectedDateRange] = useState<[string, string] | null>(null);
+	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
 	const [accountBalance, setAccountBalance] = useState(0);
 
 	useEffect(() => {
@@ -63,7 +63,7 @@ const Account = () => {
 					dynamicAccountType: transaction.origin || "N/A",
 					amount: "$" + String(Math.abs(parseFloat(transaction.amount))),
 					currency: "USD",
-					time: formatDate(transaction.processedAt),
+					time: formatDate(transaction.createdAt),
 					transactionDetail: transaction.type === "cardPurchase" 
 						? "“沃易卡账户”转出至“预充卡”"
 						: transaction.type === "cardTopup"
@@ -106,8 +106,8 @@ const Account = () => {
 	};
 
 	// Update selected date range
-	const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
-		setSelectedDateRange(dateStrings);
+	const handleTimeChange = (dates: any) => {
+		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
 	};
 
 	// Apply filters based on transaction type and date range when the user clicks "查询"
@@ -121,24 +121,19 @@ const Account = () => {
 			);
 		}
 	
-		// 只根据日期范围进行筛选
-		if (selectedDateRange && selectedDateRange.length === 2 && selectedDateRange[0] && selectedDateRange[1]) {
-			let [startDate, endDate] = selectedDateRange;
-			
-			// 将选定的日期转换为 UTC 格式
-			const startDateUTC = new Date(startDate).toISOString(); // 转换为 UTC 格式
-			const endDateUTC = new Date(endDate);
-			endDateUTC.setDate(endDateUTC.getDate() + 1); // 增加一天以包含结束日期
-			const endDateUTCString = endDateUTC.toISOString(); // 转换为 UTC 格式
-	
-			// 过滤符合日期范围的数据
-			filteredData = filteredData.filter(transaction => {
-				const transactionDateUTC = new Date(transaction.time).toISOString();
-				return transactionDateUTC >= startDateUTC && transactionDateUTC < endDateUTCString;
+		if (selectedTimeRange.length > 0) {
+			const [start, end] = selectedTimeRange;
+			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+
+			// Set end time to 23:59:59 for the end date
+			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+
+			filteredData= filteredData.filter(transaction => {
+				const cardDate = new Date(transaction.time).getTime();
+				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
 			});
 		}
-	
-		// 更新筛选后的数据
+
 		setFilteredDataSource(filteredData);
 	};
 	
@@ -157,7 +152,7 @@ const Account = () => {
 				<div>
 					<span className="title">动账明细</span>
 					<Space>
-						<RangePicker onChange={handleDateRangeChange} />
+						<RangePicker onChange={handleTimeChange} />
 						<Select
 							placeholder="请选择交易类型"
 							mode="multiple"
@@ -189,14 +184,12 @@ const Account = () => {
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
-
-	// 将时间转换为 UTC
-	const year = date.getUTCFullYear();
-	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-	const day = String(date.getUTCDate()).padStart(2, "0");
-	const hours = String(date.getUTCHours()).padStart(2, "0");
-	const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-	const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+	const seconds = String(date.getSeconds()).padStart(2, "0");
 
 	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;

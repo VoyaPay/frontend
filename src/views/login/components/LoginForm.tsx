@@ -31,15 +31,14 @@ const LoginForm = (props: any) => {
 			console.log("loginForm", loginForm);
 			// loginForm.password = md5(loginForm.password);
 			const response = await loginApi(loginForm);
+
 			console.log(response.data);
 
 			const access_token = response.data?.access_token;
-			// const access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsI…yMjN9.ZHJadrstMseAP76F2OmxQBxfyZe2Pk9TlvwoobFE5bo'
 			console.log(access_token);
 			if (!access_token) {
 				throw new Error("No access token received");
 			}
-
 			console.log("Received token:", access_token);
 			setToken("access token is " + access_token);
 			setTabsList([]);
@@ -55,14 +54,6 @@ const LoginForm = (props: any) => {
 	const onFinishFailed = (errorInfo: any) => {
 		console.log("Failed:", errorInfo);
 	};
-
-	// const changeToEmail = () => {
-	// 	setLoginType(1);
-	// };
-
-	// const changeToPhone = () => {
-	// 	setLoginType(0);
-	// };
 
 	return (
 		<div className="loginform-container">
