@@ -12,11 +12,13 @@
 		border-radius: 8px;
 		.accountBlanceWrap {
 			display: flex;
+			width: 150px;
 			flex-direction: column;
 			align-items: flex-start;
 			justify-content: space-between;
 			height: 100%;
 			.pre {
+				min-width: 150px;
 				font-size: 16px;
 				font-weight: bold;
 				color: #ffffff;
@@ -40,7 +42,13 @@
 			font-weight: bold;
 		}
 		.transactionType {
-			width: 200px !important;
+			width: 200px;
 		}
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.transactionType {
+		width: 80px !important;
 	}
 }

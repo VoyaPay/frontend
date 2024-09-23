@@ -9,6 +9,7 @@ import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
+import { useMediaQuery } from "react-responsive";
 
 const Auth = localStorage.getItem("username");
 console.log("AUTH IS " + Auth)
@@ -48,7 +49,8 @@ const PrepaidCard = () => {
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-
+	const isMobile = useMediaQuery({ maxWidth: 767 });
+	
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
 
@@ -300,7 +302,7 @@ const PrepaidCard = () => {
 							placeholder="请选择卡组"
 							mode="multiple"
 							allowClear
-							style={{ width: 150 }}
+							{...isMobile ? { style: { width: 100 } } : { style: { width: 150 } }}
 							onChange={handleGroupChange}
 							options={[{ value: "VISA", label: "VISA" }]}
 						/>
@@ -308,7 +310,7 @@ const PrepaidCard = () => {
 							placeholder="请选择状态"
 							mode="multiple"
 							allowClear
-							style={{ width: 150 }}
+							{...isMobile ? { style: { width: 100 } } : { style: { width: 150 } }}
 							onChange={handleStatusChange }
 							options={[
 								{ value: "Active", label: "活跃" },
