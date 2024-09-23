@@ -217,7 +217,7 @@ const Detail = () => {
 	};
 	const formatCardNumber = (cardNumber: string) => {
 		if (cardNumber){
-			return cardNumber.replace(/(\d{4})(?=\d)/g, '$1-');}
+			return cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ');}
 		else{
 			return 1234-5678-9000
 		}

@@ -34,21 +34,25 @@
 	}
 }
 .actionWrap {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-top: 40px;
-	margin-bottom: 15px;
-	.title {
-		margin-right: 10px;
-		font-size: 15px;
-		font-weight: bold;
-	}
-	.left {
-		display: flex;
-		align-items: center;
-	}
-	.addPrepaidCard {
-		color: #ffffff;
-	}
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+	margin-bottom: 5px;
 }
+.left {
+  display: flex;
+  align-items: center;
+}
+.actionWrap:nth-child(3) .left {
+  margin-left: 4em; /* Shift second row to the right by 3 characters */
+}
+.title {
+  margin-right: 10px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.addPrepaidCard {
+  color: #ffffff;
+}
+

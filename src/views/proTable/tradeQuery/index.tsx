@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space } from "antd";
+import { Table, DatePicker, Button, Space, Input} from "antd";
 import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
 import { useLocation } from "react-router-dom";
@@ -246,6 +246,12 @@ const TradeQuery = () => {
 								options={[{ value: "USD", label: "USD" }]}
 								className="transactionType"
 							/>
+							<Input
+							placeholder={cardData.cardNo}
+							// value={cardNoSearch}
+							// onChange={(e:any) => setCardNoSearch(e.target.value)}
+							style={{ width: 200 }}
+						/>
 							<Button type="primary">查询</Button>
 						</Space>
 					) : (

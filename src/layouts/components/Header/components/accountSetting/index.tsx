@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import "./index.less";
 import { AccountApi } from "@/api/modules/user";
+import {  Button } from "antd";
 import PasswordModal from "@/layouts/components/Header/components/PasswordModal";
 
 // Define the UserData interface for a single user
@@ -53,6 +54,12 @@ const AccountSetting = () => {
           <div className="pre">公司名称：</div>
           <div className="pre">绑定手机号：</div>
           <div className="pre">绑定邮箱：</div>
+					<div>
+				<Button type="primary" onClick={() => passRef.current?.showModal({ name: 11 })}>
+					修改密码
+				</Button>
+				</div>
+					
         </div>
         <div className="middle">
           {userData ? (  // Conditional check for non-null userData
@@ -60,16 +67,13 @@ const AccountSetting = () => {
               <div className="pre">{userData.companyName}</div>
               <div className="pre">136xxxxxx33333</div> {/* Placeholder for phone number */}
               <div className="pre">{userData.email}</div>
+							<div></div>
+							
             </>
+						
           ) : (
             <div>Loading...</div>  // Show loading message while data is being fetched
           )}
-        </div>
-        <div className="right">
-          <div className="action" onClick={() => passRef.current?.showModal({ name: 11 })}>
-            修改密码
-          </div>
-          
         </div>
       </div>
 
