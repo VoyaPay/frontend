@@ -117,7 +117,7 @@ const LayoutMenu = (props: any) => {
 				<Logo></Logo>
 				{isMobile && (
 				<div className="menu-close-button" onClick={() => updateCollapse(!isCollapse)}>
-					<Icons.CloseOutlined style={{ color: "gray", position:"absolute", top:0, right: 0, padding: "15px" }} />
+					<Icons.CloseOutlined/>
 				</div>
 				)}
 				<Menu

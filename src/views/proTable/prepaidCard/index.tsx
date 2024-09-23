@@ -47,6 +47,9 @@ const PrepaidCard = () => {
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+	const [cardNameSearch, setCardNameSearch] = useState("");
+  const [cardOwnerSearch, setCardOwnerSearch] = useState("");
+  const [cardNoSearch, setCardNoSearch] = useState("");
 	const isMobile = useMediaQuery({ maxWidth: 767 });
 
 	const navigate = useNavigate();
@@ -320,7 +323,7 @@ const PrepaidCard = () => {
 								placeholder="请选择卡组"
 								mode="multiple"
 								allowClear
-								{...isMobile ? { style: { width: 100 } } : { style: { width: 250 } }}
+								style={{ width: isMobile ? 100 : 250 }}
 								onChange={handleGroupChange}
 								options={[{ value: "MasterCard", label: "MasterCard" }]}
 							/>
@@ -328,7 +331,7 @@ const PrepaidCard = () => {
 								placeholder="请选择状态"
 								mode="multiple"
 								allowClear
-								{...isMobile ? { style: { width: 100 } } : { style: { width: 250 } }}
+								style={{ width: isMobile ? 100 : 250 }}
 								onChange={handleStatusChange}
 								options={[
 									{ value: "Active", label: "活跃" },
@@ -349,19 +352,19 @@ const PrepaidCard = () => {
 							placeholder="搜索卡昵称"
 							value={cardNameSearch}
 							onChange={(e:any) => setCardNameSearch(e.target.value)}
-							style={{ width: 250 }}
+							style={{ width: isMobile ? 100 : 250 }}
 						/>
 						<Input
 							placeholder="搜索持卡人"
 							value={cardOwnerSearch}
 							onChange={(e:any) => setCardOwnerSearch(e.target.value)}
-							style={{ width: 250 }}
+							style={{ width: isMobile ? 100 : 250 }}
 						/>
 						<Input
 							placeholder="搜索卡号"
 							value={cardNoSearch}
 							onChange={(e:any) => setCardNoSearch(e.target.value)}
-							style={{ width: 250 }}
+							style={{ width: isMobile ? 100 : 250 }}
 						/>
 					</Space>
 				</div>
