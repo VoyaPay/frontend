@@ -116,8 +116,8 @@ const LayoutMenu = (props: any) => {
 			<Spin spinning={loading} tip="Loading...">
 				<Logo></Logo>
 				{isMobile && (
-				<div className="menu-close-button" onClick={() => updateCollapse(!isCollapse)}>
-					<Icons.CloseOutlined/>
+				<div onClick={() => updateCollapse(!isCollapse)}>
+					<Icons.CloseOutlined style={{ color: 'gray', position:"absolute", top:0, right:0, padding: 15 }} />
 				</div>
 				)}
 				<Menu
