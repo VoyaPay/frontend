@@ -91,7 +91,7 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
-			title: "单号",
+			title: "授权ID",
 			dataIndex: "authNum",
 			key: "authNum",
 			align: "center"
@@ -127,6 +127,18 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
+			title: "原币种",
+			dataIndex: "tradeCurrency",
+			key: "tradeCurrency",
+			align: "center"
+		},
+		{
+			title: "金额",
+			dataIndex: "tradeCurrency",
+			key: "tradeCurrency",
+			align: "center"
+		},
+		{
 			title: "交易金额",
 			dataIndex: "tradeAmount",
 			key: "tradeAmount",
@@ -137,14 +149,20 @@ const TradeQuery = () => {
 			dataIndex: "wrongReason",
 			key: "wrongReason",
 			align: "center"
-		}
+		},
+		{
+			title: "索引号",
+			dataIndex: "authNum",
+			key: "authNum",
+			align: "center"
+		},
 	];
 
 	// 按钮权限
 	const { BUTTONS } = useAuthButtons();
 	const { RangePicker } = DatePicker;
 	// const navigate = useNavigate();
-	const [tradeType, setTradeType] = useState("create");
+	const [tradeType, setTradeType] = useState("auth");
 	// const [options, setOptions] = useState(createOptions);
 	// const [defaultOptions, setDefaultOptions] = useState("cardNum");
 	const [columns, setColumns] = useState(createColumns);
@@ -177,14 +195,6 @@ const TradeQuery = () => {
 			<div className="tradeQueryTitle">交易查询</div>
 			<div className="tradeTypeWrap">
 				<div
-					className={tradeType == "create" ? "tradeType selected" : "tradeType"}
-					onClick={() => {
-						changeTradeType("create");
-					}}
-				>
-					开卡明细
-				</div>
-				<div
 					className={tradeType == "auth" ? "tradeType selected" : "tradeType"}
 					onClick={() => {
 						changeTradeType("auth");
@@ -192,6 +202,15 @@ const TradeQuery = () => {
 				>
 					消费明细
 				</div>
+				<div
+					className={tradeType == "create" ? "tradeType selected" : "tradeType"}
+					onClick={() => {
+						changeTradeType("create");
+					}}
+				>
+					开卡明细
+				</div>
+				
 			</div>
 
 			<div className="actionWrap">

@@ -34,7 +34,7 @@ export const TransactionsCSVApi = async (): Promise<void> => {
   
 	try {
 	  // Make the axios request with responseType as 'blob'
-	  const response: AxiosResponse<Blob> = await axios.get<Blob>('http://n8wws4sc40gogwwg84og4wgc.47.253.146.52.sslip.io/ledger/csv', {
+	  const response: AxiosResponse<Blob> = await axios.get<Blob>(import.meta.env.VITE_API_URL+'/ledger/csv', {
 		headers,
 		responseType: 'blob', // Ensure we receive a Blob response
 	  });

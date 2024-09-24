@@ -1,51 +1,60 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
 import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
-import { GetBalanceApi  } from "@/api/modules/ledger";
-
+import { GetBalanceApi } from "@/api/modules/ledger";
+import { CardbinApi } from "@/api/modules/card";
+interface BinData {
+	bin: string;
+	network?: string;
+	orgCompanyId?: string;
+}
 const AddPrepaidCard = () => {
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [streetAddress, setStreetAddress] = useState(""); 
-	const [city, setCity] = useState(""); 
-	const [state, setState] = useState(""); 
+	const [streetAddress, setStreetAddress] = useState("");
+	const [city, setCity] = useState("");
+	const [state, setState] = useState("");
+	const [zipcode, setZipCode]= useState("")
+	// const [country, setCountry]= useState("")
 	const [accountBalance, setAccountBalance] = useState(0);
+	const [dataSource, setDataSource] = useState<BinData[]>([]);
+	const [selectedCard, setSelectedCard] = useState<string | null>(null);
 	const navigate = useNavigate();
 	const maxLength = 30;
 	const combinedLength = firstName.length + lastName.length;
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-		
-		if (value.length  > maxLength) {
+
+		if (value.length > maxLength) {
 			message.error("卡昵称长度不能超过16个字符");
 			return;
-		  }
-	  
-		setCardName(value);	
+		}
+
+		setCardName(value);
 	};
 
 	const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-    const regex = /^[A-Za-z\s]*$/; // Only allows English letters and spaces
+		const regex = /^[A-Za-z\s]*$/; // Only allows English letters and spaces
 
 		if (!regex.test(value)) {
 			message.error("名字只能包含英文字符");
 			return;
 		}
-		if ( value.length + lastName.length > maxLength) {
-		message.error("名字总长度不能超过16个字符");
-		return;
+		if (value.length + lastName.length > maxLength) {
+			message.error("名字总长度不能超过16个字符");
+			return;
 		}
 		setFirstName(value);
 	};
-	
+
 	const changeLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		const regex = /^[A-Za-z\s]*$/; // Only allows English letters and spaces
@@ -55,9 +64,9 @@ const AddPrepaidCard = () => {
 			return;
 		}
 
-		if ( firstName.length + value.length > maxLength) {
+		if (firstName.length + value.length > maxLength) {
 			message.error("名字总长度不能超过16个字符");
-		return;
+			return;
 		}
 
 		setLastName(value);
@@ -74,11 +83,11 @@ const AddPrepaidCard = () => {
 		if (!regex.test(value)) {
 			message.error("地址只能包含英文字符和数字");
 			return;
-		}	
-		if (value.length  > 50) {
+		}
+		if (value.length > 50) {
 			message.error("地址长度不能超过50个字符");
 			return;
-		  }	
+		}
 		setStreetAddress(value);
 	};
 
@@ -90,10 +99,10 @@ const AddPrepaidCard = () => {
 			message.error("城市只能包含英文字符");
 			return;
 		}
-		if (value.length  > 100) {
-			message.error("城市长度不能超过100个字符");
+		if (value.length > 50) {
+			message.error("城市长度不能超过50个字符");
 			return;
-		  }		
+		}
 		setCity(value);
 	};
 
@@ -104,34 +113,91 @@ const AddPrepaidCard = () => {
 		if (!regex.test(value)) {
 			message.error("州只能包含英文字符");
 			return;
-		}		
-		if (value.length  > 25) {
+		}
+		if (value.length > 25) {
 			message.error("州长度不能超过25个字符");
 			return;
-		  }		
+		}
 		setState(value);
+	};
+	const changeCountry = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		const regex = /^[A-Za-z\s]*$/; // Only allows English letters and spaces
+
+		if (!regex.test(value)) {
+			message.error("国家只能包含英文字符");
+			return;
+		}
+		if (value.length > 25) {
+			message.error("国家长度不能超过25个字符");
+			return;
+		}
+		// setCountry(value);
+	};
+	const changeZipCode= (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		const regex = /^[0-9\s]*$/; // Only allows English letters and spaces
+
+		if (!regex.test(value)) {
+			message.error("邮编只能包含数字");
+			return;
+		}
+		if (value.length > 10) {
+			message.error("邮编长度不能超过10个字符");
+			return;
+		}
+		setZipCode(value);
 	};
 	
 	useEffect(() => {
+		const getCardBin = async () => {
+			try {
+				const response = await CardbinApi();
+				if (Array.isArray(response)) {
+					const formattedData = response.map((bins: any) => ({
+						bin: bins.bin,
+						network: bins.network, // Include other properties if needed
+						orgCompanyId: bins.orgCompanyId
+					}));
+					setDataSource(formattedData);
+				} else {
+					console.error("Response is not an array:", response);
+				}
+			} catch (error) {
+				console.error("Error fetching card BINs:", error);
+			}
+		};
+
 		const getBalance = async () => {
 			try {
 				const response = await GetBalanceApi();
-				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				const balance = response.currentBalance ? parseFloat(response.currentBalance) : -100;
 				setAccountBalance(balance);
 			} catch (error) {
 				console.log("Cannot get balance of the account:", error);
 			}
 		};
+
+		// Call the functions
 		getBalance();
-	}, []);  
+		getCardBin();
+	}, []);
 
 	const handleSubmit = async () => {
 		const payload = {
 			type: "PrePaid",
 			initialLimit: amount,
-			alias:cardName,
-			
+			alias: cardName,
+			cardHolderFirstName: firstName,
+			cardHolderLastName: lastName,
+			cardHolderAddressStreet: streetAddress,
+			cardHolderAddressCity:city,
+			cardHolderAddressState: state,
+			cardHolderAddressPostalCode: zipcode,
+			cardHolderAddressCountry: "USA",
+  		cardBin: selectedCard
 		};
+		console.log("payload is "+ payload)
 
 		try {
 			const response = await AddCardApi(payload);
@@ -158,10 +224,6 @@ const AddPrepaidCard = () => {
 
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
-
-	// const apply = () => {
-	// 	setOpen(true);
-	// };
 
 	const handleOk = () => {
 		setConfirmLoading(true);
@@ -190,60 +252,44 @@ const AddPrepaidCard = () => {
 			<div className="contentWrap">
 				<div className="title">1.卡产品选择</div>
 				<div className="cardWrap">
-					<div className="prepaidCard selected">Visa 485643</div>
-					<div className="prepaidCard">MasterCard 485643</div>
+					{dataSource.map((bin, index) => (
+						<div
+							key={index}
+							className={`prepaidCard ${selectedCard === bin.bin ? "selected" : ""}`}
+							onClick={() => {
+								setSelectedCard(bin.bin);
+								console.log("Selected card:", bin.network, bin.bin);
+							}}
+						>
+							{bin.network + " " + bin.bin}
+						</div>
+					))}
 				</div>
 			</div>
 			<div className="contentWrap">
 				<div className="title">2.自定义卡信息</div>
 				<div className="content">
-					<div className="pre">
-						{/* <span className="require">*</span>卡昵称： */}
-						卡昵称：
-					</div>
+					<div className="pre">卡昵称：</div>
 					<Input value={cardName} onChange={changeCardName} className="edit" placeholder="Card Name" />
 				</div>
 				<div className="content">
 					<div className="pre">持卡人:</div>
 					<div className="name-group">
-						<Input
-						value={firstName}
-						onChange={changeFirstName}
-						className="edit"
-						placeholder="First Name"
-						/>
-						<Input
-						value={lastName}
-						onChange={changeLastName}
-						className="edit"
-						placeholder="Last Name"
-						/>
-						
-						<span>{combinedLength}/{maxLength} </span>
-						
+						<Input value={firstName} onChange={changeFirstName} className="edit" placeholder="First Name" />
+						<Input value={lastName} onChange={changeLastName} className="edit" placeholder="Last Name" />
+						<span>
+							{combinedLength}/{maxLength}{" "}
+						</span>
 					</div>
-					</div>
+				</div>
 
 				<div className="content">
 					<div className="pre">账单地址：</div>
-					<Input
-						value={streetAddress}
-						onChange={changeStreetAddress}
-						className="edit"
-						placeholder="Street Address"
-						/>
-						<Input
-						value={city}
-						onChange={changeCity}
-						className="edit"
-						placeholder="City"
-						/>
-						<Input
-						value={state}
-						onChange={changeState}
-						className="edit"
-						placeholder="State"
-						/>
+					<Input value={streetAddress} onChange={changeStreetAddress} className="edit" placeholder="Street Address" />
+					<Input value={city} onChange={changeCity} className="edit" placeholder="City" />
+					<Input value={state} onChange={changeState} className="edit" placeholder="State" />
+					<Input value="USA" onChange={changeCountry} className="edit" placeholder="Country" disabled/>
+					<Input value={zipcode} onChange={changeZipCode} className="edit" placeholder="Zip Code" />
 				</div>
 			</div>
 			<div className="contentWrap">
@@ -254,7 +300,7 @@ const AddPrepaidCard = () => {
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>
-					<Input value={amount} onChange={changeAmount} className="edit" addonBefore="$"  />
+					<Input value={amount} onChange={changeAmount} className="edit" addonBefore="$" />
 				</div>
 				<div className="content">
 					<div className="pre">开卡费：</div>

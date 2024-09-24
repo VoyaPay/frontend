@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { Table, Button, Space, DatePicker, Select,message,Tooltip,Input } from "antd";
+import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import accountBanlance from "@/assets/images/accountbanlace.png";
-import accountextra from "@/assets/images/accountextra.png";
+// import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
+import { CardInformationApi } from "@/api/modules/card";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 
 const Auth = localStorage.getItem("username");
-console.log("AUTH IS " + Auth)
+console.log("AUTH IS " + Auth);
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
@@ -25,6 +26,18 @@ const formatDate = (dateString: string) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const fetchBalance = async (id: string): Promise<{ balance: number }> => {
+	try {
+		const information = await CardInformationApi(id);
+		return {
+			balance: information.balance || 0
+		};
+	} catch (error) {
+		console.error("Error fetching card information:", error);
+		return { balance: 0 };
+	}
+};
+
 interface FormattedCard {
 	key: string;
 	cardName: string;
@@ -34,16 +47,23 @@ interface FormattedCard {
 	cardStatus: string;
 	banlance: string;
 	createCardTime: string;
+	cardHolderAddressStreet: string;
+	cardHolderAddressCity: string;
+	cardHolderAddressState: string;
+	cardHolderAddressPostalCode: string;
+	cardHolderAddressCountry: string;
+	partnerIdempotencyKey: string;
+	cardHolderName: string;
 }
+
 const PrepaidCard = () => {
 	// State to hold the card data
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
-	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalCardNumber, setTotalCardNumber] = useState(100);
 	const [accountBalance, setAccountBalance] = useState(0);
 
-	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
+	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 	const [cardNameSearch, setCardNameSearch] = useState("");
@@ -67,17 +87,32 @@ const PrepaidCard = () => {
 						cardGroup: card.network,
 						cardNo: card.last4,
 						cardStatus: card.status,
-						banlance: card.initialLimit, 
-						createCardTime: formatDate(card.createdAt)
+						banlance: card.initialLimit,
+						createCardTime: formatDate(card.createdAt),
+						cardHolderAddressStreet: card.cardHolderAddressStreet,
+						cardHolderAddressCity: card.cardHolderAddressCity,
+						cardHolderAddressState: card.cardHolderAddressState,
+						cardHolderAddressPostalCode: card.cardHolderAddressPostalCode,
+						cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
+						partnerIdempotencyKey: card.partnerIdempotencyKey,
+						cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
+							card.cardHolderLastName ? card.cardHolderLastName : "LM"
+						}`
 					}));
 
-					const total = formattedData.reduce((sum, transaction) => sum + (parseFloat(transaction.banlance) || 0), 0);
+					const cardBalancePromises = formattedData.map(card => fetchBalance(card.key));
+					const cardBalanceArray = await Promise.all(cardBalancePromises);
+
 					const totalcard = 100 - formattedData.length;
-					console.log(total);
+					console.log(formattedData);
+					const finalData = formattedData.map((card, index) => ({
+						...card,
+						banlance: cardBalanceArray[index].balance || "0"
+					}));
+					console.log("final data"+ finalData)
 					setTotalCardNumber(totalcard);
-					setDataSource(formattedData); 
+					setDataSource(formattedData);
 					setFilteredData(formattedData);
-					setTotalAmount(total);
 				}
 			} catch (error) {
 				console.error("Failed to fetch user cards:", error);
@@ -106,38 +141,39 @@ const PrepaidCard = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width:"30px", // Fixed width for this column
+			width: "30px", // Fixed width for this column
 			render: (cardName: string) => (
 				<Tooltip title={cardName.length > 17 ? cardName : ""}>
 					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
 				</Tooltip>
-			),
+			)
 		},
 		{
 			title: "持卡人",
-			dataIndex: "cardOwner",
-			key: "cardOwner",
+			dataIndex: "cardHolderName",
+			key: "cardHolderName",
 			align: "center",
 			width: "30px",
-			render: (cardOwner: string) => (
-				<Tooltip title={cardOwner.length > 17 ? cardOwner : ""}>
-					{cardOwner.length > 17 ? `${cardOwner.substring(0, 17)}...` : cardOwner}
+			render: (cardHolderName: string) => (
+				<Tooltip title={cardHolderName.length > 17 ? cardHolderName : ""}>
+					{cardHolderName.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
 				</Tooltip>
-			),
+			)
 		},
+
 		{
 			title: "卡组",
 			dataIndex: "cardGroup",
 			key: "cardGroup",
 			align: "center",
-			width: "30px",
+			width: "30px"
 		},
 		{
 			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
 			align: "center",
-			width: "30px",
+			width: "30px"
 		},
 		{
 			title: "状态",
@@ -146,13 +182,7 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "30px",
 			render: (status: string) =>
-				status === "Active"
-				  ? "活跃"
-				  : status === "Inactive"
-				  ? "已冻结"
-				  : status === "Closed"
-				  ? "已注销"
-				  : "N/A"
+				status === "Active" ? "活跃" : status === "Inactive" ? "已冻结" : status === "Closed" ? "已注销" : "N/A"
 		},
 		{
 			title: "余额",
@@ -174,7 +204,7 @@ const PrepaidCard = () => {
 				const dateA = new Date(a.createCardTime).getTime();
 				const dateB = new Date(b.createCardTime).getTime();
 				return dateA - dateB;
-			  }
+			}
 		},
 		{
 			title: "操作",
@@ -200,7 +230,7 @@ const PrepaidCard = () => {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
-				cardOwner: Auth  ? Auth: "NA",
+				cardOwner: Auth ? Auth : "NA",
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
@@ -221,7 +251,7 @@ const PrepaidCard = () => {
 			message.error("无法充值已冻结的卡片");
 			return;
 		}
-		
+
 		navigate("/prepaidRecharge/index", {
 			state: {
 				key: record.key,
@@ -297,13 +327,13 @@ const PrepaidCard = () => {
 						<span className="amount">${accountBalance}</span>
 					</div>
 				</div>
-				<div className="banlanceWrap">
+				{/* <div className="banlanceWrap">
 					<span className="pre">预充卡内总余额</span>
 					<div className="amountWrap">
 						<img src={accountextra} className="accountIcons" />
 						<span className="amount">${totalAmount}</span>
 					</div>
-				</div>
+				</div> */}
 				<div className="banlanceWrap">
 					<span className="pre">剩余可用开卡数</span>
 					<div className="amountWrap">
@@ -313,67 +343,69 @@ const PrepaidCard = () => {
 				</div>
 			</div>
 			<div className="actionWrap">
-					<div className="left">
-						<span className="title">预充卡</span>
-						<Space>
-							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
-							<Select
-								placeholder="请选择卡组"
-								mode="multiple"
-								allowClear
-								style={{ width: 250 }}
-								onChange={handleGroupChange}
-								options={[{ value: "MasterCard", label: "MasterCard" }]}
-							/>
-							<Select
-								placeholder="请选择状态"
-								mode="multiple"
-								allowClear
-								style={{ width: 250 }}
-								onChange={handleStatusChange}
-								options={[
-									{ value: "Active", label: "活跃" },
-									{ value: "Inactive", label: "已冻结" },
-									{ value: "Closed", label: "已注销" }
-								]}
-							/>
-						</Space>
-					</div>
-					<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>查询</Button>
+				<div className="left">
+					<span className="title">预充卡</span>
+					<Space>
+						<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
+						<Select
+							placeholder="请选择卡组"
+							mode="multiple"
+							allowClear
+							style={{ width: 250 }}
+							onChange={handleGroupChange}
+							options={[{ value: "MasterCard", label: "MasterCard" }]}
+						/>
+						<Select
+							placeholder="请选择状态"
+							mode="multiple"
+							allowClear
+							style={{ width: 250 }}
+							onChange={handleStatusChange}
+							options={[
+								{ value: "Active", label: "活跃" },
+								{ value: "Inactive", label: "已冻结" },
+								{ value: "Closed", label: "已注销" }
+							]}
+						/>
+					</Space>
 				</div>
+				<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>
+					查询
+				</Button>
+			</div>
 
-				<div className="actionWrap">
+			<div className="actionWrap">
 				<div className="left">
 					{/* Removed the unnecessary title here */}
 					<Space>
 						<Input
 							placeholder="搜索卡昵称"
 							value={cardNameSearch}
-							onChange={(e:any) => setCardNameSearch(e.target.value)}
+							onChange={(e: any) => setCardNameSearch(e.target.value)}
 							style={{ width: 250 }}
 						/>
 						<Input
 							placeholder="搜索持卡人"
 							value={cardOwnerSearch}
-							onChange={(e:any) => setCardOwnerSearch(e.target.value)}
+							onChange={(e: any) => setCardOwnerSearch(e.target.value)}
 							style={{ width: 250 }}
 						/>
 						<Input
 							placeholder="搜索卡号"
 							value={cardNoSearch}
-							onChange={(e:any) => setCardNoSearch(e.target.value)}
+							onChange={(e: any) => setCardNoSearch(e.target.value)}
 							style={{ width: 250 }}
 						/>
 					</Space>
 				</div>
-  <Button type="primary" icon={<PlusOutlined  /> } style={{ width: 150 }}>
-    <NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
-      新增预充卡
-    </NavLink>
-  </Button>
-				</div>
+				<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
+					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
+						新增预充卡
+					</NavLink>
+				</Button>
+			</div>
 
-			<Table bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed"/>
+			<Table bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed" />
 		</div>
 	);
 };

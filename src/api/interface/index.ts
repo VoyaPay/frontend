@@ -36,6 +36,8 @@ export interface Result{
 	headers?: string,
 	statusCode?: string,
 	message?: string, 
+	bin?: string,
+	balance?:number
 
 }
 
