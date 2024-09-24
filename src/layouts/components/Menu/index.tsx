@@ -11,13 +11,16 @@ import type { MenuProps } from "antd";
 import * as Icons from "@ant-design/icons";
 import Logo from "./components/Logo";
 import { menu } from "@/config/config";
+import { updateCollapse } from "@/redux/modules/menu/action";
+import { useMediaQuery } from "react-responsive";
 import "./index.less";
 
 const LayoutMenu = (props: any) => {
 	const { pathname } = useLocation();
-	const { isCollapse, setBreadcrumbList, setAuthRouter, setMenuList: setMenuListAction } = props;
+	const { isCollapse, updateCollapse, setBreadcrumbList, setAuthRouter, setMenuList: setMenuListAction } = props;
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
+	const isMobile = useMediaQuery({ maxWidth: 767 });
 
 	// 刷新页面菜单保持高亮
 	useEffect(() => {
@@ -100,6 +103,9 @@ const LayoutMenu = (props: any) => {
 	// 点击当前菜单跳转页面
 	const navigate = useNavigate();
 	const clickMenu: MenuProps["onClick"] = ({ key }: { key: string }) => {
+		if (isMobile) {
+			updateCollapse(!isCollapse);
+		}
 		const route = searchRoute(key, props.menuList);
 		if (route.isLink) window.open(route.isLink, "_blank");
 		navigate(key);
@@ -109,6 +115,11 @@ const LayoutMenu = (props: any) => {
 		<div className="menu">
 			<Spin spinning={loading} tip="Loading...">
 				<Logo></Logo>
+				{isMobile && (
+				<div onClick={() => updateCollapse(!isCollapse)}>
+					<Icons.CloseOutlined style={{ color: 'gray', position:"absolute", top:0, right:0, padding: 15 }} />
+				</div>
+				)}
 				<Menu
 					theme="dark"
 					mode="inline"
@@ -125,5 +136,5 @@ const LayoutMenu = (props: any) => {
 };
 
 const mapStateToProps = (state: any) => state.menu;
-const mapDispatchToProps = { setMenuList, setBreadcrumbList, setAuthRouter };
+const mapDispatchToProps = { setMenuList, setBreadcrumbList, setAuthRouter, updateCollapse };
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutMenu);

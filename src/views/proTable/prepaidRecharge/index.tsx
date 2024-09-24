@@ -113,13 +113,11 @@ const PrepaidRecharge = () => {
 				<div className="basicInfo">
 					<div className="content">
 						<div className="pre">扣款账户：</div>
-						<div className="text">沃易卡账户</div>
-						<div className="text">&nbsp;&nbsp;{" $" + accountBalance}</div>
+						<div className="text">沃易卡账户 &nbsp;&nbsp;{" $" + accountBalance}</div>
 					</div>
 					<div className="content">
 						<div className="pre">待充值预充卡：</div>
-						<div className="text">{cardData.cardName}</div>
-						<div className="text">&nbsp;{"  ( "+cardData.cardNo+" )"}</div>
+						<div className="text">{cardData.cardName}&nbsp;{"  ( "+cardData.cardNo+" )"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">充值金额:</div>
