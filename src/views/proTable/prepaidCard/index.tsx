@@ -141,7 +141,7 @@ const PrepaidCard = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: "30px", // Fixed width for this column
+			width: "40px", // Fixed width for this column
 			render: (cardName: string) => (
 				<Tooltip title={cardName.length > 17 ? cardName : ""}>
 					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
@@ -153,7 +153,7 @@ const PrepaidCard = () => {
 			dataIndex: "cardHolderName",
 			key: "cardHolderName",
 			align: "center",
-			width: "30px",
+			width: "40px",
 			render: (cardHolderName: string) => (
 				<Tooltip title={cardHolderName.length > 17 ? cardHolderName : ""}>
 					{cardHolderName.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
@@ -198,7 +198,7 @@ const PrepaidCard = () => {
 			dataIndex: "createCardTime",
 			key: "createCardTime",
 			align: "center",
-			width: "30px",
+			width: "50px",
 			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => {
 				const dateA = new Date(a.createCardTime).getTime();
@@ -211,7 +211,7 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			width: "100px",
+			width: "50px",
 			render: (text: string, record: FormattedCard) => (
 				<Space>
 					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
@@ -318,6 +318,8 @@ const PrepaidCard = () => {
 	};
 
 	return (
+		<div>
+		
 		<div className="card content-box">
 			<div className="prepaidCardInfo">
 				<div className="banlanceWrap">
@@ -327,6 +329,7 @@ const PrepaidCard = () => {
 						<span className="amount">${accountBalance}</span>
 					</div>
 				</div>
+				
 				{/* <div className="banlanceWrap">
 					<span className="pre">预充卡内总余额</span>
 					<div className="amountWrap">
@@ -342,7 +345,12 @@ const PrepaidCard = () => {
 					</div>
 				</div>
 			</div>
-			<div className="actionWrap">
+		
+		</div>
+		
+		<div className="card content-box">
+		<div className="search" style={{marginBottom:10 }}>
+			<div className="actionWrap" >
 				<div className="left">
 					<span className="title">预充卡</span>
 					<Space>
@@ -374,7 +382,7 @@ const PrepaidCard = () => {
 				</Button>
 			</div>
 
-			<div className="actionWrap">
+			<div className="actionWrap" style={{marginBottom:10 }}>
 				<div className="left">
 					{/* Removed the unnecessary title here */}
 					<Space>
@@ -404,8 +412,9 @@ const PrepaidCard = () => {
 					</NavLink>
 				</Button>
 			</div>
-
-			<Table bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed" pagination={{ pageSize: 10, showSizeChanger: false }}   />
+			</div>
+			<Table style={{marginBottom:50 }} bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed" pagination={{ pageSize: 10, showSizeChanger: false }}   />
+		</div>
 		</div>
 	);
 };
