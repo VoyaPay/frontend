@@ -1,11 +1,35 @@
 import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space, Input} from "antd";
-import useAuthButtons from "@/hooks/useAuthButtons";
+import { Table, DatePicker, Button, Space, Input, Tooltip} from "antd";
+// import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import filter from "@/assets/images/filter.png";
 import "./index.less";
-import {TransactionsCSVApi} from "@/api/modules/transactions"
+import { TransactionsCSVApi } from "@/api/modules/transactions";
+import { UserCardApi } from "@/api/modules/prepaid";
+
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, "0");
+	const day = String(date.getDate()).padStart(2, "0");
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+	const seconds = String(date.getSeconds()).padStart(2, "0");
+
+	// 返回格式为 yyyy-MM-dd hh:mm:ss
+	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+interface FormattedCard {
+	key: string;
+	cardName: string;
+	cardOwner: string;
+	cardGroup: string;
+	cardNo: string;
+	cardStatus: string;
+	banlance: string;
+	createCardTime: string;
+}
 
 interface CardData {
 	key: string;
@@ -22,12 +46,12 @@ interface CardData {
 }
 const getCSV = async (): Promise<void> => {
 	try {
-		const response = await TransactionsCSVApi()
-		console.log(response)
-	}catch(e:any){
-		console.log(e)
-		}
-	};
+		const response = await TransactionsCSVApi();
+		console.log(response);
+	} catch (e: any) {
+		console.log(e);
+	}
+};
 
 const TradeQuery = () => {
 	const location = useLocation();
@@ -42,46 +66,105 @@ const TradeQuery = () => {
 		createCardTime: "2023-01-01 00:00:00"
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
-	console.log(cardData)
+	console.log(cardData);
+
+	// 按钮权限
+
+	const { RangePicker } = DatePicker;
+	const [tradeType, setTradeType] = useState("auth");
+	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
+	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
+
+	useEffect(() => {
+		const fetchUserCards = async () => {
+			try {
+				const response = await UserCardApi();
+				console.log(response);
+				if (Array.isArray(response)) {
+					const formattedData = response
+					.filter(card => card.type === "PrePaid") 
+					.map(card => ({
+						key: card.id,
+						cardName: card.alias,
+						cardOwner: "NA",
+						cardGroup: card.network,
+						cardNo: card.last4,
+						cardStatus: card.status,
+						banlance: card.initialLimit,
+						createCardTime: formatDate(card.createdAt),
+						cardType:card.type,
+
+					}));
+
+					setDataSource(formattedData);
+					setFilteredData(formattedData);
+				}
+			} catch (error) {
+				console.error("Failed to fetch user cards:", error);
+			}
+		};
+
+		fetchUserCards();
+	}, []);
 
 	const createColumns: any[] = [
-		{
-			title: "卡号",
-			dataIndex: "cardNum",
-			key: "cardNum",
-			align: "center"
-		},
-		{
-			title: "卡片类型",
-			dataIndex: "cardType",
-			key: "cardType",
-			align: "center"
-		},
-		{
-			title: "申请ID",
-			dataIndex: "applyId",
-			key: "applyId",
-			align: "center"
-		},
-		{
-			title: "开卡时间",
-			dataIndex: "createTime",
-			key: "createTime",
-			align: "center"
-		},
-		{
-			title: "卡片名称",
-			dataIndex: "cardName",
-			key: "cardName",
-			align: "center"
-		},
-		{
-			title: "卡组",
-			dataIndex: "cardGroup",
-			key: "cardGroup",
-			align: "center"
-		}
-	];
+    {
+        title: "卡号",
+        dataIndex: "cardNo",
+        key: "cardNo",
+        align: "center",
+        width: 80, 
+    },
+    {
+        title: "卡片类型",
+        dataIndex: "cardType",
+        key: "cardType",
+        align: "center",
+        width: 100, 
+				render: (cardType: string) => (
+					cardType === "PrePaid" ? "预充卡" : "共享卡"
+			)
+    },
+    {
+        title: "申请ID",
+        dataIndex: "key",
+        key: "key",
+        align: "center",
+        width: 100, // Fixed width in pixels
+    },
+    {
+        title: "开卡时间",
+        dataIndex: "createCardTime",
+        key: "createCardTime",
+        align: "center",
+        width: 120, 
+				defaultSortOrder: "descend",
+				sorter: (a: any, b: any) => {
+					const dateA = new Date(a.createCardTime).getTime();
+					const dateB = new Date(b.createCardTime).getTime();
+					return dateA - dateB;
+				}
+    },
+    {
+        title: "卡片名称",
+        dataIndex: "cardName",
+        key: "cardName",
+        align: "center",
+        width: 150, // Fixed width in pixels
+        render: (cardName: string) => (
+            <Tooltip title={cardName.length > 17 ? cardName : ""}>
+                {cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+            </Tooltip>
+        )
+    },
+    {
+        title: "卡组",
+        dataIndex: "cardGroup",
+        key: "cardGroup",
+        align: "center",
+        width: 200, // Fixed width in pixels
+    }
+];
 
 	const transactionColumns: any[] = [
 		{
@@ -155,21 +238,15 @@ const TradeQuery = () => {
 			dataIndex: "authNum",
 			key: "authNum",
 			align: "center"
-		},
+		}
 	];
+	const [columns, setColumns] = useState(transactionColumns);
+	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
+	const [cardNoSearch, setCardNoSearch] = useState("");
 
-	// 按钮权限
-	const { BUTTONS } = useAuthButtons();
-	const { RangePicker } = DatePicker;
-	// const navigate = useNavigate();
-	const [tradeType, setTradeType] = useState("auth");
-	// const [options, setOptions] = useState(createOptions);
-	// const [defaultOptions, setDefaultOptions] = useState("cardNum");
-	const [columns, setColumns] = useState(createColumns);
-
-	useEffect(() => {
-		console.log(BUTTONS);
-	}, []);
+	const handleTimeChange = (dates: any) => {
+		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
+	};
 
 	const handleChange = (value: string) => {
 		console.log(`selected ${value}`);
@@ -178,17 +255,38 @@ const TradeQuery = () => {
 	const changeTradeType = (type: any) => {
 		setTradeType(type);
 		if (type == "create") {
-			// setOptions(createOptions);
-			// setDefaultOptions("cardNum");
 			setColumns(createColumns);
 		}
 		if (type == "auth") {
-			// setOptions(authOptions);
-			// setDefaultOptions("authTime");
 			setColumns(transactionColumns);
 		}
 	};
-	const dataSource: any = [];
+
+	const applyFilters = () => {
+		let filtered = [...dataSource];
+		console.log("filter"+ filtered)
+
+		// Apply date range filter
+		if (selectedTimeRange.length > 0) {
+			const [start, end] = selectedTimeRange;
+			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+
+			// Set end time to 23:59:59 for the end date
+			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+
+			filtered = filtered.filter(card => {
+				const cardDate = new Date(card.createCardTime).getTime();
+				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
+			});
+		}
+
+		// Apply card group filter
+		if (cardNoSearch) {
+			filtered = filtered.filter(card => card.cardNo.includes(cardNoSearch));
+		}
+
+		setFilteredData(filtered);
+	};
 
 	return (
 		<div className="card content-box tradeQueryWrap">
@@ -210,7 +308,6 @@ const TradeQuery = () => {
 				>
 					开卡明细
 				</div>
-				
 			</div>
 
 			<div className="actionWrap">
@@ -218,7 +315,7 @@ const TradeQuery = () => {
 					<img src={filter} alt="" className="filterIcon" />
 					{tradeType === "auth" ? (
 						<Space>
-							<RangePicker />
+							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
 							<Select
 								placeholder="卡片类型"
 								mode="multiple"
@@ -266,18 +363,17 @@ const TradeQuery = () => {
 								className="transactionType"
 							/>
 							<Input
-							placeholder={cardData.cardNo}
-							// value={cardNoSearch}
-							// onChange={(e:any) => setCardNoSearch(e.target.value)}
-							style={{ width: 200 }}
-						/>
+								placeholder={cardData.cardNo || "请输入卡号"} // Provide a default placeholder
+								style={{ width: 200 }}
+								onChange={(e: any) => setCardNoSearch(e.target.value)}
+							/>
 							<Button type="primary">查询</Button>
 						</Space>
 					) : (
 						<Space>
-							<RangePicker />
+							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
 							<Select
-								placeholder={cardData.cardNo}
+								placeholder="卡片类型"
 								mode="multiple"
 								allowClear
 								style={{ width: 120 }}
@@ -288,14 +384,16 @@ const TradeQuery = () => {
 								]}
 								className="transactionType"
 							/>
-							
-							<Button type="primary">查询</Button>
+							<Button type="primary" onClick={applyFilters}>查询</Button>
 						</Space>
 					)}
 				</div>
-				<Button type="primary" onClick={getCSV}>导出账单明细</Button>
+				<Button type="primary" onClick={getCSV}>
+					导出账单明细
+				</Button>
 			</div>
-			<Table bordered={true} dataSource={dataSource} columns={columns} />
+			{tradeType === "auth" ?<div> </div>:
+			<Table bordered={true} dataSource={filteredData} columns={columns} />}
 		</div>
 	);
 };

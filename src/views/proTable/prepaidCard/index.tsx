@@ -96,7 +96,7 @@ const PrepaidCard = () => {
 						cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
 						partnerIdempotencyKey: card.partnerIdempotencyKey,
 						cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
-							card.cardHolderLastName ? card.cardHolderLastName : "LM"
+						card.cardHolderLastName ? card.cardHolderLastName : "LM"
 						}`
 					}));
 
