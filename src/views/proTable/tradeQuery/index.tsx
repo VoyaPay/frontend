@@ -393,7 +393,7 @@ const TradeQuery = () => {
 				</Button>
 			</div>
 			{tradeType === "auth" ?<div> </div>:
-			<Table bordered={true} dataSource={filteredData} columns={columns} />}
+			<Table bordered={true} dataSource={filteredData} columns={columns} pagination={{ pageSize: 10, showSizeChanger: false }}  />}
 		</div>
 	);
 };

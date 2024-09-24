@@ -405,7 +405,7 @@ const PrepaidCard = () => {
 				</Button>
 			</div>
 
-			<Table bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed" />
+			<Table bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed" pagination={{ pageSize: 10, showSizeChanger: false }}   />
 		</div>
 	);
 };
