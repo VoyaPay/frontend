@@ -377,9 +377,12 @@ const PrepaidCard = () => {
 						/>
 					</Space>
 				</div>
-				<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>
-					查询
+				<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
+					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
+						新增预充卡
+					</NavLink>
 				</Button>
+				
 			</div>
 
 			<div className="actionWrap" style={{marginBottom:10 }}>
@@ -406,10 +409,8 @@ const PrepaidCard = () => {
 						/>
 					</Space>
 				</div>
-				<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
-					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
-						新增预充卡
-					</NavLink>
+				<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>
+					查询
 				</Button>
 			</div>
 			</div>
