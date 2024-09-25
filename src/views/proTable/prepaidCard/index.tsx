@@ -318,7 +318,7 @@ const PrepaidCard = () => {
 	};
 
 	return (
-		<div className="newtable" >
+		<div className="newtable">
 			<div className="card content-box">
 				<div className="prepaidCardInfo">
 					<div className="banlanceWrap">
@@ -349,9 +349,9 @@ const PrepaidCard = () => {
 
 			<div className="card content-box">
 				<div className="search" style={{ marginBottom: 10 }}>
-					<div className="actionWrap">
-						<div className="left">
-							<span className="title">预充卡</span>
+					<div className="actionWrap" >
+						<div className="left" >
+							<span className="title" >预充卡</span>
 							<Space>
 								<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
 								<Select
@@ -377,14 +377,15 @@ const PrepaidCard = () => {
 							</Space>
 						</div>
 
-						<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>
-							查询
-						</Button>
+						<div className="buttonWrap">
+							<Button type="primary" onClick={applyFilters} style={{ width: 150, marginRight: "10%" }}>
+								查询
+							</Button>
+						</div>
 					</div>
 
-					<div className="actionWrap" style={{ marginBottom: 10 }}>
+					<div className="actionWrap" style={{ marginBottom: 10, marginLeft: "4em"  }}>
 						<div className="left">
-							{/* Removed the unnecessary title here */}
 							<Space>
 								<Input
 									placeholder="搜索卡昵称"
