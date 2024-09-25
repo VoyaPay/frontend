@@ -14,7 +14,7 @@ interface CardData {
 	cardOwner: string;
 	cardGroup: string;
 	cardNo: string;
-	cardTotal:string,
+	cardTotal: string;
 	cardStatus: string;
 	banlance: string;
 	createCardTime: string;
@@ -61,7 +61,7 @@ const Detail = () => {
 		cardStatus: "defaultStatus",
 		banlance: "0",
 		createCardTime: "2023-01-01 00:00:00",
-		cardTotal:"00000000000"
+		cardTotal: "00000000000"
 	};
 	const [cardData, setCardData] = useState<CardData>((location.state as CardData) ?? defaultCardData);
 	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
@@ -91,7 +91,7 @@ const Detail = () => {
 			message.success("卡片信息修改成功");
 			setCardData(prevData => ({
 				...prevData,
-				cardStatus: updatedData.status,  // 更新状态
+				cardStatus: updatedData.status // 更新状态
 			}));
 		}
 	};
@@ -128,7 +128,7 @@ const Detail = () => {
 			message.success("卡片信息修改成功");
 			setCardData(prevData => ({
 				...prevData,
-				cardStatus: updatedData.status,  // 更新状态
+				cardStatus: updatedData.status // 更新状态
 			}));
 		}
 	};
@@ -216,12 +216,12 @@ const Detail = () => {
 		}
 	};
 	const formatCardNumber = (cardNumber: string) => {
-		if (cardNumber){
-			return cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ');}
-		else{
-			return 1234-5678-9000
+		if (cardNumber) {
+			return cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
+		} else {
+			return 1234 - 5678 - 9000;
 		}
-	  };
+	};
 
 	return (
 		<div className="detail-wrap">
@@ -229,13 +229,13 @@ const Detail = () => {
 
 			{/* Freeze Confirmation Modal */}
 			<Modal
-				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"}  // 根据状态动态调整标题
+				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"} // 根据状态动态调整标题
 				visible={openFreezeModal}
 				onOk={handleFreezeOk}
 				confirmLoading={confirmLoading}
 				onCancel={handleFreezeCancel}
 			>
-				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p>  {/* 根据状态动态调整内容 */}
+				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p> {/* 根据状态动态调整内容 */}
 			</Modal>
 
 			{/* Close Confirmation Modal */}
@@ -279,8 +279,7 @@ const Detail = () => {
 							<span
 								className="action"
 								onClick={() => {
-									cardData.cardStatus !== "Closed" ?
-									toggleCardName("change"):message.error("无法修改已注销的卡片");
+									cardData.cardStatus !== "Closed" ? toggleCardName("change") : message.error("无法修改已注销的卡片");
 								}}
 							>
 								修改
@@ -323,13 +322,14 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">卡状态：</div>
-						<div className="text">{cardData.cardStatus === "Active"
-							? "活跃"
-							: cardData.cardStatus === "Inactive"
-							? "已冻结"
-							: cardData.cardStatus === "Closed"
-							? "已注销"
-							: "N/A"}	
+						<div className="text">
+							{cardData.cardStatus === "Active"
+								? "活跃"
+								: cardData.cardStatus === "Inactive"
+								? "已冻结"
+								: cardData.cardStatus === "Closed"
+								? "已注销"
+								: "N/A"}
 						</div>
 					</div>
 
@@ -355,7 +355,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
-						disabled={cardData.cardStatus === "Closed"} 
+						disabled={cardData.cardStatus === "Closed"}
 					>
 						充值
 					</Button>

@@ -318,7 +318,7 @@ const PrepaidCard = () => {
 	};
 
 	return (
-		<div>
+		<div className="newtable" >
 			<div className="card content-box">
 				<div className="prepaidCardInfo">
 					<div className="banlanceWrap">
