@@ -96,7 +96,7 @@ const PrepaidCard = () => {
 						cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
 						partnerIdempotencyKey: card.partnerIdempotencyKey,
 						cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
-						card.cardHolderLastName ? card.cardHolderLastName : "LM"
+							card.cardHolderLastName ? card.cardHolderLastName : "LM"
 						}`
 					}));
 
@@ -109,7 +109,7 @@ const PrepaidCard = () => {
 						...card,
 						banlance: cardBalanceArray[index].balance || "0"
 					}));
-					console.log("final data"+ finalData)
+					console.log("final data" + finalData);
 					setTotalCardNumber(totalcard);
 					setDataSource(formattedData);
 					setFilteredData(formattedData);
@@ -319,103 +319,104 @@ const PrepaidCard = () => {
 
 	return (
 		<div>
-		
-		<div className="card content-box">
-			<div className="prepaidCardInfo">
-				<div className="banlanceWrap">
-					<span className="pre">沃易卡账户余额</span>
-					<div className="amountWrap">
-						<img src={accountBanlance} className="accountIcons" />
-						<span className="amount">${accountBalance}</span>
+			<div className="card content-box">
+				<div className="prepaidCardInfo">
+					<div className="banlanceWrap">
+						<span className="pre">沃易卡账户余额</span>
+						<div className="amountWrap">
+							<img src={accountBanlance} className="accountIcons" />
+							<span className="amount">${accountBalance}</span>
+						</div>
+					</div>
+
+					<div className="banlanceWrap">
+						<span className="pre">剩余可用开卡数</span>
+						<div className="amountWrap">
+							<img src={canuse} className="accountIcons" />
+							<span className="amount">{totalCardNumber}</span>
+						</div>
+					</div>
+
+					<div className="buttonWrap">
+						<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
+							<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
+								新增预充卡
+							</NavLink>
+						</Button>
 					</div>
 				</div>
-				
-				{/* <div className="banlanceWrap">
-					<span className="pre">预充卡内总余额</span>
-					<div className="amountWrap">
-						<img src={accountextra} className="accountIcons" />
-						<span className="amount">${totalAmount}</span>
-					</div>
-				</div> */}
-				<div className="banlanceWrap">
-					<span className="pre">剩余可用开卡数</span>
-					<div className="amountWrap">
-						<img src={canuse} className="accountIcons" />
-						<span className="amount">{totalCardNumber}</span>
-					</div>
-				</div>
-			</div>
-		
-		</div>
-		
-		<div className="card content-box">
-		<div className="search" style={{marginBottom:10 }}>
-			<div className="actionWrap" >
-				<div className="left">
-					<span className="title">预充卡</span>
-					<Space>
-						<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
-						<Select
-							placeholder="请选择卡组"
-							mode="multiple"
-							allowClear
-							style={{ width: 250 }}
-							onChange={handleGroupChange}
-							options={[{ value: "MasterCard", label: "MasterCard" }]}
-						/>
-						<Select
-							placeholder="请选择状态"
-							mode="multiple"
-							allowClear
-							style={{ width: 250 }}
-							onChange={handleStatusChange}
-							options={[
-								{ value: "Active", label: "活跃" },
-								{ value: "Inactive", label: "已冻结" },
-								{ value: "Closed", label: "已注销" }
-							]}
-						/>
-					</Space>
-				</div>
-				<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
-					<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
-						新增预充卡
-					</NavLink>
-				</Button>
-				
 			</div>
 
-			<div className="actionWrap" style={{marginBottom:10 }}>
-				<div className="left">
-					{/* Removed the unnecessary title here */}
-					<Space>
-						<Input
-							placeholder="搜索卡昵称"
-							value={cardNameSearch}
-							onChange={(e: any) => setCardNameSearch(e.target.value)}
-							style={{ width: 250 }}
-						/>
-						<Input
-							placeholder="搜索持卡人"
-							value={cardOwnerSearch}
-							onChange={(e: any) => setCardOwnerSearch(e.target.value)}
-							style={{ width: 250 }}
-						/>
-						<Input
-							placeholder="搜索卡号"
-							value={cardNoSearch}
-							onChange={(e: any) => setCardNoSearch(e.target.value)}
-							style={{ width: 250 }}
-						/>
-					</Space>
+			<div className="card content-box">
+				<div className="search" style={{ marginBottom: 10 }}>
+					<div className="actionWrap">
+						<div className="left">
+							<span className="title">预充卡</span>
+							<Space>
+								<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
+								<Select
+									placeholder="请选择卡组"
+									mode="multiple"
+									allowClear
+									style={{ width: 250 }}
+									onChange={handleGroupChange}
+									options={[{ value: "MasterCard", label: "MasterCard" }]}
+								/>
+								<Select
+									placeholder="请选择状态"
+									mode="multiple"
+									allowClear
+									style={{ width: 250 }}
+									onChange={handleStatusChange}
+									options={[
+										{ value: "Active", label: "活跃" },
+										{ value: "Inactive", label: "已冻结" },
+										{ value: "Closed", label: "已注销" }
+									]}
+								/>
+							</Space>
+						</div>
+
+						<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>
+							查询
+						</Button>
+					</div>
+
+					<div className="actionWrap" style={{ marginBottom: 10 }}>
+						<div className="left">
+							{/* Removed the unnecessary title here */}
+							<Space>
+								<Input
+									placeholder="搜索卡昵称"
+									value={cardNameSearch}
+									onChange={(e: any) => setCardNameSearch(e.target.value)}
+									style={{ width: 250 }}
+								/>
+								<Input
+									placeholder="搜索持卡人"
+									value={cardOwnerSearch}
+									onChange={(e: any) => setCardOwnerSearch(e.target.value)}
+									style={{ width: 250 }}
+								/>
+								<Input
+									placeholder="搜索卡号"
+									value={cardNoSearch}
+									onChange={(e: any) => setCardNoSearch(e.target.value)}
+									style={{ width: 250 }}
+								/>
+							</Space>
+						</div>
+					</div>
 				</div>
-				<Button type="primary" onClick={applyFilters} style={{ width: 150 }}>
-					查询
-				</Button>
+				<Table
+					style={{ marginBottom: 50 }}
+					bordered={true}
+					dataSource={filteredData}
+					columns={columns}
+					tableLayout="fixed"
+					pagination={{ pageSize: 10, showSizeChanger: false }}
+				/>
 			</div>
-			</div>
-			<Table style={{marginBottom:50 }} bordered={true} dataSource={filteredData} columns={columns} tableLayout="fixed" pagination={{ pageSize: 10, showSizeChanger: false }}   />
-		</div>
 		</div>
 	);
 };
