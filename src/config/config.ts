@@ -68,6 +68,7 @@ export const menu: any = [
 		title: "交易查询",
 		path: "/proTable/tradeQuery"
 	}
+
 	// {
 	// 	icon: "AreaChartOutlined",
 	// 	title: "数据大屏",
@@ -298,3 +299,87 @@ export const menu: any = [
 	// 	]
 	// }
 ];
+export const menu2: any = [
+	{
+		icon: "AppstoreOutlined",
+		title: "企业联系人信息",
+		path: "/company",
+
+		hide: false
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "入驻企业美国主体主要信息",
+		path: "/form/usEntityinfo",
+
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "usEntityinfo"
+		}
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "入驻企业香港主体主要信息",
+		path: "/form/hkEntityContact",
+
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "hongkongEntityContact"
+		}
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "企业展业情况",
+		path: "/form/companyBusiness",
+
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "Company Business Activities"
+		}
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "开通场景信息",
+		path: "/form/product",
+
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "Products Use Case Information"
+		}
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "控股股东或实控人信息",
+		path: "/form/shareholder",
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "Controlling Shareholder or Actual Controller Information"
+		}
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "受益所有人信息",
+		path: "/form/beneficical",
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "Beneficial Owner Information"
+		}
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "入驻企业中国母公司主要信息",
+		path: "/form/chinesecompany",
+
+		hide: false,
+		meta: {
+			requiresAuth: false,
+			key: "Chinese Parent Company Information"
+		}
+	}
+]

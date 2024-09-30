@@ -7,6 +7,7 @@ import BreadcrumbNav from "./components/BreadcrumbNav";
 // import Theme from "./components/Theme";
 import Fullscreen from "./components/Fullscreen";
 import "./index.less";
+import OpeningDetail from "./components/openingDetail/openingDetail";
 
 const LayoutHeader = () => {
 	const { Header } = Layout;
@@ -23,6 +24,7 @@ const LayoutHeader = () => {
 				{/* <Theme /> */}
 				<Fullscreen />
 				{/* <span className="username">Hooks</span> */}
+				<OpeningDetail/>
 				<AvatarIcon />
 			</div>
 		</Header>

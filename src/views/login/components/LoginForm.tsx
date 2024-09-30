@@ -12,6 +12,7 @@ import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import "./index.less";
 import logo from "@/assets/images/voya.png";
+import { NavLink } from "react-router-dom";
 
 const LoginForm = (props: any) => {
 	// const { t } = useTranslation();
@@ -19,7 +20,7 @@ const LoginForm = (props: any) => {
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
-	let loginType: number | string = "1"; 
+	let loginType: number | string = "1";
 	loginType = Number(loginType);
 	// const [loginType, setLoginType] = useState<Number>(0); //0: 手机号登录  1：邮箱登录
 
@@ -30,10 +31,10 @@ const LoginForm = (props: any) => {
 			console.log("loginForm", loginForm);
 			// loginForm.password = md5(loginForm.password);
 			const response = await loginApi(loginForm);
-			
+
 			console.log(response.data);
 
-			const access_token = response.data?.access_token; 
+			const access_token = response.data?.access_token;
 			console.log(access_token);
 			if (!access_token) {
 				throw new Error("No access token received");
@@ -44,7 +45,6 @@ const LoginForm = (props: any) => {
 			message.success("登录成功！");
 			localStorage.setItem("access_token", access_token);
 			navigate("/proTable/account");
-			
 		} finally {
 			setLoading(false);
 		}
@@ -92,26 +92,31 @@ const LoginForm = (props: any) => {
 					<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 				</Form.Item>
 				<Form.Item className="login-btn">
-						<Button
-							onClick={() => {
-								form.resetFields();
-							}}
-							icon={<CloseCircleOutlined />}
-						>
-							{/* {t("login.reset")} */}
-							重置
-						</Button>
-						<span className="space"/>
-						<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
-							{/* {t("login.confirm")} */}
-							登录
-						</Button>
+					<Button
+						onClick={() => {
+							form.resetFields();
+						}}
+						icon={<CloseCircleOutlined />}
+					>
+						{/* {t("login.reset")} */}
+						重置
+					</Button>
+					<span className="space" />
+					<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
+						{/* {t("login.confirm")} */}
+						登录
+					</Button>
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
 				<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
 					立即注册
 				</a>
+				<span style={{marginLeft:"20px"}}>
+					<NavLink to="/company" target="_blank" rel="noopener noreferrer">
+						填写表格
+					</NavLink>
+				</span>
 
 				{/* <span>忘记密码</span> */}
 			</div>

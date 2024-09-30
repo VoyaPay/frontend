@@ -27,6 +27,7 @@ export const rootRouter: any = [
 			key: "login"
 		}
 	},
+
 	...routerArray,
 	{
 		path: "*",

@@ -184,6 +184,10 @@ const AddPrepaidCard = () => {
 	}, []);
 
 	const handleSubmit = async () => {
+		if (!selectedCard) {
+			message.error("请先选择一个卡号");
+			return;
+		}
 		const payload = {
 			type: "PrePaid",
 			initialLimit: amount,

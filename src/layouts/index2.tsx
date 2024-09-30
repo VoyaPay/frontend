@@ -5,8 +5,8 @@ import { setAuthButtons } from "@/redux/modules/auth/action";
 import { updateCollapse } from "@/redux/modules/menu/action";
 // import { getAuthorButtons } from "@/api/modules/login";
 import { connect } from "react-redux";
-import LayoutMenu from "./components/Menu/index";
-import LayoutHeader from "./components/Header";
+import LayoutMenu from "./components/Menu/index2";
+
 import LayoutTabs from "./components/Tabs";
 import LayoutFooter from "./components/Footer";
 import "./index.less";
@@ -44,7 +44,6 @@ const LayoutIndex = (props: any) => {
 				<LayoutMenu></LayoutMenu>
 			</Sider>
 			<Layout>
-				<LayoutHeader></LayoutHeader>
 				<LayoutTabs></LayoutTabs>
 				<Content>
 					<Outlet></Outlet>

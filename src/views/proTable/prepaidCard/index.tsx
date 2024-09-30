@@ -45,7 +45,7 @@ interface FormattedCard {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: string;
+	banlance: number;
 	createCardTime: string;
 	cardHolderAddressStreet: string;
 	cardHolderAddressCity: string;
@@ -107,12 +107,12 @@ const PrepaidCard = () => {
 					console.log(formattedData);
 					const finalData = formattedData.map((card, index) => ({
 						...card,
-						banlance: cardBalanceArray[index].balance || "0"
+						banlance: cardBalanceArray[index].balance || 0
 					}));
 					console.log("final data" + finalData);
 					setTotalCardNumber(totalcard);
-					setDataSource(formattedData);
-					setFilteredData(formattedData);
+					setDataSource(finalData);
+					setFilteredData(finalData);
 				}
 			} catch (error) {
 				console.error("Failed to fetch user cards:", error);
@@ -296,7 +296,7 @@ const PrepaidCard = () => {
 			filtered = filtered.filter(card => card.cardName.toLowerCase().includes(cardNameSearch.toLowerCase()));
 		}
 		if (cardOwnerSearch) {
-			filtered = filtered.filter(card => card.cardOwner.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
+			filtered = filtered.filter(card => card.cardHolderName.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
 		}
 		if (cardNoSearch) {
 			filtered = filtered.filter(card => card.cardNo.includes(cardNoSearch));
@@ -349,9 +349,9 @@ const PrepaidCard = () => {
 
 			<div className="card content-box">
 				<div className="search" style={{ marginBottom: 10 }}>
-					<div className="actionWrap" >
-						<div className="left" >
-							<span className="title" >预充卡</span>
+					<div className="actionWrap">
+						<div className="left">
+							<span className="title">预充卡</span>
 							<Space>
 								<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
 								<Select
@@ -384,7 +384,7 @@ const PrepaidCard = () => {
 						</div>
 					</div>
 
-					<div className="actionWrap" style={{ marginBottom: 10, marginLeft: "4em"  }}>
+					<div className="actionWrap" style={{ marginBottom: 10, marginLeft: "4em" }}>
 						<div className="left">
 							<Space>
 								<Input
