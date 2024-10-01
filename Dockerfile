@@ -1,13 +1,21 @@
+# Stage 1: Build the React app
 FROM node:20-alpine AS build-stage
 WORKDIR /app
 COPY package.json .
-RUN npm install --legacy-peer-deps
+COPY yarn.lock .
+RUN yarn install --legacy-peer-deps
 COPY . .
-RUN npm run build:pro
 
-FROM busybox:1.35
-RUN adduser -D static
-USER static
-WORKDIR /home/static
-COPY --from=build-stage /app/dist .
-CMD ["busybox", "httpd", "-f", "-v", "-p", "3301"]
+# Build
+RUN yarn run build:pro
+
+# Stage 2: Serve the app using nginx
+FROM nginx:alpine
+
+# Remove the default Nginx website
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
