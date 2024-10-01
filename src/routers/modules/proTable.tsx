@@ -84,14 +84,14 @@ const proTableRouter: Array<RouteObject> = [
 				}
 			},
 			{
-				path: "/compangContractInfo",
+				path: "/proTable/prepaidCard",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/prepaidCard/index"))),
 				meta: {
 					requiresAuth: true,
 					title: "预付卡",
 					key: "prepaidCard"
 				}
-			}
+			},
 		]
 	}
 ];
