@@ -69,6 +69,9 @@ const LoginForm = (props: any) => {
 					邮箱
 				</span>
 			</div> */}
+			<div className="login-type" style={{ fontSize:"20px", fontWeight:"bold" }}>
+				登录你的 voyapay 账户
+			</div>
 			<Form
 				form={form}
 				name="basic"
@@ -112,7 +115,7 @@ const LoginForm = (props: any) => {
 				<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
 					立即注册
 				</a>
-				<span style={{marginLeft:"20px"}}>
+				<span style={{ marginLeft: "20px" }}>
 					<NavLink to="/company" target="_blank" rel="noopener noreferrer">
 						填写表格
 					</NavLink>
