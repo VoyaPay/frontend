@@ -19,6 +19,13 @@ export interface TransactionDetail {
   externalId: string;
 	
 }
+export interface configDetail{
+	id:number;
+	userid:number;
+  cardCreationFee: string;
+	maximumCardsAllowed: number;
+
+}
 export interface Result{
 	code: string;
 	msg: string;
@@ -38,6 +45,8 @@ export interface Result{
 	message?: string, 
 	bin?: string,
 	balance?:number
+	userConfig:configDetail
+	number?:string
 
 }
 

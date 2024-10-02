@@ -47,39 +47,32 @@ const AccountSetting = () => {
   }, []);
 
   return (
-    <div className="accountSetting-wrap">
-      <div className="title">账户信息</div>
-      <div className="content">
-        <div className="left">
-          <div className="pre">公司名称：</div>
-          <div className="pre">绑定手机号：</div>
-          <div className="pre">绑定邮箱：</div>
-					<div>
+		<div className="accountSetting-wrap">
+		<div className="title">账户信息</div>
+		<div className="content">
+			<div className="row">
+				<div className="label">公司名称：</div>
+				<div className="value">{userData ? userData.companyName : "Loading..."}</div>
+			</div>
+			<div className="row">
+				<div className="label">绑定手机号：</div>
+				<div className="value">136xxxxxx33333</div> {/* Placeholder for phone number */}
+			</div>
+			<div className="row">
+				<div className="label">绑定邮箱：</div>
+				<div className="value">{userData ? userData.email : "Loading..."}</div>
+			</div>
+			<div>
 				<Button type="primary" onClick={() => passRef.current?.showModal({ name: 11 })}>
 					修改密码
 				</Button>
-				</div>
-					
-        </div>
-        <div className="middle">
-          {userData ? (  // Conditional check for non-null userData
-            <>
-              <div className="pre">{userData.companyName}</div>
-              <div className="pre">136xxxxxx33333</div> {/* Placeholder for phone number */}
-              <div className="pre">{userData.email}</div>
-							<div></div>
-							
-            </>
-						
-          ) : (
-            <div>Loading...</div>  // Show loading message while data is being fetched
-          )}
-        </div>
-      </div>
-
-      {/* Add PasswordModal component and attach ref */}
-      <PasswordModal innerRef={passRef} />
-    </div>
+			</div>
+		</div>
+	
+		{/* Add PasswordModal component and attach ref */}
+		<PasswordModal innerRef={passRef} />
+	</div>
+	
   );
 };
 

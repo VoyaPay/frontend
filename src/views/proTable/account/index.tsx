@@ -52,13 +52,15 @@ const Account = () => {
 				const formattedData = response.map(transaction => ({
 					key: transaction.id,
 					transactionType: transaction.type === "cardPurchase" 
-						? "转出" 
+						? "购卡" 
 						: transaction.type === "cardTopup"
-						? "转出"  
+						? "充值到卡"  
 						: transaction.type === "deposit"
-						? "转入"
+						? "账户充值"
 						: transaction.type === "fee"
 						? "手续费"
+						: transaction.type ==="closeCardRefund"
+						? "销卡返还"
 						: "其他",
 					dynamicAccountType: transaction.origin || "N/A",
 					amount: "$" + String(Math.abs(parseFloat(transaction.amount))),
@@ -69,9 +71,11 @@ const Account = () => {
 						: transaction.type === "cardTopup"
 						? "“沃易卡账户”转出至“预充卡”"
 						: transaction.type === "deposit"
+						? "您的资金转入至“沃易卡账户”"
+						: transaction.type ==="closeCardRefund"
 						? "“预充卡”转入至 “沃易卡账户”"
 						: transaction.type === "fee"
-						? "开卡手续费"
+						? "手续费"
 						: "其他",
 				}));
 
@@ -199,16 +203,21 @@ const formatDate = (dateString: string) => {
 const userInformation = async () => {
 	try {
 		const response = await AccountApi();
+		console.log(response.userConfig.maximumCardsAllowed)
 		const formattedData = {
 			id: response.id || 0,
 			fullName: response.fullName || "N/A",
 			email: response.email || "N/A",
 			companyName: response.companyName || "N/A",
+			cardCreationFee: response.userConfig.cardCreationFee||"N/A",
+			maximumCardsAllowed: response.userConfig.maximumCardsAllowed|| 0,
 		};
 		localStorage.setItem("userid", String(formattedData.id));
 		localStorage.setItem("username", formattedData.fullName);
 		localStorage.setItem("useremail", formattedData.email);
 		localStorage.setItem("companyName", formattedData.companyName);
+		localStorage.setItem("cardfee", formattedData.cardCreationFee);
+		localStorage.setItem("cardsallowed", String(response.userConfig.maximumCardsAllowed));
 	} catch (error) {
 		console.log("Error fetching user information: " + error);
 	}

@@ -109,7 +109,7 @@ const TradeQuery = () => {
 
 	const createColumns: any[] = [
     {
-        title: "卡号",
+        title: "卡尾号",
         dataIndex: "cardNo",
         key: "cardNo",
         align: "center",
@@ -146,7 +146,7 @@ const TradeQuery = () => {
 				}
     },
     {
-        title: "卡片名称",
+        title: "卡昵称",
         dataIndex: "cardName",
         key: "cardName",
         align: "center",
@@ -180,7 +180,7 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
-			title: "卡号",
+			title: "卡尾号",
 			dataIndex: "cardNum",
 			key: "cardNum",
 			align: "center"
