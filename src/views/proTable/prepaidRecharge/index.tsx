@@ -1,10 +1,10 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // import { Breadcrumb } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 // import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal, message  } from "antd";
+import { Input, Button, Modal, message } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
 import back from "@/assets/images/return.png";
 import "./index.less";
@@ -39,6 +39,10 @@ const PrepaidRecharge = () => {
 	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState(0);
 	const recharge = () => {
+		if (accountBalance < amount) {
+			message.error("沃易卡账户余额不足");
+			return;
+		}
 		setOpen(true);
 	};
 	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,13 +58,12 @@ const PrepaidRecharge = () => {
 		try {
 			setConfirmLoading(true);
 			const response = await RechargeCardApi(cardData.key, { amount: amount });
-			
+
 			// 检查是否成功并给出提示
 			if (response.id) {
-				message.success("充值成功 !");  // 成功消息
-		
+				message.success("充值成功 !"); // 成功消息
 			}
-	
+
 			setOpen(false);
 			setConfirmLoading(false);
 		} catch (error: any) {
@@ -68,11 +71,11 @@ const PrepaidRecharge = () => {
 			if (error.response && error.response.data) {
 				const errorMessage = error.response.data.message;
 				if (errorMessage === "Insufficient balance") {
-					message.error("沃易卡账户余额不足");  // 显示余额不足错误
+					message.error("沃易卡账户余额不足"); // 显示余额不足错误
 				} else if (Array.isArray(errorMessage) && errorMessage.includes("amount must be a positive number")) {
-					message.error("金额必须是正数， 请重新输入");  // 显示无效金额错误
+					message.error("金额必须是正数， 请重新输入"); // 显示无效金额错误
 				} else {
-					message.error("其他错误");  // 其他错误的提示
+					message.error("其他错误"); // 其他错误的提示
 				}
 			} else {
 				message.error("An unknown error occurred. Please try again later.");
@@ -92,7 +95,7 @@ const PrepaidRecharge = () => {
 			}
 		};
 		getBalance();
-	}, []);  // 依赖为空数组，表示只在组件挂载时运行一次
+	}, []); // 依赖为空数组，表示只在组件挂载时运行一次
 	const handleCancel = () => {
 		setOpen(false);
 	};
@@ -119,12 +122,12 @@ const PrepaidRecharge = () => {
 					<div className="content">
 						<div className="pre">待充值预充卡：</div>
 						<div className="text">{cardData.cardName}</div>
-						<div className="text">&nbsp;{"  ( "+cardData.cardNo+" )"}</div>
+						<div className="text">&nbsp;{"  ( " + cardData.cardNo + " )"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">充值金额:</div>
 						<div className="input-wrapper">
-							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$"  />
+							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$" />
 							<div className="input-tips">注意：充值金额不能大于沃易卡账户的余额</div> {/* 提示文字在输入框下方 */}
 						</div>
 					</div>

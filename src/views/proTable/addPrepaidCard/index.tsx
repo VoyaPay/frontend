@@ -12,6 +12,7 @@ interface BinData {
 	network?: string;
 	orgCompanyId?: string;
 }
+const cardsfee = localStorage.getItem("cardfee") || "0";
 const AddPrepaidCard = () => {
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
@@ -20,7 +21,7 @@ const AddPrepaidCard = () => {
 	const [streetAddress, setStreetAddress] = useState("");
 	const [city, setCity] = useState("");
 	const [state, setState] = useState("");
-	const [zipcode, setZipCode]= useState("")
+	const [zipcode, setZipCode] = useState("");
 	// const [country, setCountry]= useState("")
 	const [accountBalance, setAccountBalance] = useState(0);
 	const [dataSource, setDataSource] = useState<BinData[]>([]);
@@ -38,6 +39,52 @@ const AddPrepaidCard = () => {
 		}
 
 		setCardName(value);
+	};
+	const showModal = () => {
+		if (!selectedCard) {
+			message.error("请先选择一个卡号");
+			return;
+		}
+		if (!cardName) {
+			message.error("请填写卡昵称");
+			return;
+		}
+
+		if (!firstName) {
+			message.error("请填写持卡人名字");
+			return;
+		}
+
+		if (!lastName) {
+			message.error("请填写持卡人姓氏");
+			return;
+		}
+
+		if (!streetAddress) {
+			message.error("请填写地址");
+			return;
+		}
+
+		if (!city) {
+			message.error("请填写城市");
+			return;
+		}
+
+		if (!state) {
+			message.error("请填写州");
+			return;
+		}
+
+		if (!zipcode) {
+			message.error("请填写邮编");
+			return;
+		}
+
+		if (amount <= 0) {
+			message.error("充值金额必须大于0");
+			return;
+		}
+		setOpen(true);
 	};
 
 	const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,7 +181,7 @@ const AddPrepaidCard = () => {
 		}
 		// setCountry(value);
 	};
-	const changeZipCode= (e: React.ChangeEvent<HTMLInputElement>) => {
+	const changeZipCode = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		const regex = /^[0-9\s]*$/; // Only allows English letters and spaces
 
@@ -148,46 +195,8 @@ const AddPrepaidCard = () => {
 		}
 		setZipCode(value);
 	};
-	
-	useEffect(() => {
-		const getCardBin = async () => {
-			try {
-				const response = await CardbinApi();
-				if (Array.isArray(response)) {
-					const formattedData = response.map((bins: any) => ({
-						bin: bins.bin,
-						network: bins.network, // Include other properties if needed
-						orgCompanyId: bins.orgCompanyId
-					}));
-					setDataSource(formattedData);
-				} else {
-					console.error("Response is not an array:", response);
-				}
-			} catch (error) {
-				console.error("Error fetching card BINs:", error);
-			}
-		};
-
-		const getBalance = async () => {
-			try {
-				const response = await GetBalanceApi();
-				const balance = response.currentBalance ? parseFloat(response.currentBalance) : -100;
-				setAccountBalance(balance);
-			} catch (error) {
-				console.log("Cannot get balance of the account:", error);
-			}
-		};
-
-		// Call the functions
-		getBalance();
-		getCardBin();
-	}, []);
-
 	const handleSubmit = async () => {
-		if (!selectedCard) {
-			message.error("请先选择一个卡号");
-			return;
-		}
+		
 		const payload = {
 			type: "PrePaid",
 			initialLimit: amount,
@@ -195,13 +204,13 @@ const AddPrepaidCard = () => {
 			cardHolderFirstName: firstName,
 			cardHolderLastName: lastName,
 			cardHolderAddressStreet: streetAddress,
-			cardHolderAddressCity:city,
+			cardHolderAddressCity: city,
 			cardHolderAddressState: state,
 			cardHolderAddressPostalCode: zipcode,
 			cardHolderAddressCountry: "USA",
-  		cardBin: selectedCard
+			cardBin: selectedCard
 		};
-		console.log("payload is "+ payload)
+		console.log("payload is " + payload);
 
 		try {
 			const response = await AddCardApi(payload);
@@ -226,15 +235,54 @@ const AddPrepaidCard = () => {
 		}
 	};
 
+	useEffect(() => {
+		const getCardBin = async () => {
+			try {
+				const response = await CardbinApi();
+				if (Array.isArray(response)) {
+					const formattedData = response.map((bins: any) => ({
+						bin: bins.bin,
+						network: bins.network, // Include other properties if needed
+						orgCompanyId: bins.orgCompanyId
+					}));
+					setDataSource(formattedData);
+				} else {
+					console.error("Response is not an array:", response);
+				}
+			} catch (error) {
+				console.error("Error fetching card BINs:", error);
+			}
+		};
+
+		const getBalance = async () => {
+			try {
+				const response = await GetBalanceApi();
+				console.log("this balance" + response.currentBalance);
+				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				setAccountBalance(balance);
+			} catch (error) {
+				console.log("Cannot get balance of the account:", error);
+			}
+		};
+
+		// Call the functions
+		getBalance();
+		getCardBin();
+	}, []);
+
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
 
 	const handleOk = () => {
+		
 		setConfirmLoading(true);
 		setTimeout(() => {
+			message.success("申请已提交");
 			setOpen(false);
 			setConfirmLoading(false);
-		}, 2000);
+			// 调用你的提交函数，比如 handleSubmit()
+			handleSubmit();
+		}, 1000);
 	};
 
 	const handleCancel = () => {
@@ -244,7 +292,9 @@ const AddPrepaidCard = () => {
 	return (
 		<div className="addPrepaidCard-wrap">
 			<Modal title="申请" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
-				<p>充值金额XX， 开卡费1USD，总计XX，继续申请？</p>
+				<p>
+					充值金额 {amount} USD， 开卡费 {cardsfee} USD，总计 {parseFloat(cardsfee) + amount} USD，继续申请？
+				</p>
 			</Modal>
 			<div className="nav">
 				<NavLink to="/proTable/prepaidCard" className="myAccount">
@@ -292,7 +342,7 @@ const AddPrepaidCard = () => {
 					<Input value={streetAddress} onChange={changeStreetAddress} className="edit" placeholder="Street Address" />
 					<Input value={city} onChange={changeCity} className="edit" placeholder="City" />
 					<Input value={state} onChange={changeState} className="edit" placeholder="State" />
-					<Input value="USA" onChange={changeCountry} className="edit" placeholder="Country" disabled/>
+					<Input value="USA" onChange={changeCountry} className="edit" placeholder="Country" disabled />
 					<Input value={zipcode} onChange={changeZipCode} className="edit" placeholder="Zip Code" />
 				</div>
 			</div>
@@ -308,11 +358,11 @@ const AddPrepaidCard = () => {
 				</div>
 				<div className="content">
 					<div className="pre">开卡费：</div>
-					<div className="text">1 USD</div>
+					<div className="text">{cardsfee} USD</div>
 				</div>
 			</div>
 			<div className="btns">
-				<Button type="primary" className="actionBtn" onClick={handleSubmit}>
+				<Button type="primary" className="actionBtn" onClick={showModal}>
 					立即申请
 				</Button>
 				<Button type="text" className="return">

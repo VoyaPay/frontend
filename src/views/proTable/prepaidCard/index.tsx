@@ -12,6 +12,8 @@ import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 
 const Auth = localStorage.getItem("username");
+const cardsallowed = localStorage.getItem("cardsallowed");
+
 console.log("AUTH IS " + Auth);
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
@@ -54,13 +56,17 @@ interface FormattedCard {
 	cardHolderAddressCountry: string;
 	partnerIdempotencyKey: string;
 	cardHolderName: string;
+	number?:string;
 }
 
 const PrepaidCard = () => {
 	// State to hold the card data
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
-	const [totalCardNumber, setTotalCardNumber] = useState(100);
+	const initialTotalCards = cardsallowed ? parseInt(cardsallowed, 10) : 100;
+
+	const [totalCardNumber, setTotalCardNumber] = useState(initialTotalCards);
+
 	const [accountBalance, setAccountBalance] = useState(0);
 
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
@@ -72,20 +78,24 @@ const PrepaidCard = () => {
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
-
+	const totalCards = cardsallowed ? parseInt(cardsallowed, 10) : 0;
+	console.log(totalCards);
+	// 将转换后的整数传递给 setTotalCardNumber
+	// setTotalCardNumber(totalCards);
 	// Fetch data from the API on component mount
 	useEffect(() => {
 		const fetchUserCards = async () => {
 			try {
 				const response = await UserCardApi();
 				console.log(response);
+
 				if (Array.isArray(response)) {
 					const formattedData = response.map(card => ({
 						key: card.id,
 						cardName: card.alias,
 						cardOwner: Auth ? Auth : "NA",
 						cardGroup: card.network,
-						cardNo: card.last4,
+						cardNo: card.number,
 						cardStatus: card.status,
 						banlance: card.initialLimit,
 						createCardTime: formatDate(card.createdAt),
@@ -103,7 +113,7 @@ const PrepaidCard = () => {
 					const cardBalancePromises = formattedData.map(card => fetchBalance(card.key));
 					const cardBalanceArray = await Promise.all(cardBalancePromises);
 
-					const totalcard = 100 - formattedData.length;
+					const totalcard = totalCards - formattedData.length;
 					console.log(formattedData);
 					const finalData = formattedData.map((card, index) => ({
 						...card,
@@ -173,7 +183,7 @@ const PrepaidCard = () => {
 			dataIndex: "cardNo",
 			key: "cardNo",
 			align: "center",
-			width: "30px"
+			width: "50px"
 		},
 		{
 			title: "状态",
@@ -182,7 +192,8 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "30px",
 			render: (status: string) =>
-				status === "Active" ? "活跃" : status === "Inactive" ? "已冻结" : status === "Closed" ? "已注销" : "N/A"
+				status === "Active" ? "活跃" : status === "Inactive" ? "已冻结" : status === "Closed" ? "已注销": status === "PreClose"
+			? "待注销" : "N/A"
 		},
 		{
 			title: "余额",
@@ -235,7 +246,13 @@ const PrepaidCard = () => {
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
 				banlance: record.banlance,
-				createCardTime: record.createCardTime
+				createCardTime: record.createCardTime,
+				cardHolderAddressStreet: record.cardHolderAddressStreet,
+				cardHolderAddressCity: record.cardHolderAddressCity,
+				cardHolderAddressState: record.cardHolderAddressState,
+				cardHolderAddressPostalCode: record.cardHolderAddressPostalCode,
+				cardHolderAddressCountry: record.cardHolderAddressCountry,
+				cardHolderName: record.cardHolderName
 			}
 		});
 	};
