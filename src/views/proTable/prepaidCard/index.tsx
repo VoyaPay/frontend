@@ -56,7 +56,7 @@ interface FormattedCard {
 	cardHolderAddressCountry: string;
 	partnerIdempotencyKey: string;
 	cardHolderName: string;
-	number?:string;
+	number?: string;
 }
 
 const PrepaidCard = () => {
@@ -192,8 +192,15 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "30px",
 			render: (status: string) =>
-				status === "Active" ? "活跃" : status === "Inactive" ? "已冻结" : status === "Closed" ? "已注销": status === "PreClose"
-			? "待注销" : "N/A"
+				status === "Active"
+					? "活跃"
+					: status === "Inactive"
+					? "已冻结"
+					: status === "Closed"
+					? "已注销"
+					: status === "PreClose"
+					? "待注销"
+					: "N/A"
 		},
 		{
 			title: "余额",
@@ -377,7 +384,7 @@ const PrepaidCard = () => {
 									allowClear
 									style={{ width: 250 }}
 									onChange={handleGroupChange}
-									options={[{ value: "MasterCard", label: "MasterCard" }]}
+									options={[{ value: "MasterCard", label: "Mastercard" }]}
 								/>
 								<Select
 									placeholder="请选择状态"
