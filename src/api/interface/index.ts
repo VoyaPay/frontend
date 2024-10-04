@@ -1,53 +1,70 @@
 // * 请求响应参数(不包含data)
 export interface NewRecharge {
-	when?: string,
-    amount: number,
-    transactionId: number,
+	when?: string;
+	amount: number;
+	transactionId: number;
 }
 
-export interface NewTransaction{
+export interface NewTransaction {
 	transferId?: number;
-	newBalance?:number;
-	status?:boolean;
+	newBalance?: number;
+	status?: boolean;
 }
 export interface TransactionDetail {
-  id: string;
-  type: string;
-  origin: string;
-  amount: string;
-  processedAt: string;
-  externalId: string;
-	
+	id: string;
+	type: string;
+	origin: string;
+	amount: string;
+	processedAt: string;
+	externalId: string;
 }
-export interface configDetail{
-	id:number;
-	userid:number;
-  cardCreationFee: string;
-	maximumCardsAllowed: number;
 
+export interface TransactionListItem {
+	id: string;
+	orderNumber: string;
+	status: string;
+	// transactionTime: string;
+	currencyCode: string;
+	amount: string;
+	merchantName: string;
+	// merchantCountry: string;
+	// merchantId: string;
+	mcc: string;
+	// merchantCity: string;
+	isReversal: boolean;
+	userId: number;
+	// cardId: number;
+	createdAt: string;
+	cardNum: string;
 }
-export interface Result{
+
+export interface configDetail {
+	id: number;
+	userid: number;
+	cardCreationFee: string;
+	maximumCardsAllowed: number;
+}
+export interface Result {
 	code: string;
 	msg: string;
 	card?: object;
 	transaction?: NewTransaction;
 	currentBalance?: string;
-	cvc?:string;
+	cvc?: string;
 	expiration?: string;
-	pan?:string;
-	id?: number,
-	fullName?: string,
-	email?: string,
-	companyName?: string
-	recharges?: NewRecharge
-	headers?: string,
-	statusCode?: string,
-	message?: string, 
-	bin?: string,
-	balance?:number
-	userConfig:configDetail
-	number?:string
-
+	pan?: string;
+	id?: number;
+	fullName?: string;
+	email?: string;
+	companyName?: string;
+	recharges?: NewRecharge;
+	headers?: string;
+	statusCode?: string;
+	message?: string;
+	bin?: string;
+	balance?: number;
+	userConfig: configDetail;
+	number?: string;
 }
 
 // * 请求响应参数(包含data)
@@ -81,4 +98,18 @@ export namespace Login {
 	export interface ResAuthButtons {
 		[propName: string]: any;
 	}
+}
+
+export class Where {
+	cardNumber?: string;
+	startDate?: Date;
+	endDate?: Date;
+	status?: string;
+	merchant?: string;
+}
+
+export interface SearchTransactionRequest extends ReqPage {
+	where?: Where;
+	sortBy: "createdAt";
+	asc: false;
 }

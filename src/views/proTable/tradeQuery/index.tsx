@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space, Input, Tooltip} from "antd";
+import { Table, DatePicker, Button, Space, Input, Tooltip, TablePaginationConfig, TableProps } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import filter from "@/assets/images/filter.png";
 import "./index.less";
-import { TransactionsCSVApi } from "@/api/modules/transactions";
+import { SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
 import { UserCardApi } from "@/api/modules/prepaid";
+import { SearchTransactionRequest, TransactionListItem } from "@/api/interface";
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
@@ -20,6 +21,19 @@ const formatDate = (dateString: string) => {
 	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+const StatusMapping = {
+	Authorized: "已授权",
+	Settled: "已结算",
+	Declined: "失败",
+	Reversed: "退款"
+};
+
+const CardTypeMapping = {
+	PrePaid: "预充卡",
+	Shared: "共享卡"
+};
+
 interface FormattedCard {
 	key: string;
 	cardName: string;
@@ -44,14 +58,17 @@ interface CardData {
 	expirationDate?: string;
 	cvv2?: string;
 }
-const getCSV = async (): Promise<void> => {
-	try {
-		const response = await TransactionsCSVApi();
-		console.log(response);
-	} catch (e: any) {
-		console.log(e);
-	}
-};
+
+interface TableParams {
+	pagination?: TablePaginationConfig;
+	// sortField?: SorterResult<any>['field'];
+	// sortOrder?: SorterResult<any>['order'];
+	// filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
+}
+
+interface FormattedTransaction extends TransactionListItem {
+	key: string;
+}
 
 const TradeQuery = () => {
 	const location = useLocation();
@@ -74,6 +91,35 @@ const TradeQuery = () => {
 	const [tradeType, setTradeType] = useState("auth");
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
+	const [transactionPage, setTransactionPage] = useState<FormattedTransaction[]>([]);
+	const [transactionTableParams, setTransactionTableParams] = useState<TableParams>({
+		pagination: {
+			current: 1,
+			pageSize: 10,
+			showSizeChanger: false
+		}
+	});
+
+	const getCSV = async (): Promise<void> => {
+		try {
+			const response = await TransactionsCSVApi({
+				where: {
+					startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
+					endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
+					status: tranStatus,
+					merchant: merchant,
+					cardNumber: cardNoSearch
+				},
+				sortBy: "createdAt",
+				asc: false,
+				pageNum: 1,
+				pageSize: 100000
+			});
+			console.log(response);
+		} catch (e: any) {
+			console.log(e);
+		}
+	};
 
 	useEffect(() => {
 		const fetchUserCards = async () => {
@@ -82,19 +128,18 @@ const TradeQuery = () => {
 				console.log(response);
 				if (Array.isArray(response)) {
 					const formattedData = response
-					.filter(card => card.type === "PrePaid") 
-					.map(card => ({
-						key: card.id,
-						cardName: card.alias,
-						cardOwner: "NA",
-						cardGroup: card.network,
-						cardNo: card.last4,
-						cardStatus: card.status,
-						banlance: card.initialLimit,
-						createCardTime: formatDate(card.createdAt),
-						cardType:card.type,
-
-					}));
+						.filter(card => card.type === "PrePaid")
+						.map(card => ({
+							key: card.id,
+							cardName: card.alias,
+							cardOwner: "NA",
+							cardGroup: card.network,
+							cardNo: card.last4,
+							cardStatus: card.status,
+							banlance: card.initialLimit,
+							createCardTime: formatDate(card.createdAt),
+							cardType: card.type
+						}));
 
 					setDataSource(formattedData);
 					setFilteredData(formattedData);
@@ -105,82 +150,81 @@ const TradeQuery = () => {
 		};
 
 		fetchUserCards();
+		searchTransaction(1, 10);
 	}, []);
 
 	const createColumns: any[] = [
-    {
-        title: "卡尾号",
-        dataIndex: "cardNo",
-        key: "cardNo",
-        align: "center",
-        width: 80, 
-    },
-    {
-        title: "卡片类型",
-        dataIndex: "cardType",
-        key: "cardType",
-        align: "center",
-        width: 100, 
-				render: (cardType: string) => (
-					cardType === "PrePaid" ? "预充卡" : "共享卡"
+		{
+			title: "卡尾号",
+			dataIndex: "cardNo",
+			key: "cardNo",
+			align: "center",
+			width: 80
+		},
+		{
+			title: "卡片类型",
+			dataIndex: "cardType",
+			key: "cardType",
+			align: "center",
+			width: 100,
+			render: (cardType: string) => (cardType === "PrePaid" ? "预充卡" : "共享卡")
+		},
+		{
+			title: "申请ID",
+			dataIndex: "key",
+			key: "key",
+			align: "center",
+			width: 100 // Fixed width in pixels
+		},
+		{
+			title: "开卡时间",
+			dataIndex: "createCardTime",
+			key: "createCardTime",
+			align: "center",
+			width: 120,
+			defaultSortOrder: "descend",
+			sorter: (a: any, b: any) => {
+				const dateA = new Date(a.createCardTime).getTime();
+				const dateB = new Date(b.createCardTime).getTime();
+				return dateA - dateB;
+			}
+		},
+		{
+			title: "卡昵称",
+			dataIndex: "cardName",
+			key: "cardName",
+			align: "center",
+			width: 150, // Fixed width in pixels
+			render: (cardName: string) => (
+				<Tooltip title={cardName.length > 17 ? cardName : ""}>
+					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+				</Tooltip>
 			)
-    },
-    {
-        title: "申请ID",
-        dataIndex: "key",
-        key: "key",
-        align: "center",
-        width: 100, // Fixed width in pixels
-    },
-    {
-        title: "开卡时间",
-        dataIndex: "createCardTime",
-        key: "createCardTime",
-        align: "center",
-        width: 120, 
-				defaultSortOrder: "descend",
-				sorter: (a: any, b: any) => {
-					const dateA = new Date(a.createCardTime).getTime();
-					const dateB = new Date(b.createCardTime).getTime();
-					return dateA - dateB;
-				}
-    },
-    {
-        title: "卡昵称",
-        dataIndex: "cardName",
-        key: "cardName",
-        align: "center",
-        width: 150, // Fixed width in pixels
-        render: (cardName: string) => (
-            <Tooltip title={cardName.length > 17 ? cardName : ""}>
-                {cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
-            </Tooltip>
-        )
-    },
-    {
-        title: "卡组",
-        dataIndex: "cardGroup",
-        key: "cardGroup",
-        align: "center",
-        width: 200, // Fixed width in pixels
-    }
-];
+		},
+		{
+			title: "卡组",
+			dataIndex: "cardGroup",
+			key: "cardGroup",
+			align: "center",
+			width: 200 // Fixed width in pixels
+		}
+	];
 
 	const transactionColumns: any[] = [
 		{
 			title: "时间",
-			dataIndex: "authTime",
-			key: "authTime",
+			dataIndex: "createdAt",
+			key: "createdAt",
 			align: "center"
 		},
 		{
 			title: "授权ID",
-			dataIndex: "authNum",
-			key: "authNum",
+			dataIndex: "orderNumber",
+			key: "orderNumber",
 			align: "center"
 		},
 		{
-			title: "卡尾号",
+			title: "卡号",
 			dataIndex: "cardNum",
 			key: "cardNum",
 			align: "center"
@@ -193,38 +237,32 @@ const TradeQuery = () => {
 		},
 		{
 			title: "商户名称",
-			dataIndex: "shopName",
-			key: "shopName",
+			dataIndex: "merchantName",
+			key: "merchantName",
 			align: "center"
 		},
 		{
 			title: "支付状态",
-			dataIndex: "authStatus",
-			key: "authStatus",
+			dataIndex: "status",
+			key: "status",
 			align: "center"
 		},
-		{
-			title: "交易币种",
-			dataIndex: "tradeCurrency",
-			key: "tradeCurrency",
-			align: "center"
-		},
-		{
-			title: "原币种",
-			dataIndex: "tradeCurrency",
-			key: "tradeCurrency",
-			align: "center"
-		},
+		// {
+		// 	title: "交易币种",
+		// 	dataIndex: "currencyCode",
+		// 	key: "currencyCode",
+		// 	align: "center"
+		// },
+		// {
+		// 	title: "原币种",
+		// 	dataIndex: "currencyCode",
+		// 	key: "currencyCode",
+		// 	align: "center"
+		// },
 		{
 			title: "金额",
-			dataIndex: "tradeCurrency",
-			key: "tradeCurrency",
-			align: "center"
-		},
-		{
-			title: "交易金额",
-			dataIndex: "tradeAmount",
-			key: "tradeAmount",
+			dataIndex: "amount",
+			key: "amount",
 			align: "center"
 		},
 		{
@@ -235,17 +273,20 @@ const TradeQuery = () => {
 		},
 		{
 			title: "索引号",
-			dataIndex: "authNum",
-			key: "authNum",
+			dataIndex: "id",
+			key: "id",
 			align: "center"
 		}
 	];
 	const [columns, setColumns] = useState(transactionColumns);
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [cardNoSearch, setCardNoSearch] = useState("");
+	const [merchant, setMerchant] = useState("");
+	const [tranStatus, setTranStatus] = useState(undefined);
 
 	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
+		setSelectedTimeRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : []);
+		console.log("dates", [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")]);
 	};
 
 	const handleChange = (value: string) => {
@@ -262,9 +303,62 @@ const TradeQuery = () => {
 		}
 	};
 
+	const onClickSearch = () => {
+		setTransactionTableParams({
+			pagination: {
+				...transactionTableParams.pagination,
+				current: 1
+			}
+		});
+		searchTransaction(1, transactionTableParams.pagination?.pageSize ?? 10);
+	};
+
+	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = config => {
+		searchTransaction(config.current ?? 1, config.pageSize ?? 10);
+	};
+
+	function searchTransaction(current: number, pageSize: number) {
+		const requestBody: SearchTransactionRequest = {
+			where: {
+				startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
+				endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
+				status: tranStatus,
+				merchant: merchant,
+				cardNumber: cardNoSearch
+			},
+			sortBy: "createdAt",
+			asc: false,
+			pageNum: current ?? 1,
+			pageSize: pageSize ?? 10
+		};
+		SearchTransactionApi(requestBody).then(res => {
+			console.log("search result", res);
+			const formattedData = res.datalist?.map((tran: any) => {
+				const t: FormattedTransaction = {
+					key: tran.id,
+					...tran,
+					createdAt: formatDate(tran.createdAt),
+					status: StatusMapping[tran.status as keyof typeof StatusMapping],
+					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping]
+				};
+				return t;
+			});
+			setTransactionTableParams({
+				pagination: {
+					...transactionTableParams.pagination,
+					current: res.pageNum,
+					total: res.total
+				}
+			});
+			if (formattedData) {
+				setTransactionPage(formattedData);
+			}
+		});
+	}
+
 	const applyFilters = () => {
 		let filtered = [...dataSource];
-		console.log("filter"+ filtered)
+		console.log("filter" + filtered);
 
 		// Apply date range filter
 		if (selectedTimeRange.length > 0) {
@@ -316,58 +410,57 @@ const TradeQuery = () => {
 					{tradeType === "auth" ? (
 						<Space>
 							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
-							<Select
-								placeholder="卡片类型"
-								mode="multiple"
-								allowClear
-								style={{ width: 120 }}
-								onChange={handleChange}
-								options={[
-									{ value: "prepaid", label: "预充卡" },
-									{ value: "share", label: "共享卡" }
-								]}
-								className="transactionType"
-							/>
-							<Select
-								placeholder="商户名称"
-								mode="multiple"
-								allowClear
-								style={{ width: 120 }}
-								onChange={handleChange}
-								options={[
-									{ value: "Meta", label: "Meta" },
-									{ value: "Amazon", label: "Amazon" }
-								]}
-								className="transactionType"
+							{/*<Select*/}
+							{/*	placeholder="卡片类型"*/}
+							{/*	mode="multiple"*/}
+							{/*	allowClear*/}
+							{/*	style={{ width: 120 }}*/}
+							{/*	onChange={handleChange}*/}
+							{/*	options={[*/}
+							{/*		{ value: "prepaid", label: "预充卡" },*/}
+							{/*		{ value: "share", label: "共享卡" }*/}
+							{/*	]}*/}
+							{/*	className="transactionType"*/}
+							{/*/>*/}
+							<Input
+								placeholder="商户名称" // Provide a default placeholder
+								style={{ width: 200 }}
+								onChange={(e: any) => {
+									setMerchant(e.target.value);
+									console.log("merchant status " + merchant + " merchant value：" + e.target.value);
+								}}
 							/>
 							<Select
 								placeholder="支付状态"
-								mode="multiple"
 								allowClear
 								style={{ width: 120 }}
-								onChange={handleChange}
-								options={[
-									{ value: "auth", label: "已授权" },
-									{ value: "settled", label: "已结算" },
-									{ value: "fail", label: "失败" }
-								]}
+								onChange={value => {
+									setTranStatus(value);
+									console.log("tran status " + tranStatus + " value：" + value);
+								}}
+								options={Object.entries(StatusMapping).map(([key, label]) => ({ value: key, label }))}
 								className="transactionType"
 							/>
-							<Select
-								placeholder="交易币种"
-								mode="multiple"
-								allowClear
-								style={{ width: 120 }}
-								onChange={handleChange}
-								options={[{ value: "USD", label: "USD" }]}
-								className="transactionType"
-							/>
+							{/*<Select*/}
+							{/*	placeholder="交易币种"*/}
+							{/*	mode="multiple"*/}
+							{/*	allowClear*/}
+							{/*	style={{ width: 120 }}*/}
+							{/*	onChange={handleChange}*/}
+							{/*	options={[{ value: "USD", label: "USD" }]}*/}
+							{/*	className="transactionType"*/}
+							{/*/>*/}
 							<Input
 								placeholder={cardData.cardNo || "请输入卡号"} // Provide a default placeholder
 								style={{ width: 200 }}
-								onChange={(e: any) => setCardNoSearch(e.target.value)}
+								onChange={(e: any) => {
+									setCardNoSearch(e.target.value);
+									console.log("card No search " + cardNoSearch + " target value：" + e.target.value);
+								}}
 							/>
-							<Button type="primary">查询</Button>
+							<Button type="primary" onClick={onClickSearch}>
+								查询
+							</Button>
 						</Space>
 					) : (
 						<Space>
@@ -384,7 +477,9 @@ const TradeQuery = () => {
 								]}
 								className="transactionType"
 							/>
-							<Button type="primary" onClick={applyFilters}>查询</Button>
+							<Button type="primary" onClick={applyFilters}>
+								查询
+							</Button>
 						</Space>
 					)}
 				</div>
@@ -392,8 +487,22 @@ const TradeQuery = () => {
 					导出账单明细
 				</Button>
 			</div>
-			{tradeType === "auth" ?<div> </div>:
-			<Table bordered={true} dataSource={filteredData} columns={columns} pagination={{ pageSize: 10, showSizeChanger: false }}  />}
+			{tradeType === "auth" ? (
+				<Table
+					bordered={true}
+					dataSource={transactionPage}
+					columns={columns}
+					pagination={transactionTableParams.pagination}
+					onChange={handleTransactionTableChange}
+				/>
+			) : (
+				<Table
+					bordered={true}
+					dataSource={filteredData}
+					columns={columns}
+					pagination={{ pageSize: 10, showSizeChanger: false }}
+				/>
+			)}
 		</div>
 	);
 };
