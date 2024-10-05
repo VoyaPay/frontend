@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { AccountApi } from "@/api/modules/user";
 import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -10,9 +10,15 @@ import "./index.less";
 import { CardInformationApi } from "@/api/modules/card";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
+import { CardbinApi } from "@/api/modules/card";
+
+interface BinData {
+	bin: string;
+	network?: string;
+	orgCompanyId?: string;
+}
 
 const Auth = localStorage.getItem("username");
-const cardsallowed = localStorage.getItem("cardsallowed");
 
 console.log("AUTH IS " + Auth);
 const formatDate = (dateString: string) => {
@@ -49,6 +55,7 @@ interface FormattedCard {
 	cardStatus: string;
 	banlance: number;
 	createCardTime: string;
+	updateCardTime: string;
 	cardHolderAddressStreet: string;
 	cardHolderAddressCity: string;
 	cardHolderAddressState: string;
@@ -63,8 +70,8 @@ const PrepaidCard = () => {
 	// State to hold the card data
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
-	const initialTotalCards = cardsallowed ? parseInt(cardsallowed, 10) : 100;
-
+	const initialTotalCards = 100;
+	const [bins, setbins] = useState<BinData[]>([]);
 	const [totalCardNumber, setTotalCardNumber] = useState(initialTotalCards);
 
 	const [accountBalance, setAccountBalance] = useState(0);
@@ -78,71 +85,108 @@ const PrepaidCard = () => {
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
-	const totalCards = cardsallowed ? parseInt(cardsallowed, 10) : 0;
-	console.log(totalCards);
-	// 将转换后的整数传递给 setTotalCardNumber
-	// setTotalCardNumber(totalCards);
-	// Fetch data from the API on component mount
+	const userInformation = async () => {
+		try {
+			const response = await AccountApi();
+			console.log(response.userConfig.maximumCardsAllowed);
+			const formattedData = {
+				id: response.id || 0,
+				fullName: response.fullName || "N/A",
+				email: response.email || "N/A",
+				companyName: response.companyName || "N/A",
+				cardCreationFee: response.userConfig.cardCreationFee || "N/A",
+				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
+			};
+			setTotalCardNumber(formattedData.maximumCardsAllowed);
+		} catch (error) {
+			console.log("Error fetching user information: " + error);
+		}
+	};
+	const getCardBin = async () => {
+		try {
+			const response = await CardbinApi();
+			if (Array.isArray(response)) {
+				const formattedData = response.map((bins: any) => ({
+					bin: bins.bin,
+					network: bins.network, // Include other properties if needed
+					orgCompanyId: bins.orgCompanyId
+				}));
+				setbins(formattedData);
+			} else {
+				console.error("Response is not an array:", response);
+			}
+		} catch (error) {
+			console.error("Error fetching card BINs:", error);
+		}
+	};
+	const binOptions = bins.map(bin => ({
+		value: bin.bin,
+		label: `${bin.bin}`
+	}));
+	const fetchUserCards = async () => {
+		try {
+			const response = await UserCardApi();
+			console.log(response);
+
+			if (Array.isArray(response)) {
+				const formattedData = response.map(card => ({
+					key: card.id,
+					cardName: card.alias,
+					cardOwner: Auth ? Auth : "NA",
+					cardGroup: card.network,
+					cardNo: card.number,
+					cardStatus: card.status,
+					banlance: card.initialLimit,
+					createCardTime: formatDate(card.createdAt),
+					updateCardTime: formatDate(card.updatedAt),
+					cardHolderAddressStreet: card.cardHolderAddressStreet,
+					cardHolderAddressCity: card.cardHolderAddressCity,
+					cardHolderAddressState: card.cardHolderAddressState,
+					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode,
+					cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
+					partnerIdempotencyKey: card.partnerIdempotencyKey,
+					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
+						card.cardHolderLastName ? card.cardHolderLastName : "LM"
+					}`
+				}));
+
+				const cardBalancePromises = formattedData.map(card => fetchBalance(card.key));
+				const cardBalanceArray = await Promise.all(cardBalancePromises);
+
+				const totalcard = totalCardNumber - formattedData.length;
+				console.log(formattedData);
+				const finalData = formattedData.map((card, index) => ({
+					...card,
+					banlance: cardBalanceArray[index].balance ? parseFloat(cardBalanceArray[index].balance.toFixed(2)):0
+				}));
+				console.log("final data" + finalData);
+				setTotalCardNumber(totalcard);
+				setDataSource(finalData);
+				setFilteredData(finalData);
+			}
+		} catch (error) {
+			console.error("Failed to fetch user cards:", error);
+		}
+	};
+
+	const getBalance = async () => {
+		try {
+			const response = await GetBalanceApi();
+			console.log(response);
+			console.log("Full response:", response.currentBalance);
+			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
+			setAccountBalance(balance);
+		} catch (error) {
+			console.log("Cannot get balance of the account:", error);
+		}
+	};
+
 	useEffect(() => {
-		const fetchUserCards = async () => {
-			try {
-				const response = await UserCardApi();
-				console.log(response);
-
-				if (Array.isArray(response)) {
-					const formattedData = response.map(card => ({
-						key: card.id,
-						cardName: card.alias,
-						cardOwner: Auth ? Auth : "NA",
-						cardGroup: card.network,
-						cardNo: card.number,
-						cardStatus: card.status,
-						banlance: card.initialLimit,
-						createCardTime: formatDate(card.createdAt),
-						cardHolderAddressStreet: card.cardHolderAddressStreet,
-						cardHolderAddressCity: card.cardHolderAddressCity,
-						cardHolderAddressState: card.cardHolderAddressState,
-						cardHolderAddressPostalCode: card.cardHolderAddressPostalCode,
-						cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
-						partnerIdempotencyKey: card.partnerIdempotencyKey,
-						cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
-							card.cardHolderLastName ? card.cardHolderLastName : "LM"
-						}`
-					}));
-
-					const cardBalancePromises = formattedData.map(card => fetchBalance(card.key));
-					const cardBalanceArray = await Promise.all(cardBalancePromises);
-
-					const totalcard = totalCards - formattedData.length;
-					console.log(formattedData);
-					const finalData = formattedData.map((card, index) => ({
-						...card,
-						banlance: cardBalanceArray[index].balance || 0
-					}));
-					console.log("final data" + finalData);
-					setTotalCardNumber(totalcard);
-					setDataSource(finalData);
-					setFilteredData(finalData);
-				}
-			} catch (error) {
-				console.error("Failed to fetch user cards:", error);
-			}
-		};
-
-		const getBalance = async () => {
-			try {
-				const response = await GetBalanceApi();
-				console.log(response);
-				console.log("Full response:", response.currentBalance);
-				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
-				setAccountBalance(balance);
-			} catch (error) {
-				console.log("Cannot get balance of the account:", error);
-			}
-		};
-
+		getCardBin();
+		userInformation();
 		getBalance();
 		fetchUserCards();
+		console.log(binOptions);
 	}, []);
 
 	const columns: any[] = [
@@ -252,6 +296,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
+				updatecardTime: record.updateCardTime,
 				banlance: record.banlance,
 				createCardTime: record.createCardTime,
 				cardHolderAddressStreet: record.cardHolderAddressStreet,
@@ -263,6 +308,7 @@ const PrepaidCard = () => {
 			}
 		});
 	};
+
 	const handlerRechargeDetails = (record: FormattedCard) => {
 		console.log(record);
 		if (record.cardStatus === "Closed") {
@@ -308,7 +354,7 @@ const PrepaidCard = () => {
 
 		// Apply card group filter
 		if (selectedGroups.length > 0) {
-			filtered = filtered.filter(card => selectedGroups.includes(card.cardGroup));
+			filtered = filtered.filter(card => selectedGroups.includes(card.cardNo.slice(0, 6)));
 		}
 
 		// Apply card status filter
@@ -323,7 +369,7 @@ const PrepaidCard = () => {
 			filtered = filtered.filter(card => card.cardHolderName.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
 		}
 		if (cardNoSearch) {
-			filtered = filtered.filter(card => card.cardNo.includes(cardNoSearch));
+			filtered = filtered.filter(card => card.cardNo.slice(-4).includes(cardNoSearch));
 		}
 
 		setFilteredData(filtered);
@@ -379,12 +425,12 @@ const PrepaidCard = () => {
 							<Space>
 								<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
 								<Select
-									placeholder="请选择卡组"
+									placeholder="请选择卡bin"
 									mode="multiple"
 									allowClear
 									style={{ width: 250 }}
 									onChange={handleGroupChange}
-									options={[{ value: "MasterCard", label: "Mastercard" }]}
+									options={binOptions}
 								/>
 								<Select
 									placeholder="请选择状态"
@@ -395,6 +441,7 @@ const PrepaidCard = () => {
 									options={[
 										{ value: "Active", label: "活跃" },
 										{ value: "Inactive", label: "已冻结" },
+										{ value: "PreClose", label: "待注销" },
 										{ value: "Closed", label: "已注销" }
 									]}
 								/>
@@ -424,7 +471,7 @@ const PrepaidCard = () => {
 									style={{ width: 250 }}
 								/>
 								<Input
-									placeholder="搜索卡号"
+									placeholder="搜索卡号后四位"
 									value={cardNoSearch}
 									onChange={(e: any) => setCardNoSearch(e.target.value)}
 									style={{ width: 250 }}
