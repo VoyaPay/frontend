@@ -14,33 +14,6 @@ const formRouter: Array<RouteObject> = [
 		},
 		children: [
 			{
-				path: "/form/basicForm",
-				element: lazyLoad(React.lazy(() => import("@/views/form/basicForm/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "基础 Form",
-					key: "basicForm"
-				}
-			},
-			{
-				path: "/form/validateForm",
-				element: lazyLoad(React.lazy(() => import("@/views/form/validateForm/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "校验 Form",
-					key: "validateForm"
-				}
-			},
-			{
-				path: "/form/dynamicForm",
-				element: lazyLoad(React.lazy(() => import("@/views/form/dynamicForm/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "动态 Form",
-					key: "dynamicForm"
-				}
-			},
-			{
 				path: "/company",
 				element: <CompangContractInfo />,
 				meta: {
@@ -84,7 +57,6 @@ const formRouter: Array<RouteObject> = [
 					title: "开通场景信息",
 					key: "Products Use Case Information"
 				}
-
 			},
 			{
 				path: "/form/shareholder",
@@ -94,7 +66,6 @@ const formRouter: Array<RouteObject> = [
 					title: "控股股东或实控人信息",
 					key: "Controlling Shareholder or Actual Controller Information"
 				}
-
 			},
 			{
 				path: "/form/beneficical",
@@ -104,7 +75,6 @@ const formRouter: Array<RouteObject> = [
 					title: "受益所有人信息",
 					key: "Beneficial Owner Information"
 				}
-
 			},
 			{
 				path: "/form/chinesecompany",
@@ -114,11 +84,9 @@ const formRouter: Array<RouteObject> = [
 					title: "入驻企业中国母公司主要信息",
 					key: "Chinese Parent Company Information"
 				}
-
-			},
-			
+			}
 		]
 	}
-]
+];
 
 export default formRouter;
