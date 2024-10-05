@@ -7,27 +7,28 @@ import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
+import { AccountApi } from "@/api/modules/user";
 interface BinData {
 	bin: string;
 	network?: string;
 	orgCompanyId?: string;
 }
-const cardsfee = localStorage.getItem("cardfee") || "0";
+
 const AddPrepaidCard = () => {
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [streetAddress, setStreetAddress] = useState("");
-	const [city, setCity] = useState("");
-	const [state, setState] = useState("");
-	const [zipcode, setZipCode] = useState("");
-	// const [country, setCountry]= useState("")
+	const [streetAddress, setStreetAddress] = useState("1201 North Market Street, Suite 111");
+  const [city, setCity] = useState("Wilmington");
+  const [state, setState] = useState("DE");
+  const [zipcode, setZipCode] = useState("19801");
+	const [cardsfee, setcardsfee] = useState("0");
 	const [accountBalance, setAccountBalance] = useState(0);
 	const [dataSource, setDataSource] = useState<BinData[]>([]);
 	const [selectedCard, setSelectedCard] = useState<string | null>(null);
 	const navigate = useNavigate();
-	const maxLength = 30;
+	const maxLength = 16;
 	const combinedLength = firstName.length + lastName.length;
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,7 +197,6 @@ const AddPrepaidCard = () => {
 		setZipCode(value);
 	};
 	const handleSubmit = async () => {
-		
 		const payload = {
 			type: "PrePaid",
 			initialLimit: amount,
@@ -234,8 +234,26 @@ const AddPrepaidCard = () => {
 			message.error("提交过程中发生错误");
 		}
 	};
+	const userInformation = async () => {
+		try {
+			const response = await AccountApi();
+			console.log(response.userConfig.maximumCardsAllowed);
+			const formattedData = {
+				id: response.id || 0,
+				fullName: response.fullName || "N/A",
+				email: response.email || "N/A",
+				companyName: response.companyName || "N/A",
+				cardCreationFee: response.userConfig.cardCreationFee || "N/A",
+				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
+			};
+			setcardsfee(formattedData.cardCreationFee);
+		} catch (error) {
+			console.log("Error fetching user information: " + error);
+		}
+	};
 
 	useEffect(() => {
+		userInformation();
 		const getCardBin = async () => {
 			try {
 				const response = await CardbinApi();
@@ -258,7 +276,7 @@ const AddPrepaidCard = () => {
 			try {
 				const response = await GetBalanceApi();
 				console.log("this balance" + response.currentBalance);
-				const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
 				setAccountBalance(balance);
 			} catch (error) {
 				console.log("Cannot get balance of the account:", error);
@@ -274,7 +292,6 @@ const AddPrepaidCard = () => {
 	const [confirmLoading, setConfirmLoading] = useState(false);
 
 	const handleOk = () => {
-		
 		setConfirmLoading(true);
 		setTimeout(() => {
 			message.success("申请已提交");

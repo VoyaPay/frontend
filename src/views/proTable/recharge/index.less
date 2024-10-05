@@ -1,5 +1,4 @@
 .recharge-wrap {
-	
 	.nav {
 		padding: 15px 20px;
 		font-size: 15px;
@@ -21,7 +20,7 @@
 		align-items: center;
 		.userInfo {
 			width: 30%;
-			height:400px;
+			height: 400px;
 			padding: 15px 20px;
 			margin-top: 10px;
 			margin-right: 10px;
@@ -34,13 +33,11 @@
 			.content {
 				display: flex;
 				flex-direction: column;
+				flex-direction: row;
 				align-items: flex-start;
+				align-items: center;
 				margin-top: 10px;
 				font-size: 15px;
-				
-				display: flex;
-				flex-direction: row;
-				align-items: center;
 				.left {
 					display: flex;
 					flex-direction: column;
@@ -61,8 +58,8 @@
 		}
 		.accountInfo {
 			flex: 1;
+			height: 400px;
 			padding: 15px 20px;
-			height:400px;
 			margin-top: 10px;
 			background-color: #ffffff;
 			border-radius: 8px;
@@ -76,39 +73,29 @@
 				align-items: flex-start;
 				justify-content: flex-start;
 				margin-top: 10px;
-			
 				.left {
 					display: flex;
 					flex-direction: column;
 					margin-right: 20px;
 					.pre {
-						margin-bottom: 20px;
 						display: row;
+						margin-bottom: 20px;
 					}
 				}
-			
 				.middle {
 					display: flex;
 					flex-direction: column;
 					.pre {
-						margin-bottom: 42px;
 						display: row;
+						margin-bottom: 42px;
 					}
 				}
-				// .sub-pre {
-				// 	margin-bottom: 5px;
-				// }
-			
-				/* Optional: Add some spacing between the translations */
-				// .left .sub-pre + .sub-pre {
-				// 	margin-top: 3px;
-				// }
+				.sub-pre {
+					justify-content: flex-start
+				}
 			}
-			
 		}
-		
 	}
-	
 	.chargeTips {
 		width: 100%;
 		padding: 15px;

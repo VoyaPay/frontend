@@ -4,7 +4,7 @@ import { Select } from "antd";
 import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
-import { GetBalanceApi,LedgerCSVApi  } from "@/api/modules/ledger";
+import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
 import { AccountApi } from "@/api/modules/user";
 
 interface FormattedTransaction {
@@ -22,7 +22,7 @@ const Account = () => {
 	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
 	const [filteredDataSource, setFilteredDataSource] = useState<FormattedTransaction[]>([]);
 	const [selectedTransactionTypes, setSelectedTransactionTypes] = useState<string[]>([]);
-	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]); 
+	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [accountBalance, setAccountBalance] = useState(0);
 
 	useEffect(() => {
@@ -38,7 +38,7 @@ const Account = () => {
 	const getBalance = async () => {
 		try {
 			const response = await GetBalanceApi();
-			const balance = response.currentBalance ? parseFloat(response.currentBalance) : 0;
+			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2))  : 0;
 			setAccountBalance(balance);
 		} catch (error) {
 			console.log("Cannot get balance of the account:", error);
@@ -50,33 +50,36 @@ const Account = () => {
 			const response = await UserTransfersApi();
 			if (Array.isArray(response)) {
 				const formattedData = response.map(transaction => ({
+					
 					key: transaction.id,
-					transactionType: transaction.type === "cardPurchase" 
-						? "购卡" 
-						: transaction.type === "cardTopup"
-						? "充值到卡"  
-						: transaction.type === "deposit"
-						? "账户充值"
-						: transaction.type === "fee"
-						? "手续费"
-						: transaction.type ==="closeCardRefund"
-						? "销卡返还"
-						: "其他",
+					transactionType:
+						transaction.type === "cardPurchase"
+							? "购卡"
+							: transaction.type === "cardTopup"
+							? "充值到卡"
+							: transaction.type === "deposit"
+							? "账户充值"
+							: transaction.type === "fee"
+							? "手续费"
+							: transaction.type === "closeCardRefund"
+							? "销卡返还"
+							: "其他",
 					dynamicAccountType: transaction.origin || "N/A",
-					amount: "$" + String(Math.abs(parseFloat(transaction.amount))),
+					amount: "$" + String(Math.abs(parseFloat(transaction.amount)).toFixed(2)),
 					currency: "USD",
 					time: formatDate(transaction.createdAt),
-					transactionDetail: transaction.type === "cardPurchase" 
-						? "“沃易卡账户”转出至“预充卡”"
-						: transaction.type === "cardTopup"
-						? "“沃易卡账户”转出至“预充卡”"
-						: transaction.type === "deposit"
-						? "您的资金转入至“沃易卡账户”"
-						: transaction.type ==="closeCardRefund"
-						? "“预充卡”转入至 “沃易卡账户”"
-						: transaction.type === "fee"
-						? "手续费"
-						: "其他",
+					transactionDetail:
+						transaction.type === "cardPurchase"
+							? "“沃易卡账户”转出至“预充卡”"
+							: transaction.type === "cardTopup"
+							? "“沃易卡账户”转出至“预充卡”"
+							: transaction.type === "deposit"
+							? "您的资金转入至“沃易卡账户”"
+							: transaction.type === "closeCardRefund"
+							? "“预充卡”转入至 “沃易卡账户”"
+							: transaction.type === "fee"
+							? "手续费"
+							: "其他"
 				}));
 
 				setDataSource(formattedData);
@@ -88,20 +91,43 @@ const Account = () => {
 	};
 
 	const getCSV = async (): Promise<void> => {
-	try {
-		const response = await LedgerCSVApi()
-		console.log(response)
-	}catch(e:any){
-		console.log(e)
-	}
-	}
+		try {
+			const response = await LedgerCSVApi();
+			console.log(response);
+		} catch (e: any) {
+			console.log(e);
+		}
+	};
 
 	const columns: any[] = [
-		{ title: "交易类型", dataIndex: "transactionType", key: "transactionType", align: "center" },
-		{ title: "金额", dataIndex: "amount", key: "amount", align: "center" },
-		{ title: "币种", dataIndex: "currency", key: "currency", align: "center" },
-		{ title: "时间", dataIndex: "time", key: "time", align: "center" },
-		{ title: "交易明细", dataIndex: "transactionDetail", key: "transactionDetail", align: "center" },
+		{ title: "交易类型", dataIndex: "transactionType", key: "transactionType", align: "center", width: "200px" },
+		{
+			title: "金额",
+			dataIndex: "amount",
+			key: "amount",
+			align: "center",
+			width: "300px",
+			sorter: (a: any, b: any) => {
+				const amountA = parseFloat(a.amount.replace('$', '').replace(',', ''));
+				const amountB = parseFloat(b.amount.replace('$', '').replace(',', ''));
+				return amountA - amountB;
+			}
+		},
+		{ title: "币种", dataIndex: "currency", key: "currency", align: "center", width: "200px" },
+		{
+			title: "时间",
+			dataIndex: "time",
+			key: "time",
+			align: "center",
+			defaultSortOrder: "descend",
+			sorter: (a: any, b: any) => {
+				const dateA = new Date(a.time).getTime();
+				const dateB = new Date(b.time).getTime();
+				return dateA - dateB;
+			},
+			width: "400px"
+		},
+		{ title: "交易明细", dataIndex: "transactionDetail", key: "transactionDetail", align: "center", width: "400px" }
 	];
 
 	// Update selected transaction types
@@ -117,14 +143,12 @@ const Account = () => {
 	// Apply filters based on transaction type and date range when the user clicks "查询"
 	const applyFilters = () => {
 		let filteredData = dataSource; // 初始为所有数据
-	
+
 		// 只根据 selectedTransactionTypes 进行筛选
 		if (selectedTransactionTypes.length > 0) {
-			filteredData = filteredData.filter(transaction =>
-				selectedTransactionTypes.includes(transaction.transactionType)
-			);
+			filteredData = filteredData.filter(transaction => selectedTransactionTypes.includes(transaction.transactionType));
 		}
-	
+
 		if (selectedTimeRange.length > 0) {
 			const [start, end] = selectedTimeRange;
 			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
@@ -132,7 +156,7 @@ const Account = () => {
 			// Set end time to 23:59:59 for the end date
 			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
 
-			filteredData= filteredData.filter(transaction => {
+			filteredData = filteredData.filter(transaction => {
 				const cardDate = new Date(transaction.time).getTime();
 				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
 			});
@@ -140,7 +164,7 @@ const Account = () => {
 
 		setFilteredDataSource(filteredData);
 	};
-	
+
 	return (
 		<div className="card content-box accountWrap">
 			<div className="accountInfo">
@@ -172,17 +196,21 @@ const Account = () => {
 							]}
 							className="transactionType"
 						/>
-						<Button type="primary" onClick={applyFilters}>查询</Button>
+						<Button type="primary" onClick={applyFilters}>
+							查询
+						</Button>
 					</Space>
 				</div>
-				<Button type="primary" onClick={getCSV}>导出账单明细</Button>
+				<Button type="primary" onClick={getCSV}>
+					导出账单明细
+				</Button>
 			</div>
 			<Table
 				bordered={true}
 				dataSource={filteredDataSource}
 				columns={columns}
-				pagination={{ pageSize: 10, showSizeChanger: false }}  
-				/>
+				pagination={{ pageSize: 10, showSizeChanger: false }}
+			/>
 		</div>
 	);
 };
@@ -203,14 +231,14 @@ const formatDate = (dateString: string) => {
 const userInformation = async () => {
 	try {
 		const response = await AccountApi();
-		console.log(response.userConfig.maximumCardsAllowed)
+		console.log(response.userConfig.maximumCardsAllowed);
 		const formattedData = {
 			id: response.id || 0,
 			fullName: response.fullName || "N/A",
 			email: response.email || "N/A",
 			companyName: response.companyName || "N/A",
-			cardCreationFee: response.userConfig.cardCreationFee||"N/A",
-			maximumCardsAllowed: response.userConfig.maximumCardsAllowed|| 0,
+			cardCreationFee: response.userConfig.cardCreationFee || "N/A",
+			maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
 		};
 		localStorage.setItem("userid", String(formattedData.id));
 		localStorage.setItem("username", formattedData.fullName);
