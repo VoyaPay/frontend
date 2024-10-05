@@ -36,6 +36,7 @@ export interface TransactionListItem {
 	// cardId: number;
 	createdAt: string;
 	cardNum: string;
+	notes: string;
 }
 
 export interface configDetail {
