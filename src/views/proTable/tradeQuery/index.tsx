@@ -68,6 +68,7 @@ interface TableParams {
 
 interface FormattedTransaction extends TransactionListItem {
 	key: string;
+	wrongReason?: string;
 }
 
 const TradeQuery = () => {
@@ -339,7 +340,8 @@ const TradeQuery = () => {
 					...tran,
 					createdAt: formatDate(tran.createdAt),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
-					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping]
+					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping],
+					wrongReason: tran.status === "Declined" ? tran.notes : ""
 				};
 				return t;
 			});
