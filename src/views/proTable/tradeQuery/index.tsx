@@ -3,7 +3,7 @@ import { Table, DatePicker, Button, Space, Input, Tooltip, TablePaginationConfig
 // import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
 import { useLocation } from "react-router-dom";
-import filter from "@/assets/images/filter.png";
+
 import "./index.less";
 import { SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
 import { UserCardApi } from "@/api/modules/prepaid";
@@ -134,7 +134,7 @@ const TradeQuery = () => {
 							cardName: card.alias,
 							cardOwner: "NA",
 							cardGroup: card.network,
-							cardNo: card.last4,
+							cardNo: card.number,
 							cardStatus: card.status,
 							banlance: card.initialLimit,
 							createCardTime: formatDate(card.createdAt),
@@ -155,33 +155,27 @@ const TradeQuery = () => {
 
 	const createColumns: any[] = [
 		{
-			title: "卡尾号",
+			title: "卡号",
 			dataIndex: "cardNo",
 			key: "cardNo",
 			align: "center",
-			width: 80
+			width: "200px"
 		},
 		{
 			title: "卡片类型",
 			dataIndex: "cardType",
 			key: "cardType",
 			align: "center",
-			width: 100,
+			width: "100px",
 			render: (cardType: string) => (cardType === "PrePaid" ? "预充卡" : "共享卡")
 		},
-		{
-			title: "申请ID",
-			dataIndex: "key",
-			key: "key",
-			align: "center",
-			width: 100 // Fixed width in pixels
-		},
+		
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
 			key: "createCardTime",
 			align: "center",
-			width: 120,
+			width: "200px",
 			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => {
 				const dateA = new Date(a.createCardTime).getTime();
@@ -194,7 +188,7 @@ const TradeQuery = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: 150, // Fixed width in pixels
+			width:"200px", // Fixed width in pixels
 			render: (cardName: string) => (
 				<Tooltip title={cardName.length > 17 ? cardName : ""}>
 					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
@@ -206,7 +200,7 @@ const TradeQuery = () => {
 			dataIndex: "cardGroup",
 			key: "cardGroup",
 			align: "center",
-			width: 200 // Fixed width in pixels
+			width: "100px" // Fixed width in pixels
 		}
 	];
 
@@ -406,7 +400,6 @@ const TradeQuery = () => {
 
 			<div className="actionWrap">
 				<div>
-					<img src={filter} alt="" className="filterIcon" />
 					{tradeType === "auth" ? (
 						<Space>
 							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
