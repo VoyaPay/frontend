@@ -6,7 +6,6 @@ export const CHARGE_URL: string = "/proTable/account";
 
 // * Tabs（黑名单地址，不需要添加到 tabs 的路由地址，暂时没用）
 export const TABS_BLACK_LIST: string[] = ["/403", "/404", "/500", "/layout", "/login", "/dataScreen"];
-
 // * 高德地图key
 export const MAP_KEY: string = "";
 
@@ -70,19 +69,22 @@ export const menu: any = [
 	}
 ];
 
+// 在组件外部获取 formStatus 并保证其初始化
+export const formStatus = JSON.parse(localStorage.getItem('data') || '{}');
+
+// 动态菜单配置
 export const menu2: any = [
 	{
 		icon: "AppstoreOutlined",
 		title: "企业联系人信息",
 		path: "/company",
-
 		hide: false
 	},
 	{
 		icon: "AppstoreOutlined",
 		title: "入驻企业美国主体主要信息",
 		path: "/form/usEntityinfo",
-
+		disabled: !formStatus['CompanyContractInfo'], // 如果联系人信息未填写，则禁用
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -93,7 +95,7 @@ export const menu2: any = [
 		icon: "AppstoreOutlined",
 		title: "入驻企业香港主体主要信息",
 		path: "/form/hkEntityContact",
-
+		disabled: !formStatus['CompanyContractInfo'], // 如果联系人信息未填写，则禁用
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -104,7 +106,7 @@ export const menu2: any = [
 		icon: "AppstoreOutlined",
 		title: "企业展业情况",
 		path: "/form/companyBusiness",
-
+		disabled: !formStatus['usEntityInfo'] || !formStatus['hkEntityInfo'], // 确保美国和香港实体信息已填写
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -115,7 +117,7 @@ export const menu2: any = [
 		icon: "AppstoreOutlined",
 		title: "开通场景信息",
 		path: "/form/product",
-
+		disabled: !formStatus['companyBusinessInfo'], // 确保展业信息已填写
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -126,6 +128,7 @@ export const menu2: any = [
 		icon: "AppstoreOutlined",
 		title: "控股股东或实控人信息",
 		path: "/form/shareholder",
+		disabled: !formStatus['productsUseCaseInfo'], // 确保开通场景信息已填写
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -136,6 +139,7 @@ export const menu2: any = [
 		icon: "AppstoreOutlined",
 		title: "受益所有人信息",
 		path: "/form/beneficical",
+		disabled: !formStatus['chineseParentCompanyInfo'], // 确保中国母公司信息已填写
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -146,7 +150,7 @@ export const menu2: any = [
 		icon: "AppstoreOutlined",
 		title: "入驻企业中国母公司主要信息",
 		path: "/form/chinesecompany",
-
+		disabled: !formStatus['CompanyContractInfo'], // 确保联系人信息已填写
 		hide: false,
 		meta: {
 			requiresAuth: false,
@@ -154,3 +158,4 @@ export const menu2: any = [
 		}
 	}
 ];
+
