@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
 
-// Define the types for form values
 interface FormValues {
 	contactName: string;
 	contactPhone: string;
@@ -19,12 +19,27 @@ const CompanyContractInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
-	// const onReset = () => {
-	// 	form.resetFields();
-	// };
+	useEffect(() => {
+		// Automatically load stored data if the "email" key exists in localStorage
+
+		const storedData = localStorage.getItem("data");
+		console.log(JSON.parse(localStorage.getItem('data') || '{}'))
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			// Auto-fill the form with stored data
+			form.setFieldsValue({
+				contactName: parsedData.CompanyContractInfo?.contactName || "",
+				contactPhone: parsedData.CompanyContractInfo?.contactPhone || "",
+				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
+				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
+				contactEmail: parsedData.CompanyContractInfo?.contactEmail || "",
+				isUSEntity: parsedData.CompanyContractInfo?.isUSEntity || "us"
+			});
+		}
+	}, [form]);
 
 	const onSubmit = (values: FormValues) => {
-		const payload = {
+		const newCompanyContractInfo = {
 			contactName: values.contactName,
 			contactPhone: values.contactPhone,
 			contactMobile: values.contactMobile,
@@ -32,9 +47,30 @@ const CompanyContractInfo = () => {
 			contactEmail: values.contactEmail,
 			isUSEntity: values.isUSEntity
 		};
-		console.log("Payload:", payload);
 
-		// Use form values to navigate based on US entity status
+		// Retrieve existing data
+		const existingData = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			// Merge new data with existing data
+			combinedPayload = {
+				...parsedData,
+				CompanyContractInfo: newCompanyContractInfo // Update CompanyContractInfo
+			};
+		} else {
+			// If no existing data, save new company contact information
+			combinedPayload = {
+				CompanyContractInfo: newCompanyContractInfo
+			};
+		}
+
+		// Save updated data to localStorage
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		console.log("Updated Payload:", combinedPayload);
+
+		// Navigate based on US entity status
 		navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
 	};
 
@@ -54,8 +90,7 @@ const CompanyContractInfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
+							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
@@ -75,7 +110,7 @@ const CompanyContractInfo = () => {
 							name="companyContractForm"
 							layout="vertical"
 							onFinish={onSubmit}
-							initialValues={{ isUSEntity: "us" }} // default is non-US entity
+							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">
 								<div className="left">

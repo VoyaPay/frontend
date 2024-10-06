@@ -1,5 +1,5 @@
 import { Button, Form, Input, Select } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
@@ -7,22 +7,86 @@ import { NavLink } from "react-router-dom";
 
 // Define the types for form values
 interface FormValues {
-	industry: string;
-	businessDescription: string;
-	monthlySpend: string;
+	requestedProducts: string;
+	estimatedMonthlySpend: string;
+	spendingUseCase: string;
+	otherUseCase?: string;
+	businessModel: string;
+	b2bClientNumber?: string;
+	b2bClientSpend?: string;
+	b2cClientNumber?: string;
+	b2cClientSpend?: string;
 }
-const productsUseCaseinfo = () => {
+
+const ProductsUseCaseInfo = () => {
 	const [form] = Form.useForm();
 	const [businessModel, setBusinessModel] = useState<string | null>(null);
 	const { Option } = Select;
 	const navigate = useNavigate();
+
+	// Handle business model change
 	const handleBusinessModelChange = (value: string) => {
 		setBusinessModel(value); // Track business model selection
 	};
 
+	// Auto-populate form with existing data from localStorage
+	useEffect(() => {
+		const storedData = localStorage.getItem("data");
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			// Set form values if product use case info exists
+			form.setFieldsValue({
+				requestedProducts: parsedData.productsUseCaseInfo?.requestedProducts || "",
+				estimatedMonthlySpend: parsedData.productsUseCaseInfo?.estimatedMonthlySpend || "",
+				spendingUseCase: parsedData.productsUseCaseInfo?.spendingUseCase || "",
+				otherUseCase: parsedData.productsUseCaseInfo?.otherUseCase || "",
+				businessModel: parsedData.productsUseCaseInfo?.businessModel || "",
+				b2bClientNumber: parsedData.productsUseCaseInfo?.b2bClientNumber || "",
+				b2bClientSpend: parsedData.productsUseCaseInfo?.b2bClientSpend || "",
+				b2cClientNumber: parsedData.productsUseCaseInfo?.b2cClientNumber || "",
+				b2cClientSpend: parsedData.productsUseCaseInfo?.b2cClientSpend || ""
+			});
+			setBusinessModel(parsedData.productsUseCaseInfo?.businessModel || null);
+		}
+	}, [form]);
+
+	// Form submission handler
 	const onSubmit = (values: FormValues) => {
-		console.log("Submitted Values:", values);
-		// You can handle the submission here or navigate to a different page
+		// Create the payload for product use case info
+		const productsUseCasePayload = {
+			requestedProducts: values.requestedProducts,
+			estimatedMonthlySpend: values.estimatedMonthlySpend,
+			spendingUseCase: values.spendingUseCase,
+			otherUseCase: values.otherUseCase,
+			businessModel: values.businessModel,
+			b2bClientNumber: values.b2bClientNumber,
+			b2bClientSpend: values.b2bClientSpend,
+			b2cClientNumber: values.b2cClientNumber,
+			b2cClientSpend: values.b2cClientSpend
+		};
+
+		// Retrieve existing data under the user's email
+		const existingData = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		// If there is existing data, merge it with the new product use case info
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			combinedPayload = {
+				...parsedData, // Spread existing data
+				productsUseCaseInfo: productsUseCasePayload // Add new product use case info
+			};
+		} else {
+			// If no existing data, just store the product use case info
+			combinedPayload = {
+				productsUseCaseInfo: productsUseCasePayload
+			};
+		}
+
+		// Save the combined payload back into localStorage under the email key
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+
+		console.log("Combined Payload:", combinedPayload);
 		navigate("/form/shareholder");
 	};
 
@@ -42,13 +106,7 @@ const productsUseCaseinfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
+							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 					</div>
 				</div>
@@ -66,7 +124,6 @@ const productsUseCaseinfo = () => {
 								<Select placeholder="请选择拟开通产品 / Please select requested products">
 									<Option value="voyaVirtualCard">Voya Virtual Credit Card（沃易虚拟卡）</Option>
 									<Option value="voyaBankAccount">Voya Bank Account（沃易收款账户）</Option>
-									{/* Add other product options if needed */}
 								</Select>
 							</Form.Item>
 
@@ -95,7 +152,6 @@ const productsUseCaseinfo = () => {
 								<Select placeholder="请选择消费场景 / Please select spending use case">
 									<Option value="Onlineads">Online Ads（线上广告）</Option>
 									<Option value="storeRental">Store Rental (店铺缴费)</Option>
-
 									<Option value="airlineTicketandHotel">Airline Tickets and Hotels (机票和酒店)</Option>
 									<Option value="education">Education Fees （教育相关费用）</Option>
 									<Option value="others">Others（其他）</Option>
@@ -178,4 +234,4 @@ const productsUseCaseinfo = () => {
 	);
 };
 
-export default productsUseCaseinfo;
+export default ProductsUseCaseInfo;

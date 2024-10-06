@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import type { MenuProps } from "antd";
 import * as Icons from "@ant-design/icons";
 import Logo from "./components/Logo";
-import { menu2} from "@/config/config";
+import {formStatus, menu2 } from "@/config/config";
 import "./index.less";
 
 const LayoutMenu = (props: any) => {
@@ -82,6 +82,7 @@ const LayoutMenu = (props: any) => {
 		try {
 			// const { data } = await getMenuList();
 			// if (!data) return;
+			console.log(formStatus)
 			setMenuList(deepLoopFloat(menu2));
 			// 存储处理过后的所有面包屑导航栏到 redux 中
 			setBreadcrumbList(findAllBreadcrumb(menu2));

@@ -1,9 +1,11 @@
-import { Button, Form, Input, Upload } from "antd";
+import { Button, Form, Input, InputNumber, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import moment from "moment";
 
 // Define the types for form values
 interface FormValues {
@@ -20,20 +22,57 @@ interface FormValues {
 	annualReturn: any;
 	companyArticles: any;
 }
-const hkEntityInfo = () => {
+
+const HKEntityInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
-	// const onReset = () => {
-	// 	form.resetFields();
-	// };
+	// Load saved data from localStorage when the component is mounted
+	useEffect(() => {
+	
+			const storedData = localStorage.getItem("data");
+			if (storedData) {
+				const parsedData = JSON.parse(storedData);
+				// Set form values if data exists
+				form.setFieldsValue({
+					hkEntityName: parsedData.hkEntityInfo?.hkEntityName || "",
+					companyWebsite: parsedData.hkEntityInfo?.companyWebsite || "",
+					certificateNo: parsedData.hkEntityInfo?.certificateNo || "",
+					commencementDate: parsedData.hkEntityInfo?.commencementDate
+						? moment(parsedData.hkEntityInfo?.commencementDate) // Convert date to moment
+						: null,
+					expiryDate: parsedData.hkEntityInfo?.expiryDate
+						? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
+						: null,
+					registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
+					totalEmployees: parsedData.hkEntityInfo?.totalEmployees || "",
+				});
+			
+		}
+	}, [form]);
 
+	// Handle form submission
 	const onSubmit = (values: FormValues) => {
+		// Save the form data to localStorage
+		const existingData = localStorage.getItem("data")||"";
+		const parsedData = JSON.parse(existingData);
+
+		const updatedData = {
+			...parsedData,
+			hkEntityInfo: values,
+		};
+
+		localStorage.setItem("data", JSON.stringify(updatedData));
 		console.log("Submitted Values:", values);
-		// You can handle the submission here or navigate to a different page
 		navigate("/form/companyBusiness");
 	};
 
+	// Handle form submission failure
+	const onFinishFailed = (errorInfo: any) => {
+		console.log("Failed:", errorInfo);
+	};
+
+	// Alphanumeric validation
 	const validateAlphanumeric = (_: any, value: string) => {
 		const regex = /^[a-zA-Z0-9\s]*$/;
 		if (value && !regex.test(value)) {
@@ -73,7 +112,13 @@ const hkEntityInfo = () => {
 						<div className="title">入驻企业香港主体主要信息</div>
 						<div className="title">HK Entity Information</div>
 
-						<Form form={form} name="hkEntityForm" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="hkEntityForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							onFinishFailed={onFinishFailed}
+						>
 							<Form.Item
 								name="hkEntityName"
 								label="香港主体全称 / HK Entity Legal Name"
@@ -138,11 +183,10 @@ const hkEntityInfo = () => {
 								name="totalEmployees"
 								label="企业总员工人数 / Total Number of Employees"
 								rules={[
-									{ required: true, message: "请输入员工总人数 / Please enter total number of employees" },
-									{ type: "number", message: "请输入有效的员工人数 / Please enter a valid number" }
+									{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }
 								]}
 							>
-								<Input type="number" placeholder="请输入员工总人数 / Please enter total number of employees" />
+								<InputNumber placeholder="请输入员工总人数 / Please enter total number of employees" style={{ width: "100%" }} />
 							</Form.Item>
 
 							{/* File Uploads */}
@@ -153,7 +197,7 @@ const hkEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传商业登记证 / Please upload the business registration" }]}
 							>
-								<Upload name="br" action="/upload" listType="text">
+								<Upload beforeUpload={() => false}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -165,7 +209,7 @@ const hkEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传公司注册书 / Please upload the company incorporation" }]}
 							>
-								<Upload name="ci" action="/upload" listType="text">
+								<Upload beforeUpload={() => false}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -177,7 +221,7 @@ const hkEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传法团成立表 / Please upload the incorporation form" }]}
 							>
-								<Upload name="nnc1" action="/upload" listType="text">
+								<Upload beforeUpload={() => false}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -189,7 +233,7 @@ const hkEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传周年申报表 / Please upload the annual return" }]}
 							>
-								<Upload name="nar1" action="/upload" listType="text">
+								<Upload beforeUpload={() => false}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -201,7 +245,7 @@ const hkEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传公司章程 / Please upload the company articles" }]}
 							>
-								<Upload name="ma" action="/upload" listType="text">
+								<Upload beforeUpload={() => false}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -219,4 +263,4 @@ const hkEntityInfo = () => {
 	);
 };
 
-export default hkEntityInfo;
+export default HKEntityInfo;
