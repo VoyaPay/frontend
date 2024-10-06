@@ -1,38 +1,127 @@
-import { Button, Form, Input, DatePicker, Upload, Modal } from "antd";
+import { Button, Form, Input, DatePicker, Upload, Modal,message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import moment from "moment";
+import {createKYCapi} from "@/api/modules/form"
 
 // Define the types for form values
 interface FormValues {
-	industry: string;
-	businessDescription: string;
-	monthlySpend: string;
+	companyName: string;
+	creditCode: string;
+	companyType: string;
+	establishmentDate: any;
+	licenseExpiryDate: any;
+	legalRepresentative: string;
+	businessLicense: any;
 }
-const chineseParentCompanyinfo = () => {
+
+const ChineseParentCompanyInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
-	const navigate= useNavigate()
+	const navigate = useNavigate();
 
-	// const onReset = () => {
-	// 	form.resetFields();
-	// };
+	// Populate form with existing data from localStorage when the component mounts
+	useEffect(() => {
+		const storedData = localStorage.getItem("data");
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			if (parsedData.chineseParentCompanyInfo) {
+				form.setFieldsValue({
+					...parsedData.chineseParentCompanyInfo,
+					// Ensure date fields are parsed correctly using moment
+					establishmentDate: parsedData.chineseParentCompanyInfo.establishmentDate
+						? moment(parsedData.chineseParentCompanyInfo.establishmentDate)
+						: null,
+					licenseExpiryDate: parsedData.chineseParentCompanyInfo.licenseExpiryDate
+						? moment(parsedData.chineseParentCompanyInfo.licenseExpiryDate)
+						: null
+				});
+			}
+		}
+	}, [form]);
 
+	// Handle form submission
 	const onSubmit = (values: FormValues) => {
-		console.log("Submitted Values:", values);
+		// Retrieve the user's email from localStorage
+		const email = localStorage.getItem("data") || "";
+		if (!email) {
+			console.error("Email not found in localStorage");
+			return;
+		}
+
+		// Create the payload for the Chinese parent company info
+		const chineseParentCompanyPayload = {
+			companyName: values.companyName,
+			creditCode: values.creditCode,
+			companyType: values.companyType,
+			establishmentDate: values.establishmentDate,
+			licenseExpiryDate: values.licenseExpiryDate,
+			legalRepresentative: values.legalRepresentative,
+			businessLicense: values.businessLicense
+		};
+
+		// Retrieve any existing data stored under the user's email
+		const existingData = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		// If existing data is found, merge it with the new Chinese parent company info
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			combinedPayload = {
+				...parsedData,
+				chineseParentCompanyInfo: chineseParentCompanyPayload
+			};
+		} else {
+			// Otherwise, just store the new Chinese parent company info
+			combinedPayload = {
+				chineseParentCompanyInfo: chineseParentCompanyPayload
+			};
+		}
+
+		// Save the updated payload to localStorage under the user's email
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+
+		console.log("Combined Payload:", localStorage.getItem("data"));
+
+		// Open confirmation modal
 		setOpen(true);
-		// You can handle the submission here or navigate to a different page
-		
 	};
+
 	const handleCancel = () => {
 		setOpen(false);
 	};
+
 	const handleOk = async () => {
-		navigate("/login");
-	};
+		setOpen(false);
+		try {
+			// 调用 createKYCapi 函数，发送 KYC 信息
+			const response = await createKYCapi();
+	
+			// 检查响应是否成功
+			if (response && !response.message) {
+				// 成功消息提示
+				message.success("KYC 信息提交成功， 我们将尽快联系您！");
+				
+				// 跳转到登录页面
+				navigate("/login");
+			} else {
+				// 如果有错误消息，显示错误提示
+				message.error(response.message || "提交失败，请稍后再试！");
+			}
+		} catch (error: any) {
+			if (error.response && error.response.data) {
+					// 显示来自服务器的错误消息
+					message.error(error.response.data.message);
+			} else {
+					// 显示通用错误信息
+					message.error("发生未知错误，请稍后再试");
+			}
+			
+	};}
 
 	return (
 		<div className="detail-wrap">
@@ -50,13 +139,7 @@ const chineseParentCompanyinfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
+							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 					</div>
 				</div>
@@ -97,21 +180,12 @@ const chineseParentCompanyinfo = () => {
 							</Form.Item>
 
 							{/* 企业成立日期 / Company Establishment Date */}
-							<Form.Item
-								name="establishmentDate"
-								label="企业成立日期 / Company Establishment Date"
-								rules={[{ message: "请选择企业成立日期 / Please select the establishment date" }]}
-							>
-								<DatePicker placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
+							<Form.Item name="establishmentDate" label="企业成立日期 / Company Establishment Date">
+								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
 							</Form.Item>
 
-							{/* 执照有效期至 / License Expiry Date */}
-							<Form.Item
-								name="licenseExpiryDate"
-								label="执照有效期至 / License Expiry Date"
-								rules={[{ message: "请选择执照有效期 / Please select the license expiry date" }]}
-							>
-								<DatePicker placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
+							<Form.Item name="licenseExpiryDate" label="执照有效期至 / License Expiry Date">
+								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
 							</Form.Item>
 
 							{/* 法定代表人 / Legal Representative */}
@@ -141,11 +215,9 @@ const chineseParentCompanyinfo = () => {
 								提交 / Submit
 							</Button>
 						</Form>
-						<Modal title="受益人" visible={open} onOk={handleOk} onCancel={handleCancel}>
+						<Modal title="确认" visible={open} onOk={handleOk} onCancel={handleCancel}>
 							<p>我确认我已完整如实填写所有信息</p>
-							<p>
-								I confirm that I have fully and truthfully provided the information
-							</p>
+							<p>I confirm that I have fully and truthfully provided the information</p>
 						</Modal>
 					</div>
 				</div>
@@ -154,4 +226,4 @@ const chineseParentCompanyinfo = () => {
 	);
 };
 
-export default chineseParentCompanyinfo;
+export default ChineseParentCompanyInfo;

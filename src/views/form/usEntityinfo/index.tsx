@@ -1,17 +1,18 @@
-import { Button, Form, Input, Select, Upload, DatePicker } from "antd";
+import { Button, Form, Input, Select, Upload, DatePicker, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
+import { useEffect } from "react";
+import moment from "moment";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 
-// Define the types for form values
 interface FormValues {
 	usEntityName: string;
 	companyWebsite: string;
 	usEntityType: string;
 	usEntityEIN: string;
-	usEntityFormationDate: string;
+	usEntityFormationDate: any;
 	usEntityRegisteredState: string;
 	usEntityRegisteredAddress: string;
 	usEntityOperatingAddress: string;
@@ -20,21 +21,85 @@ interface FormValues {
 	einDocumentFile: any;
 	operatingAgreementFile: any;
 }
-const usEntityInfo = () => {
+
+const UsEntityInfo = () => {
 	const { Option } = Select;
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
-	// const onReset = () => {
-	// 	form.resetFields();
-	// };
+	// Automatically populate form data if available in localStorage
+	useEffect(() => {
+		
+			const storedData = localStorage.getItem("data");
+			if (storedData) {
+				const parsedData = JSON.parse(storedData);
+				// Set form values if data exists
+				form.setFieldsValue({
+					usEntityName: parsedData.usEntityInfo?.usEntityName || "",
+					companyWebsite: parsedData.usEntityInfo?.companyWebsite || "",
+					usEntityType: parsedData.usEntityInfo?.usEntityType || "",
+					usEntityEIN: parsedData.usEntityInfo?.usEntityEIN || "",
+					usEntityFormationDate: parsedData.usEntityInfo?.usEntityFormationDate
+						? moment(parsedData.usEntityInfo?.usEntityFormationDate) // Convert date to moment
+						: null,
+					usEntityRegisteredState: parsedData.usEntityInfo?.usEntityRegisteredState || "",
+					usEntityRegisteredAddress: parsedData.usEntityInfo?.usEntityRegisteredAddress || "",
+					usEntityOperatingAddress: parsedData.usEntityInfo?.usEntityOperatingAddress || "",
+					totalEmployees: parsedData.usEntityInfo?.totalEmployees || "",
+				});
+			
+		}
+	}, [form]);
 
+	// Handle form submission
 	const onSubmit = (values: FormValues) => {
-		console.log("Submitted Values:", values);
-		// You can handle the submission here or navigate to a different page
+
+		// Create payload for US Entity Info
+		const usEntityPayload = {
+			usEntityName: values.usEntityName,
+			companyWebsite: values.companyWebsite,
+			usEntityType: values.usEntityType,
+			usEntityEIN: values.usEntityEIN,
+			usEntityFormationDate: values.usEntityFormationDate
+				? values.usEntityFormationDate.format("YYYY-MM-DD") // Convert moment to string
+				: "",
+			usEntityRegisteredState: values.usEntityRegisteredState,
+			usEntityRegisteredAddress: values.usEntityRegisteredAddress,
+			usEntityOperatingAddress: values.usEntityOperatingAddress,
+			totalEmployees: values.totalEmployees,
+			companyFormationFile: values.companyFormationFile,
+			einDocumentFile: values.einDocumentFile,
+			operatingAgreementFile: values.operatingAgreementFile,
+		};
+
+		// Get existing data from localStorage
+		const prevInfo = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		if (prevInfo) {
+			const lastInformation = JSON.parse(prevInfo);
+			// Merge with previous data
+			combinedPayload = {
+				...lastInformation,
+				usEntityInfo: usEntityPayload,
+			};
+		} else {
+			// If no previous data, just save the US Entity Info
+			combinedPayload = {
+				usEntityInfo: usEntityPayload,
+			};
+		}
+
+		// Save the combined data to localStorage
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+
+		message.success("US Entity Information saved successfully!");
+
+		// Navigate to the next page
 		navigate("/form/companyBusiness");
 	};
 
+	// Alphanumeric validation
 	const validateAlphanumeric = (_: any, value: string) => {
 		const regex = /^[a-zA-Z0-9\s]*$/;
 		if (value && !regex.test(value)) {
@@ -59,13 +124,7 @@ const usEntityInfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
+							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 					</div>
 				</div>
@@ -80,7 +139,7 @@ const usEntityInfo = () => {
 								label="美国主体全称：US Entity Legal Name"
 								rules={[
 									{ required: true, message: "请输入美国主体全称 / Please enter the US Entity Legal Name" },
-									{ validator: validateAlphanumeric }
+									{ validator: validateAlphanumeric },
 								]}
 							>
 								<Input placeholder="请输入美国主体全称 / Please enter US Entity Legal Name" />
@@ -88,7 +147,7 @@ const usEntityInfo = () => {
 
 							<Form.Item
 								name="companyWebsite"
-								label="入网企业企业网站链接：Company Website"
+								label="企业网站链接：Company Website"
 								rules={[{ required: true, type: "url", message: "请输入有效的网站链接 / Please enter a valid URL" }]}
 							>
 								<Input placeholder="请输入企业网站链接 / Please enter Company Website" />
@@ -100,12 +159,11 @@ const usEntityInfo = () => {
 								rules={[{ required: true, message: "请选择美国主体类型 / Please select the US Entity Type" }]}
 							>
 								<Select placeholder="请选择美国主体类型 / Select US Entity Type">
-									<Option value="Limited Liability Comapny (LLC)">Limited Liability Comapny (LLC)</Option>
+									<Option value="Limited Liability Company (LLC)">Limited Liability Company (LLC)</Option>
 									<Option value="Partnership">Partnership</Option>
 									<Option value="Cooperative">Cooperative</Option>
 									<Option value="Corporation">Corporation</Option>
 									<Option value="Sole Partnership">Sole Partnership</Option>
-									{/* Add other types as necessary */}
 								</Select>
 							</Form.Item>
 
@@ -114,7 +172,7 @@ const usEntityInfo = () => {
 								label="美国主体EIN(9位数）：US Entity EIN"
 								rules={[
 									{ required: true, message: "请输入美国主体EIN / Please enter US Entity EIN" },
-									{ len: 9, message: "EIN必须是9位数字 / EIN must be 9 digits long" }
+									{ len: 9, message: "EIN必须是9位数字 / EIN must be 9 digits long" },
 								]}
 							>
 								<Input placeholder="请输入美国主体EIN / Please enter US Entity EIN" />
@@ -157,7 +215,7 @@ const usEntityInfo = () => {
 								label="企业总员工人数：Total Number of Employees"
 								rules={[
 									{ required: true, message: "请输入企业总员工人数 / Please enter Total Number of Employees" },
-									{ validator: validateAlphanumeric }
+									{ validator: validateAlphanumeric },
 								]}
 							>
 								<Input placeholder="请输入总员工人数 / Please enter total number of employees" />
@@ -206,4 +264,4 @@ const usEntityInfo = () => {
 	);
 };
 
-export default usEntityInfo;
+export default UsEntityInfo;

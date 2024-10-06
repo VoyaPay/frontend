@@ -4,28 +4,76 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Define the types for form values
-interface FormValues {
-	industry: string;
-	businessDescription: string;
-	monthlySpend: string;
+interface Shareholder {
+	entityName: string;
+	nationalityOrLocation: string;
+	position: string;
+	ssnOrItin?: string;
+	ownershipPercentage: number;
 }
-const controllingShareholderinfo = () => {
+interface FormValues {
+	shareholders: Shareholder[];
+}
+
+const ControllingShareholderInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
 
 	const navigate = useNavigate();
+
 	const handleCancel = () => {
 		setOpen(false);
 	};
+
 	const handleOk = async () => {
 		navigate("/form/beneficical");
 	};
 
+	// Auto-populate form with existing data from localStorage
+	useEffect(() => {
+		const storedData = localStorage.getItem("data");
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			// Set form values if controlling shareholder info exists
+			form.setFieldsValue({
+				shareholders: parsedData.controllingShareholderInfo?.shareholders || []
+			});
+		}
+	}, [form]);
+
 	const onSubmit = (values: FormValues) => {
-		console.log("Submitted Values:", values);
+		// Create the payload for controlling shareholders info
+		const controllingShareholdersPayload = {
+			shareholders: values.shareholders
+		};
+
+		// Retrieve existing data under the user's email
+		const existingData = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		// If there is existing data, merge it with the new controlling shareholders info
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			combinedPayload = {
+				...parsedData, // Spread existing data
+				controllingShareholderInfo: controllingShareholdersPayload // Add new shareholder info
+			};
+		} else {
+			// If no existing data, just store the controlling shareholders info
+			combinedPayload = {
+				controllingShareholderInfo: controllingShareholdersPayload
+			};
+		}
+
+		// Save the combined payload back into localStorage under the email key
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+
+		console.log("Combined Payload:", combinedPayload);
+
+		// Show the modal after submission
 		setOpen(true);
 	};
 
@@ -45,8 +93,7 @@ const controllingShareholderinfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
+							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
@@ -58,7 +105,7 @@ const controllingShareholderinfo = () => {
 				<div className="firstCol">
 					<div className="accountInfo">
 						<div className="title">控股股东或实控人信息</div>
-						<div className="title">Controlling Shareholder or Actual Controller INformation</div>
+						<div className="title">Controlling Shareholder or Actual Controller Information</div>
 						<Form form={form} name="controllingShareholderForm" layout="vertical" onFinish={onSubmit}>
 							<Form.List name="shareholders">
 								{(fields, { add, remove }) => (
@@ -66,7 +113,7 @@ const controllingShareholderinfo = () => {
 										{fields.map(({ key, name, ...restField }) => (
 											<Space key={key} style={{ marginBottom: "50px" }} align="baseline">
 												{/* Controlling Party/Entity Name */}
-												<div className="row" >
+												<div className="row">
 													<Col span={15}>
 														<Form.Item
 															{...restField}
@@ -154,7 +201,6 @@ const controllingShareholderinfo = () => {
 						<Modal title="股东" visible={open} onOk={handleOk} onCancel={handleCancel}>
 							<p>确认已经填完所有股东?</p>
 						</Modal>
-						;
 					</div>
 				</div>
 			</div>
@@ -162,4 +208,4 @@ const controllingShareholderinfo = () => {
 	);
 };
 
-export default controllingShareholderinfo;
+export default ControllingShareholderInfo;
