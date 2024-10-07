@@ -7,7 +7,6 @@ import accountBanlance from "@/assets/images/accountbanlace.png";
 // import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
-import { CardInformationApi } from "@/api/modules/card";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
@@ -32,18 +31,6 @@ const formatDate = (dateString: string) => {
 
 	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-const fetchBalance = async (id: string): Promise<{ balance: number }> => {
-	try {
-		const information = await CardInformationApi(id);
-		return {
-			balance: information.balance || 0
-		};
-	} catch (error) {
-		console.error("Error fetching card information:", error);
-		return { balance: 0 };
-	}
 };
 
 interface FormattedCard {
@@ -136,7 +123,7 @@ const PrepaidCard = () => {
 					cardGroup: card.network,
 					cardNo: card.number,
 					cardStatus: card.status,
-					banlance: card.initialLimit,
+					banlance: card.balance,
 					createCardTime: formatDate(card.createdAt),
 					updateCardTime: formatDate(card.updatedAt),
 					cardHolderAddressStreet: card.cardHolderAddressStreet,
@@ -149,20 +136,13 @@ const PrepaidCard = () => {
 						card.cardHolderLastName ? card.cardHolderLastName : "LM"
 					}`
 				}));
-
-				const cardBalancePromises = formattedData.map(card => fetchBalance(card.key));
-				const cardBalanceArray = await Promise.all(cardBalancePromises);
-
 				const totalcard = totalCardNumber - formattedData.length;
 				console.log(formattedData);
-				const finalData = formattedData.map((card, index) => ({
-					...card,
-					banlance: cardBalanceArray[index].balance ? parseFloat(cardBalanceArray[index].balance.toFixed(2)):0
-				}));
-				console.log("final data" + finalData);
+
+				console.log("final data" + formattedData);
 				setTotalCardNumber(totalcard);
-				setDataSource(finalData);
-				setFilteredData(finalData);
+				setDataSource(formattedData);
+				setFilteredData(formattedData);
 			}
 		} catch (error) {
 			console.error("Failed to fetch user cards:", error);
@@ -394,7 +374,7 @@ const PrepaidCard = () => {
 					<div className="banlanceWrap">
 						<span className="pre">沃易卡账户余额</span>
 						<div className="amountWrap">
-							<img src={accountBanlance} className="accountIcons" />
+							<img src={accountBanlance} className="accountIcons" alt="沃易卡账户余额" />
 							<span className="amount">${accountBalance}</span>
 						</div>
 					</div>
@@ -402,7 +382,7 @@ const PrepaidCard = () => {
 					<div className="banlanceWrap">
 						<span className="pre">剩余可用开卡数</span>
 						<div className="amountWrap">
-							<img src={canuse} className="accountIcons" />
+							<img src={canuse} className="accountIcons" alt="剩余可用开卡数" />
 							<span className="amount">{totalCardNumber}</span>
 						</div>
 					</div>
