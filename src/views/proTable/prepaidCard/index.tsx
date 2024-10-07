@@ -9,7 +9,6 @@ import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { CardInformationApi } from "@/api/modules/card";
 import { UserCardApi } from "@/api/modules/prepaid";
-import { GetBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 
 interface BinData {
@@ -136,7 +135,7 @@ const PrepaidCard = () => {
 					cardGroup: card.network,
 					cardNo: card.number,
 					cardStatus: card.status,
-					banlance: card.initialLimit,
+					banlance: card.balance,
 					createCardTime: formatDate(card.createdAt),
 					updateCardTime: formatDate(card.updatedAt),
 					cardHolderAddressStreet: card.cardHolderAddressStreet,
@@ -149,42 +148,22 @@ const PrepaidCard = () => {
 						card.cardHolderLastName ? card.cardHolderLastName : "LM"
 					}`
 				}));
-
-				const cardBalancePromises = formattedData.map(card => fetchBalance(card.key));
-				const cardBalanceArray = await Promise.all(cardBalancePromises);
-
 				const totalcard = totalCardNumber - formattedData.length;
 				console.log(formattedData);
-				const finalData = formattedData.map((card, index) => ({
-					...card,
-					banlance: cardBalanceArray[index].balance ? parseFloat(cardBalanceArray[index].balance.toFixed(2)):0
-				}));
-				console.log("final data" + finalData);
+
+				console.log("final data" + formattedData);
 				setTotalCardNumber(totalcard);
-				setDataSource(finalData);
-				setFilteredData(finalData);
+				setDataSource(formattedData);
+				setFilteredData(formattedData);
 			}
 		} catch (error) {
 			console.error("Failed to fetch user cards:", error);
 		}
 	};
 
-	const getBalance = async () => {
-		try {
-			const response = await GetBalanceApi();
-			console.log(response);
-			console.log("Full response:", response.currentBalance);
-			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
-			setAccountBalance(balance);
-		} catch (error) {
-			console.log("Cannot get balance of the account:", error);
-		}
-	};
-
 	useEffect(() => {
 		getCardBin();
 		userInformation();
-		getBalance();
 		fetchUserCards();
 		console.log(binOptions);
 	}, []);
@@ -239,12 +218,12 @@ const PrepaidCard = () => {
 				status === "Active"
 					? "活跃"
 					: status === "Inactive"
-					? "已冻结"
-					: status === "Closed"
-					? "已注销"
-					: status === "PreClose"
-					? "待注销"
-					: "N/A"
+						? "已冻结"
+						: status === "Closed"
+							? "已注销"
+							: status === "PreClose"
+								? "待注销"
+								: "N/A"
 		},
 		{
 			title: "余额",
