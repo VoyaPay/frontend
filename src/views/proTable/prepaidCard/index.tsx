@@ -7,8 +7,8 @@ import accountBanlance from "@/assets/images/accountbanlace.png";
 // import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
-import { CardInformationApi } from "@/api/modules/card";
 import { UserCardApi } from "@/api/modules/prepaid";
+import { GetBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 
 interface BinData {
@@ -31,18 +31,6 @@ const formatDate = (dateString: string) => {
 
 	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-const fetchBalance = async (id: string): Promise<{ balance: number }> => {
-	try {
-		const information = await CardInformationApi(id);
-		return {
-			balance: information.balance || 0
-		};
-	} catch (error) {
-		console.error("Error fetching card information:", error);
-		return { balance: 0 };
-	}
 };
 
 interface FormattedCard {
@@ -161,9 +149,22 @@ const PrepaidCard = () => {
 		}
 	};
 
+	const getBalance = async () => {
+		try {
+			const response = await GetBalanceApi();
+			console.log(response);
+			console.log("Full response:", response.currentBalance);
+			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
+			setAccountBalance(balance);
+		} catch (error) {
+			console.log("Cannot get balance of the account:", error);
+		}
+	};
+
 	useEffect(() => {
 		getCardBin();
 		userInformation();
+		getBalance();
 		fetchUserCards();
 		console.log(binOptions);
 	}, []);
@@ -218,12 +219,12 @@ const PrepaidCard = () => {
 				status === "Active"
 					? "活跃"
 					: status === "Inactive"
-						? "已冻结"
-						: status === "Closed"
-							? "已注销"
-							: status === "PreClose"
-								? "待注销"
-								: "N/A"
+					? "已冻结"
+					: status === "Closed"
+					? "已注销"
+					: status === "PreClose"
+					? "待注销"
+					: "N/A"
 		},
 		{
 			title: "余额",
@@ -373,7 +374,7 @@ const PrepaidCard = () => {
 					<div className="banlanceWrap">
 						<span className="pre">沃易卡账户余额</span>
 						<div className="amountWrap">
-							<img src={accountBanlance} className="accountIcons" />
+							<img src={accountBanlance} className="accountIcons" alt="沃易卡账户余额" />
 							<span className="amount">${accountBalance}</span>
 						</div>
 					</div>
@@ -381,7 +382,7 @@ const PrepaidCard = () => {
 					<div className="banlanceWrap">
 						<span className="pre">剩余可用开卡数</span>
 						<div className="amountWrap">
-							<img src={canuse} className="accountIcons" />
+							<img src={canuse} className="accountIcons" alt="剩余可用开卡数" />
 							<span className="amount">{totalCardNumber}</span>
 						</div>
 					</div>
