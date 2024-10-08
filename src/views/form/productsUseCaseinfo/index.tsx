@@ -87,7 +87,8 @@ const ProductsUseCaseInfo = () => {
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 
 		console.log("Combined Payload:", combinedPayload);
-		navigate("/form/shareholder");
+		// navigate("/form/shareholder");
+		navigate("/form/companyBusiness");
 	};
 
 	return (
@@ -107,6 +108,11 @@ const ProductsUseCaseInfo = () => {
 					<div className="content">
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
+						</span>
+						<span className="pre">
+							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
+							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
+							questionnaire.
 						</span>
 					</div>
 				</div>
@@ -223,7 +229,7 @@ const ProductsUseCaseInfo = () => {
 
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
-									下一步
+									下一步 / Next Step
 								</Button>
 							</div>
 						</Form>

@@ -64,7 +64,8 @@ const CompanyBusinessInfo = () => {
 		console.log("Combined Payload:", combinedPayload);
 
 		// Navigate to the next page
-		navigate("/form/product");
+		const storedData = JSON.parse(localStorage.getItem('data') || '{}');
+		navigate(storedData.CompanyContractInfo?.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
 	};
 
 	return (
@@ -138,7 +139,7 @@ const CompanyBusinessInfo = () => {
 
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
-									下一步
+									下一步 / Next Step
 								</Button>
 							</div>
 						</Form>

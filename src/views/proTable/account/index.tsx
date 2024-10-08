@@ -56,7 +56,7 @@ const Account = () => {
 						transaction.type === "cardPurchase"
 							? "购卡"
 							: transaction.type === "cardTopup"
-							? "充值到卡"
+							? "卡充值"
 							: transaction.type === "deposit"
 							? "账户充值"
 							: transaction.type === "fee"

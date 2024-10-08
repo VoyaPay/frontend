@@ -89,12 +89,17 @@ const BeneficialOwnerInfo = () => {
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
+						<span className="pre">
+							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
+							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
+							questionnaire.
+						</span>
 					</div>
 				</div>
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">控股股东或实控人信息</div>
-						<div className="title">Controlling Shareholder or Actual Controller Information</div>
+						<div className="title">受益所有人信息</div>
+						<div className="title">Beneficial Owner Information</div>
 
 						<Form
 							form={form}

@@ -29,42 +29,40 @@ const HKEntityInfo = () => {
 
 	// Load saved data from localStorage when the component is mounted
 	useEffect(() => {
-	
-			const storedData = localStorage.getItem("data");
-			if (storedData) {
-				const parsedData = JSON.parse(storedData);
-				// Set form values if data exists
-				form.setFieldsValue({
-					hkEntityName: parsedData.hkEntityInfo?.hkEntityName || "",
-					companyWebsite: parsedData.hkEntityInfo?.companyWebsite || "",
-					certificateNo: parsedData.hkEntityInfo?.certificateNo || "",
-					commencementDate: parsedData.hkEntityInfo?.commencementDate
-						? moment(parsedData.hkEntityInfo?.commencementDate) // Convert date to moment
-						: null,
-					expiryDate: parsedData.hkEntityInfo?.expiryDate
-						? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
-						: null,
-					registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
-					totalEmployees: parsedData.hkEntityInfo?.totalEmployees || "",
-				});
-			
+		const storedData = localStorage.getItem("data");
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			// Set form values if data exists
+			form.setFieldsValue({
+				hkEntityName: parsedData.hkEntityInfo?.hkEntityName || "",
+				companyWebsite: parsedData.hkEntityInfo?.companyWebsite || "",
+				certificateNo: parsedData.hkEntityInfo?.certificateNo || "",
+				commencementDate: parsedData.hkEntityInfo?.commencementDate
+					? moment(parsedData.hkEntityInfo?.commencementDate) // Convert date to moment
+					: null,
+				expiryDate: parsedData.hkEntityInfo?.expiryDate
+					? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
+					: null,
+				registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
+				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || ""
+			});
 		}
 	}, [form]);
 
 	// Handle form submission
 	const onSubmit = (values: FormValues) => {
 		// Save the form data to localStorage
-		const existingData = localStorage.getItem("data")||"";
+		const existingData = localStorage.getItem("data") || "";
 		const parsedData = JSON.parse(existingData);
 
 		const updatedData = {
 			...parsedData,
-			hkEntityInfo: values,
+			hkEntityInfo: values
 		};
 
 		localStorage.setItem("data", JSON.stringify(updatedData));
 		console.log("Submitted Values:", values);
-		navigate("/form/companyBusiness");
+		navigate("/form/shareholder");
 	};
 
 	// Handle form submission failure
@@ -112,13 +110,7 @@ const HKEntityInfo = () => {
 						<div className="title">入驻企业香港主体主要信息</div>
 						<div className="title">HK Entity Information</div>
 
-						<Form
-							form={form}
-							name="hkEntityForm"
-							layout="vertical"
-							onFinish={onSubmit}
-							onFinishFailed={onFinishFailed}
-						>
+						<Form form={form} name="hkEntityForm" layout="vertical" onFinish={onSubmit} onFinishFailed={onFinishFailed}>
 							<Form.Item
 								name="hkEntityName"
 								label="香港主体全称 / HK Entity Legal Name"
@@ -182,9 +174,7 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="totalEmployees"
 								label="企业总员工人数 / Total Number of Employees"
-								rules={[
-									{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }
-								]}
+								rules={[{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }]}
 							>
 								<InputNumber placeholder="请输入员工总人数 / Please enter total number of employees" style={{ width: "100%" }} />
 							</Form.Item>
@@ -252,7 +242,7 @@ const HKEntityInfo = () => {
 
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
-									下一步
+									下一步 / Next Step
 								</Button>
 							</div>
 						</Form>
