@@ -331,6 +331,7 @@ const TradeQuery = () => {
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					key: tran.id,
+					amount: "$ "+tran.amount,
 					...tran,
 					createdAt: formatDate(tran.createdAt),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],

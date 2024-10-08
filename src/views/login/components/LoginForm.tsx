@@ -4,6 +4,7 @@ import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
+// import { KYCStateApi } from "@/api/modules/form";
 // import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
@@ -28,6 +29,10 @@ const LoginForm = (props: any) => {
 	const onFinish = async (loginForm: Login.ReqLoginForm) => {
 		try {
 			setLoading(true);
+			if (loginForm.email) {
+				console.log("here is change lowercase");
+				loginForm.email = loginForm.email.toLowerCase();
+			}
 			console.log("loginForm", loginForm);
 			// loginForm.password = md5(loginForm.password);
 			const response = await loginApi(loginForm);
@@ -44,6 +49,20 @@ const LoginForm = (props: any) => {
 			setTabsList([]);
 			message.success("登录成功！");
 			localStorage.setItem("access_token", access_token);
+			// if (loginForm.email) {
+			// 	const kycResponse = await KYCStateApi(loginForm.email);
+
+			// 	if (kycResponse.status === "approved") {
+			// 		localStorage.setItem("kyc_state", "successful");
+			// 		console.log(kycResponse.status)
+			// 		navigate("/proTable/account");
+			// 	} else {
+			// 		localStorage.setItem("kyc_state", kycResponse.status || "");
+			// 		console.log(kycResponse.status)
+			// 		navigate("/company");
+			// 	}
+
+			// }
 			navigate("/proTable/account");
 		} finally {
 			setLoading(false);
@@ -88,7 +107,13 @@ const LoginForm = (props: any) => {
 					</Form.Item>
 				) : (
 					<Form.Item name="email" rules={[{ required: true, message: `请输入邮箱` }]}>
-						<Input placeholder="邮箱" prefix={<UserOutlined />} />
+						<Input
+							placeholder="邮箱"
+							prefix={<UserOutlined />}
+							onChange={e => {
+								e.target.value = e.target.value.toLowerCase();
+							}}
+						/>
 					</Form.Item>
 				)}
 				<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>

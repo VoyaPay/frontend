@@ -1,4 +1,4 @@
-import { Button, Form, Input, DatePicker, Upload, Modal,message } from "antd";
+import { Button, Form, Input, DatePicker, Upload, Modal, message, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -6,7 +6,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import {createKYCapi} from "@/api/modules/form"
+import { createKYCapi } from "@/api/modules/form";
 
 // Define the types for form values
 interface FormValues {
@@ -100,12 +100,12 @@ const ChineseParentCompanyInfo = () => {
 		try {
 			// 调用 createKYCapi 函数，发送 KYC 信息
 			const response = await createKYCapi();
-	
+
 			// 检查响应是否成功
 			if (response && !response.message) {
 				// 成功消息提示
 				message.success("KYC 信息提交成功， 我们将尽快联系您！");
-				
+
 				// 跳转到登录页面
 				navigate("/login");
 			} else {
@@ -114,14 +114,14 @@ const ChineseParentCompanyInfo = () => {
 			}
 		} catch (error: any) {
 			if (error.response && error.response.data) {
-					// 显示来自服务器的错误消息
-					message.error(error.response.data.message);
+				// 显示来自服务器的错误消息
+				message.error(error.response.data.message);
 			} else {
-					// 显示通用错误信息
-					message.error("发生未知错误，请稍后再试");
+				// 显示通用错误信息
+				message.error("发生未知错误，请稍后再试");
 			}
-			
-	};}
+		}
+	};
 
 	return (
 		<div className="detail-wrap">
@@ -139,7 +139,7 @@ const ChineseParentCompanyInfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
+							&nbsp;&nbsp;&nbsp;&nbsp;*及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 					</div>
 				</div>
@@ -174,9 +174,18 @@ const ChineseParentCompanyInfo = () => {
 							<Form.Item
 								name="companyType"
 								label="企业类型 / Company Type"
-								rules={[{ message: "请输入企业类型 / Please enter the company type" }]}
+								rules={[{ required: true, message: "请选择企业类型 / Please select the company type" }]}
 							>
-								<Input placeholder="请输入企业类型 / Please enter the company type" />
+								<Select placeholder="请选择企业类型 / Please select the company type">
+									<Select.Option value="有限责任公司（自然人独资）">有限责任公司（自然人独资）</Select.Option>
+									<Select.Option value="有限责任公司（法人独资）">有限责任公司（法人独资）</Select.Option>
+									<Select.Option value="有限责任公司（自然人投资或控股）">有限责任公司（自然人投资或控股）</Select.Option>
+									<Select.Option value="有限责任公司（国有独资）">有限责任公司（国有独资）</Select.Option>
+									<Select.Option value="有限责任公司（外商投资）">有限责任公司（外商投资）</Select.Option>
+									<Select.Option value="有限责任公司（外商独资）">有限责任公司（外商独资）</Select.Option>
+									<Select.Option value="股份有限公司（上市公司）">股份有限公司（上市公司）</Select.Option>
+									<Select.Option value="股份有限公司（非上市公司）">股份有限公司（非上市公司）</Select.Option>
+								</Select>
 							</Form.Item>
 
 							{/* 企业成立日期 / Company Establishment Date */}
@@ -205,8 +214,8 @@ const ChineseParentCompanyInfo = () => {
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ message: "请上传营业执照 / Please upload the business license" }]}
 							>
-								<Upload name="businessLicense" action="/upload" listType="picture">
-									<Button icon={<UploadOutlined />}>上传营业执照 / Upload Business License</Button>
+								<Upload beforeUpload={() => false}>
+									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
 

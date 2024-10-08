@@ -190,8 +190,8 @@ const AddPrepaidCard = () => {
 			message.error("邮编只能包含数字");
 			return;
 		}
-		if (value.length > 10) {
-			message.error("邮编长度不能超过10个字符");
+		if (value.length > 5) {
+			message.error("邮编长度不能超过5个字符");
 			return;
 		}
 		setZipCode(value);

@@ -29,31 +29,28 @@ const UsEntityInfo = () => {
 
 	// Automatically populate form data if available in localStorage
 	useEffect(() => {
-		
-			const storedData = localStorage.getItem("data");
-			if (storedData) {
-				const parsedData = JSON.parse(storedData);
-				// Set form values if data exists
-				form.setFieldsValue({
-					usEntityName: parsedData.usEntityInfo?.usEntityName || "",
-					companyWebsite: parsedData.usEntityInfo?.companyWebsite || "",
-					usEntityType: parsedData.usEntityInfo?.usEntityType || "",
-					usEntityEIN: parsedData.usEntityInfo?.usEntityEIN || "",
-					usEntityFormationDate: parsedData.usEntityInfo?.usEntityFormationDate
-						? moment(parsedData.usEntityInfo?.usEntityFormationDate) // Convert date to moment
-						: null,
-					usEntityRegisteredState: parsedData.usEntityInfo?.usEntityRegisteredState || "",
-					usEntityRegisteredAddress: parsedData.usEntityInfo?.usEntityRegisteredAddress || "",
-					usEntityOperatingAddress: parsedData.usEntityInfo?.usEntityOperatingAddress || "",
-					totalEmployees: parsedData.usEntityInfo?.totalEmployees || "",
-				});
-			
+		const storedData = localStorage.getItem("data");
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			// Set form values if data exists
+			form.setFieldsValue({
+				usEntityName: parsedData.usEntityInfo?.usEntityName || "",
+				companyWebsite: parsedData.usEntityInfo?.companyWebsite || "",
+				usEntityType: parsedData.usEntityInfo?.usEntityType || "",
+				usEntityEIN: parsedData.usEntityInfo?.usEntityEIN || "",
+				usEntityFormationDate: parsedData.usEntityInfo?.usEntityFormationDate
+					? moment(parsedData.usEntityInfo?.usEntityFormationDate) // Convert date to moment
+					: null,
+				usEntityRegisteredState: parsedData.usEntityInfo?.usEntityRegisteredState || "",
+				usEntityRegisteredAddress: parsedData.usEntityInfo?.usEntityRegisteredAddress || "",
+				usEntityOperatingAddress: parsedData.usEntityInfo?.usEntityOperatingAddress || "",
+				totalEmployees: parsedData.usEntityInfo?.totalEmployees || ""
+			});
 		}
 	}, [form]);
 
 	// Handle form submission
 	const onSubmit = (values: FormValues) => {
-
 		// Create payload for US Entity Info
 		const usEntityPayload = {
 			usEntityName: values.usEntityName,
@@ -69,7 +66,7 @@ const UsEntityInfo = () => {
 			totalEmployees: values.totalEmployees,
 			companyFormationFile: values.companyFormationFile,
 			einDocumentFile: values.einDocumentFile,
-			operatingAgreementFile: values.operatingAgreementFile,
+			operatingAgreementFile: values.operatingAgreementFile
 		};
 
 		// Get existing data from localStorage
@@ -81,12 +78,12 @@ const UsEntityInfo = () => {
 			// Merge with previous data
 			combinedPayload = {
 				...lastInformation,
-				usEntityInfo: usEntityPayload,
+				usEntityInfo: usEntityPayload
 			};
 		} else {
 			// If no previous data, just save the US Entity Info
 			combinedPayload = {
-				usEntityInfo: usEntityPayload,
+				usEntityInfo: usEntityPayload
 			};
 		}
 
@@ -96,7 +93,7 @@ const UsEntityInfo = () => {
 		message.success("US Entity Information saved successfully!");
 
 		// Navigate to the next page
-		navigate("/form/companyBusiness");
+		navigate("/form/beneficical");
 	};
 
 	// Alphanumeric validation
@@ -126,6 +123,11 @@ const UsEntityInfo = () => {
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
+						<span className="pre">
+							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
+							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
+							questionnaire.
+						</span>
 					</div>
 				</div>
 				<div className="firstCol">
@@ -139,7 +141,7 @@ const UsEntityInfo = () => {
 								label="美国主体全称：US Entity Legal Name"
 								rules={[
 									{ required: true, message: "请输入美国主体全称 / Please enter the US Entity Legal Name" },
-									{ validator: validateAlphanumeric },
+									{ validator: validateAlphanumeric }
 								]}
 							>
 								<Input placeholder="请输入美国主体全称 / Please enter US Entity Legal Name" />
@@ -172,7 +174,7 @@ const UsEntityInfo = () => {
 								label="美国主体EIN(9位数）：US Entity EIN"
 								rules={[
 									{ required: true, message: "请输入美国主体EIN / Please enter US Entity EIN" },
-									{ len: 9, message: "EIN必须是9位数字 / EIN must be 9 digits long" },
+									{ len: 9, message: "EIN必须是9位数字 / EIN must be 9 digits long" }
 								]}
 							>
 								<Input placeholder="请输入美国主体EIN / Please enter US Entity EIN" />
@@ -215,7 +217,7 @@ const UsEntityInfo = () => {
 								label="企业总员工人数：Total Number of Employees"
 								rules={[
 									{ required: true, message: "请输入企业总员工人数 / Please enter Total Number of Employees" },
-									{ validator: validateAlphanumeric },
+									{ validator: validateAlphanumeric }
 								]}
 							>
 								<Input placeholder="请输入总员工人数 / Please enter total number of employees" />
@@ -253,7 +255,7 @@ const UsEntityInfo = () => {
 
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
-									下一步
+									下一步 / Next Step
 								</Button>
 							</div>
 						</Form>

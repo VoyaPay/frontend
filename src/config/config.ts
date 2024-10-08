@@ -82,24 +82,13 @@ export const menu2: any = [
 	},
 	{
 		icon: "AppstoreOutlined",
-		title: "入驻企业美国主体主要信息",
-		path: "/form/usEntityinfo",
-		disabled: !formStatus['CompanyContractInfo'], // 如果联系人信息未填写，则禁用
+		title: "开通场景信息",
+		path: "/form/product",
+		disabled: !formStatus['companyBusinessInfo'], // 确保展业信息已填写
 		hide: false,
 		meta: {
 			requiresAuth: false,
-			key: "usEntityinfo"
-		}
-	},
-	{
-		icon: "AppstoreOutlined",
-		title: "入驻企业香港主体主要信息",
-		path: "/form/hkEntityContact",
-		disabled: !formStatus['CompanyContractInfo'], // 如果联系人信息未填写，则禁用
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "hongkongEntityContact"
+			key: "Products Use Case Information"
 		}
 	},
 	{
@@ -115,15 +104,27 @@ export const menu2: any = [
 	},
 	{
 		icon: "AppstoreOutlined",
-		title: "开通场景信息",
-		path: "/form/product",
-		disabled: !formStatus['companyBusinessInfo'], // 确保展业信息已填写
+		title: "境外入住企业主体信息",
+		path: "/form/usEntityinfo",
+		disabled: !formStatus['CompanyContractInfo'], // 如果联系人信息未填写，则禁用
 		hide: false,
 		meta: {
 			requiresAuth: false,
-			key: "Products Use Case Information"
+			key: "usEntityinfo"
 		}
 	},
+	// {
+	// 	icon: "AppstoreOutlined",
+	// 	title: "入驻境外企业主体主要信息",
+	// 	path: "/form/hkEntityContact",
+	// 	disabled: !formStatus['CompanyContractInfo'], // 如果联系人信息未填写，则禁用
+	// 	hide: false,
+	// 	meta: {
+	// 		requiresAuth: false,
+	// 		key: "hongkongEntityContact"
+	// 	}
+	// },
+	
 	{
 		icon: "AppstoreOutlined",
 		title: "控股股东或实控人信息",
@@ -158,4 +159,3 @@ export const menu2: any = [
 		}
 	}
 ];
-

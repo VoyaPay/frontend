@@ -194,7 +194,7 @@ const ControllingShareholderInfo = () => {
 
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
-									下一步
+									下一步 / Next Step
 								</Button>
 							</div>
 						</Form>

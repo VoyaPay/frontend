@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Radio } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
@@ -15,7 +15,6 @@ interface FormValues {
 }
 
 const CompanyContractInfo = () => {
-	const { Option } = Select;
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ const CompanyContractInfo = () => {
 		// Automatically load stored data if the "email" key exists in localStorage
 
 		const storedData = localStorage.getItem("data");
-		console.log(JSON.parse(localStorage.getItem('data') || '{}'))
+		console.log(JSON.parse(localStorage.getItem("data") || "{}"));
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
 			// Auto-fill the form with stored data
@@ -69,9 +68,10 @@ const CompanyContractInfo = () => {
 		// Save updated data to localStorage
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 		console.log("Updated Payload:", combinedPayload);
+		navigate("/form/product");
 
 		// Navigate based on US entity status
-		navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+		// navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
 	};
 
 	return (
@@ -159,16 +159,16 @@ const CompanyContractInfo = () => {
 										label="是否通过美国主体入驻打款 / Is US Entity?"
 										rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
 									>
-										<Select placeholder="选择一个选项 / Select an option">
-											<Option value="us">是 / Yes</Option>
-											<Option value="hk">否 / No</Option>
-										</Select>
+										<Radio.Group>
+											<Radio value="us">是 / Yes</Radio>
+											<Radio value="hk">否 / No</Radio>
+										</Radio.Group>
 									</Form.Item>
 								</div>
 							</div>
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
-									下一步
+									下一步 / Next Step
 								</Button>
 							</div>
 						</Form>
