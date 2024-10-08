@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import type { MenuProps } from "antd";
 import * as Icons from "@ant-design/icons";
 import Logo from "./components/Logo";
-import {formStatus, menu2 } from "@/config/config";
+import { formStatus, menu2 } from "@/config/config";
 import "./index.less";
 
 const LayoutMenu = (props: any) => {
@@ -47,7 +47,7 @@ const LayoutMenu = (props: any) => {
 			icon,
 			children,
 			label,
-			type,
+			type
 		} as MenuItem;
 	};
 
@@ -58,7 +58,7 @@ const LayoutMenu = (props: any) => {
 	};
 
 	interface ExtendedMenuOptions extends Menu.MenuOptions {
-			hide?: boolean;  // 扩展 hide 属性
+		hide?: boolean; // 扩展 hide 属性
 	}
 
 	// 处理后台返回菜单 key 值为 antd 菜单需要的 key 值
@@ -82,7 +82,7 @@ const LayoutMenu = (props: any) => {
 		try {
 			// const { data } = await getMenuList();
 			// if (!data) return;
-			console.log(formStatus)
+			console.log(formStatus);
 			setMenuList(deepLoopFloat(menu2));
 			// 存储处理过后的所有面包屑导航栏到 redux 中
 			setBreadcrumbList(findAllBreadcrumb(menu2));
@@ -98,9 +98,10 @@ const LayoutMenu = (props: any) => {
 		getMenuData();
 	}, []);
 
-	// 点击当前菜单跳转页面
+	// 点击当前菜单跳转页面   <div style={{ pointerEvents: 'none' }}>
 	const navigate = useNavigate();
 	const clickMenu: MenuProps["onClick"] = ({ key }: { key: string }) => {
+		console.log(key);
 		const route = searchRoute(key, props.menuList);
 		if (route.isLink) window.open(route.isLink, "_blank");
 		navigate(key);
@@ -110,16 +111,18 @@ const LayoutMenu = (props: any) => {
 		<div className="menu">
 			<Spin spinning={loading} tip="Loading...">
 				<Logo></Logo>
-				<Menu
-					theme="dark"
-					mode="inline"
-					triggerSubMenuAction="click"
-					openKeys={openKeys}
-					selectedKeys={selectedKeys}
-					items={menuList}
-					onClick={clickMenu}
-					onOpenChange={onOpenChange}
-				></Menu>
+				<div>
+					<Menu
+						theme="dark"
+						mode="inline"
+						triggerSubMenuAction="click"
+						openKeys={openKeys}
+						selectedKeys={selectedKeys}
+						items={menuList}
+						onClick={clickMenu}
+						onOpenChange={onOpenChange}
+					></Menu>
+				</div>
 			</Spin>
 		</div>
 	);

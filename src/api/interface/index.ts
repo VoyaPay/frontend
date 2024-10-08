@@ -66,6 +66,7 @@ export interface Result {
 	balance?: number;
 	userConfig: configDetail;
 	number?: string;
+	status?:string;
 }
 
 // * 请求响应参数(包含data)
@@ -92,6 +93,7 @@ export namespace Login {
 	export interface ReqLoginForm {
 		username: string;
 		password: string;
+		email?:string
 	}
 	export interface ResLogin {
 		access_token: string;
