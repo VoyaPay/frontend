@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select, Radio } from "antd";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -10,6 +10,7 @@ interface FormValues {
 	industry: string;
 	businessDescription: string;
 	monthlySpend: string;
+	isUSEntity: string;
 }
 
 const CompanyBusinessInfo = () => {
@@ -27,7 +28,8 @@ const CompanyBusinessInfo = () => {
 			form.setFieldsValue({
 				industry: parsedData.companyBusinessInfo?.industry || "",
 				businessDescription: parsedData.companyBusinessInfo?.businessDescription || "",
-				monthlySpend: parsedData.companyBusinessInfo?.monthlySpend || ""
+				monthlySpend: parsedData.companyBusinessInfo?.monthlySpend || "",
+				isUSEntity: parsedData.CompanyContractInfo?.isUSEntity || "us"
 			});
 		}
 	}, [form]);
@@ -37,7 +39,8 @@ const CompanyBusinessInfo = () => {
 		const businessInfoPayload = {
 			industry: values.industry,
 			businessDescription: values.businessDescription,
-			monthlySpend: values.monthlySpend
+			monthlySpend: values.monthlySpend,
+			isUSEntity: values.isUSEntity
 		};
 
 		// Retrieve the current data stored under the email
@@ -63,9 +66,8 @@ const CompanyBusinessInfo = () => {
 
 		console.log("Combined Payload:", combinedPayload);
 
-		// Navigate to the next page
-		const storedData = JSON.parse(localStorage.getItem('data') || '{}');
-		navigate(storedData.CompanyContractInfo?.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+		navigate(businessInfoPayload.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+
 	};
 
 	return (
@@ -101,7 +103,7 @@ const CompanyBusinessInfo = () => {
 						<Form form={form} name="companyBusinessInfo" layout="vertical" onFinish={onSubmit}>
 							<Form.Item
 								name="industry"
-								label="企业所在行业：Industry"
+								label="企业所在行业 / Industry:"
 								rules={[{ required: true, message: "请选择企业所在行业 / Please select the industry" }]}
 							>
 								<Select placeholder="请选择企业所在行业 / Please select the industry">
@@ -116,7 +118,7 @@ const CompanyBusinessInfo = () => {
 
 							<Form.Item
 								name="businessDescription"
-								label="简述企业主营业务 / Business Description"
+								label="简述企业主营业务 / Business Description:"
 								rules={[{ required: true, message: "请输入企业主营业务 / Please enter business description" }]}
 							>
 								<Input.TextArea placeholder="请输入企业主营业务 / Please enter business description" />
@@ -124,7 +126,7 @@ const CompanyBusinessInfo = () => {
 
 							<Form.Item
 								name="monthlySpend"
-								label="企业平均月消耗量范围（USD） / Company Average Monthly Spend (USD)"
+								label="企业平均月消耗量范围（USD） / Company Average Monthly Spend (USD):"
 								rules={[{ required: true, message: "请选择企业月消耗量 / Please select a spend range" }]}
 							>
 								<Select placeholder="请选择企业月消耗量 / Please select a spend range">
@@ -136,6 +138,16 @@ const CompanyBusinessInfo = () => {
 									<Option value="above10">Above $10M</Option>
 								</Select>
 							</Form.Item>
+							<Form.Item
+										name="isUSEntity"
+										label="请选择入驻境外主体的所属的国家和地区 / Please select the country or region where the overseas entity is located:"
+										rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
+									>
+										<Radio.Group>
+											<Radio value="us">是 / Yes</Radio>
+											<Radio value="hk">否 / No</Radio>
+										</Radio.Group>
+									</Form.Item>
 
 							<div className="btns">
 								<Button type="primary" htmlType="submit">
