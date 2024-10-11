@@ -1,4 +1,4 @@
-import { Form, Input, Button, Space, InputNumber, Modal, Col } from "antd";
+import { Form, Input, Button, Space, InputNumber, Modal, Col,message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -66,6 +66,10 @@ const ControllingShareholderInfo = () => {
 			combinedPayload = {
 				controllingShareholderInfo: controllingShareholdersPayload
 			};
+		}
+		if (controllingShareholdersPayload.shareholders.length<1){
+			message.error("至少需要填写一名控权股东")
+			return
 		}
 
 		// Save the combined payload back into localStorage under the email key

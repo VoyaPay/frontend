@@ -6,7 +6,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import { createKYCapi } from "@/api/modules/form";
+import { createKYCapi, FileApi } from "@/api/modules/form";
 
 // Define the types for form values
 interface FormValues {
@@ -16,12 +16,13 @@ interface FormValues {
 	establishmentDate: any;
 	licenseExpiryDate: any;
 	legalRepresentative: string;
-	businessLicense: any;
+	businessLicense: any; // 上传的文件信息
 }
 
 const ChineseParentCompanyInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
+	const [fileList, setFileList] = useState<any[]>([]);
 	const navigate = useNavigate();
 
 	// Populate form with existing data from localStorage when the component mounts
@@ -45,12 +46,30 @@ const ChineseParentCompanyInfo = () => {
 	}, [form]);
 
 	// Handle form submission
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = async (values: FormValues) => {
 		// Retrieve the user's email from localStorage
-		const email = localStorage.getItem("data") || "";
+		const email = localStorage.getItem("email") || "";
 		if (!email) {
 			console.error("Email not found in localStorage");
 			return;
+		}
+
+		// 上传文件并处理响应
+		if (fileList.length > 0) {
+			const file = fileList[0].originFileObj; // 获取上传的文件对象
+			try {
+				const response = await FileApi(file, email); // 使用 FileApi 上传文件
+				if (response) {
+					message.success("文件上传成功 / File uploaded successfully");
+					values.businessLicense = response.fileID; // 假设 API 返回文件 URL
+				} else {
+					message.error("文件上传失败 / File upload failed");
+					return;
+				}
+			} catch (error) {
+				message.error("文件上传时发生错误 / Error occurred during file upload");
+				return;
+			}
 		}
 
 		// Create the payload for the Chinese parent company info
@@ -61,7 +80,7 @@ const ChineseParentCompanyInfo = () => {
 			establishmentDate: values.establishmentDate,
 			licenseExpiryDate: values.licenseExpiryDate,
 			legalRepresentative: values.legalRepresentative,
-			businessLicense: values.businessLicense
+			businessLicense: values.businessLicense // 文件上传后的 URL
 		};
 
 		// Retrieve any existing data stored under the user's email
@@ -84,7 +103,6 @@ const ChineseParentCompanyInfo = () => {
 
 		// Save the updated payload to localStorage under the user's email
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
-
 		console.log("Combined Payload:", localStorage.getItem("data"));
 
 		// Open confirmation modal
@@ -123,6 +141,10 @@ const ChineseParentCompanyInfo = () => {
 		}
 	};
 
+	const onFileChange = ({ fileList }: any) => {
+		setFileList(fileList); // 更新文件列表状态
+	};
+
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
@@ -139,12 +161,11 @@ const ChineseParentCompanyInfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
+							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
+							*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and compliance interviews,
+							meetings, and on-site visits with customers based on the content provided in the questionnaire.
 						</span>
 					</div>
 				</div>
@@ -154,7 +175,6 @@ const ChineseParentCompanyInfo = () => {
 						<div className="title">Chinese Parent Company Information</div>
 
 						<Form form={form} name="companyInfoForm" layout="vertical" onFinish={onSubmit}>
-							{/* 企业名称 / Company Name */}
 							<Form.Item
 								name="companyName"
 								label="企业名称 / Company Name:"
@@ -163,7 +183,6 @@ const ChineseParentCompanyInfo = () => {
 								<Input placeholder="请输入企业名称 / Please enter the company name" />
 							</Form.Item>
 
-							{/* 统一社会信用代码 / Unified Social Credit Code (18 digits/letters) */}
 							<Form.Item
 								name="creditCode"
 								label="统一社会信用代码（18位数字及字母）/ Unified Social Credit Code (18 digits/letters):"
@@ -175,7 +194,6 @@ const ChineseParentCompanyInfo = () => {
 								<Input placeholder="请输入统一社会信用代码 / Please enter the unified social credit code" />
 							</Form.Item>
 
-							{/* 企业类型 / Company Type */}
 							<Form.Item
 								name="companyType"
 								label="企业类型 / Company Type:"
@@ -193,7 +211,6 @@ const ChineseParentCompanyInfo = () => {
 								</Select>
 							</Form.Item>
 
-							{/* 企业成立日期 / Company Establishment Date */}
 							<Form.Item name="establishmentDate" label="企业成立日期 / Company Establishment Date:">
 								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
 							</Form.Item>
@@ -202,7 +219,6 @@ const ChineseParentCompanyInfo = () => {
 								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
 							</Form.Item>
 
-							{/* 法定代表人 / Legal Representative */}
 							<Form.Item
 								name="legalRepresentative"
 								label="法定代表人 / Legal Representative:"
@@ -211,18 +227,17 @@ const ChineseParentCompanyInfo = () => {
 								<Input placeholder="请输入法定代表人姓名 / Please enter the legal representative name" />
 							</Form.Item>
 
-							{/* 中国关联公司营业执照上传 / Chinese Affiliate Company Business License */}
 							<Form.Item
 								name="businessLicense"
 								label="中国关联公司营业执照 / Chinese Affiliate Company Business License:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ message: "请上传营业执照 / Please upload the business license" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload beforeUpload={() => false} onChange={onFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
+
 							<Form.Item
 								name="agreement"
 								valuePropName="checked"
@@ -241,12 +256,10 @@ const ChineseParentCompanyInfo = () => {
 								</Checkbox>
 							</Form.Item>
 
-							{/* Submit Button */}
 							<Button type="primary" htmlType="submit">
 								提交 / Submit
 							</Button>
 						</Form>
-
 						<Modal title="确认" visible={open} onOk={handleOk} onCancel={handleCancel}>
 							<p>我确认我已完整如实填写所有信息</p>
 							<p>I confirm that I have fully and truthfully provided the information</p>
