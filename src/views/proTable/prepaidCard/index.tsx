@@ -51,15 +51,14 @@ interface FormattedCard {
 	partnerIdempotencyKey: string;
 	cardHolderName: string;
 	number?: string;
+	maximumCardsAllowed?: number;
 }
 
 const PrepaidCard = () => {
 	// State to hold the card data
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
-	const initialTotalCards = 100;
 	const [bins, setbins] = useState<BinData[]>([]);
-	const [totalCardNumber, setTotalCardNumber] = useState(initialTotalCards);
 
 	const [accountBalance, setAccountBalance] = useState(0);
 
@@ -72,7 +71,8 @@ const PrepaidCard = () => {
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
-	const userInformation = async () => {
+	const [totalCardNumber, setTotalCardNumber] = useState<number | null>(null);
+	const userInformation = async (): Promise<number> => {
 		try {
 			const response = await AccountApi();
 			console.log(response.userConfig.maximumCardsAllowed);
@@ -85,10 +85,13 @@ const PrepaidCard = () => {
 				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
 			};
 			setTotalCardNumber(formattedData.maximumCardsAllowed);
+			return formattedData.maximumCardsAllowed; // Return the value
 		} catch (error) {
 			console.log("Error fetching user information: " + error);
+			return 0; // Return 0 in case of error
 		}
 	};
+
 	const getCardBin = async () => {
 		try {
 			const response = await CardbinApi();
@@ -112,8 +115,11 @@ const PrepaidCard = () => {
 	}));
 	const fetchUserCards = async () => {
 		try {
+			const maxCards = await userInformation();
 			const response = await UserCardApi();
-			console.log(response);
+			console.log(response.length);
+			const totalcard = maxCards- parseFloat(response.length as string);
+			setTotalCardNumber(totalcard);
 
 			if (Array.isArray(response)) {
 				const formattedData = response.map(card => ({
@@ -136,17 +142,36 @@ const PrepaidCard = () => {
 						card.cardHolderLastName ? card.cardHolderLastName : "LM"
 					}`
 				}));
-				const totalcard = totalCardNumber - formattedData.length;
+
 				console.log(formattedData);
 
 				console.log("final data" + formattedData);
-				setTotalCardNumber(totalcard);
 				setDataSource(formattedData);
 				setFilteredData(formattedData);
 			}
 		} catch (error) {
 			console.error("Failed to fetch user cards:", error);
 		}
+	};
+	useEffect(() => {
+		getCardBin();
+		getBalance();
+		fetchUserCards();
+		console.log(binOptions);
+	}, []);
+	const goCheck = (record: FormattedCard) => {
+		navigate("/proTable/tradeQuery", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
 	};
 
 	const getBalance = async () => {
@@ -160,14 +185,6 @@ const PrepaidCard = () => {
 			console.log("Cannot get balance of the account:", error);
 		}
 	};
-
-	useEffect(() => {
-		getCardBin();
-		userInformation();
-		getBalance();
-		fetchUserCards();
-		console.log(binOptions);
-	}, []);
 
 	const columns: any[] = [
 		{
@@ -253,7 +270,7 @@ const PrepaidCard = () => {
 			dataIndex: "transactionDetail",
 			key: "transactionDetail",
 			align: "center",
-			width: "50px",
+			width: "90px",
 			render: (text: string, record: FormattedCard) => (
 				<Space>
 					<Button type="link" size="small" onClick={() => handleViewDetails(record)}>
@@ -261,6 +278,9 @@ const PrepaidCard = () => {
 					</Button>
 					<Button type="link" size="small" onClick={() => handlerRechargeDetails(record)}>
 						充值
+					</Button>
+					<Button type="link" size="small" onClick={() => goCheck(record)}>
+						消费记录
 					</Button>
 				</Space>
 			)

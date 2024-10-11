@@ -19,7 +19,7 @@ const AddPrepaidCard = () => {
 	const [amount, setAmount] = useState(0);
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [streetAddress, setStreetAddress] = useState("1201 North Market Street, Suite 111");
+	const [streetAddress, setStreetAddress] = useState("1201 North Market Street");
   const [city, setCity] = useState("Wilmington");
   const [state, setState] = useState("DE");
   const [zipcode, setZipCode] = useState("19801");

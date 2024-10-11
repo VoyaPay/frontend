@@ -68,6 +68,7 @@ export interface Result {
 	number?: string;
 	status?:string;
 	fileID?:string;
+	length?:string;
 
 }
 

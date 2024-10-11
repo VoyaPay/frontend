@@ -244,8 +244,6 @@ const userInformation = async () => {
 		localStorage.setItem("username", formattedData.fullName);
 		localStorage.setItem("useremail", formattedData.email);
 		localStorage.setItem("companyName", formattedData.companyName);
-		localStorage.setItem("cardfee", formattedData.cardCreationFee);
-		localStorage.setItem("cardsallowed", String(response.userConfig.maximumCardsAllowed));
 	} catch (error) {
 		console.log("Error fetching user information: " + error);
 	}
