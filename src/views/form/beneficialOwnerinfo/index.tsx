@@ -64,6 +64,10 @@ const BeneficialOwnerInfo = () => {
 				beneficialOwnerInfo: beneficialOwnersPayload
 			};
 		}
+		if (beneficialOwnersPayload.beneficialOwners.length < 1) {
+			message.error("至少需要填写一名控权股东");
+			return;
+		}
 
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 		console.log("Combined Payload:", combinedPayload);

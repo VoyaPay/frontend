@@ -217,7 +217,6 @@ const ChineseParentCompanyInfo = () => {
 								label="中国关联公司营业执照 / Chinese Affiliate Company Business License:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ message: "请上传营业执照 / Please upload the business license" }]}
 							>
 								<Upload beforeUpload={() => false}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
