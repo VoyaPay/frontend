@@ -118,7 +118,7 @@ const ControllingShareholderInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "entityName"]}
-															label="控股股东或实控人名称 / Controlling Party/Entity Name"
+															label="控股股东或实控人名称 / Controlling Party/Entity Name:"
 															rules={[
 																{ required: true, message: "控股股东或实际控制人名称或企业名称 / Please enter party/entity name" }
 															]}
@@ -131,7 +131,7 @@ const ControllingShareholderInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "nationalityOrLocation"]}
-															label="国籍或企业所在地 / Nationality or Company Location"
+															label="国籍或企业所在地 / Nationality or Company Location:"
 															rules={[
 																{
 																	required: true,
@@ -147,7 +147,7 @@ const ControllingShareholderInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "position"]}
-															label="职位 / Position"
+															label="职位 / Position:"
 															rules={[{ required: true, message: "请输入职位 / Please enter the position" }]}
 														>
 															<Input placeholder="请输入职位 / Please enter position" />
@@ -157,7 +157,7 @@ const ControllingShareholderInfo = () => {
 												<div className="row">
 													<Col span={15}>
 														{/* SSN/ITIN */}
-														<Form.Item {...restField} name={[name, "ssnOrItin"]} label="SSN/ITIN（如有） / SSN/ITIN (if any)">
+														<Form.Item {...restField} name={[name, "ssnOrItin"]} label="SSN/ITIN（如有） / SSN/ITIN (if any):">
 															<Input placeholder="SSN/ITIN" />
 														</Form.Item>
 													</Col>
@@ -166,13 +166,13 @@ const ControllingShareholderInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "ownershipPercentage"]}
-															label="股权占比（%） / Ownership Percentage (%)"
+															label="股权占比（%） / Ownership Percentage (%):"
 															rules={[{ required: true, message: "请输入股权占比 / Please enter ownership percentage" }]}
 														>
 															<InputNumber
 																min={0}
 																max={100}
-																placeholder="股权占比（%） / Ownership Percentage"
+																placeholder="股权占比（%） / Ownership Percentage:"
 																style={{ width: "100%" }}
 															/>
 														</Form.Item>

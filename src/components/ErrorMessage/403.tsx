@@ -13,7 +13,7 @@ const NotAuth = () => {
 	return (
 		<Result
 			icon={<img src={checkImage} alt="welcome" style={{ width: '100px', height: '100px' }} />} 
-			title="Welcome to Voyapay"
+			title="Welcome to VoyaPay"
 			
 			extra={
 				<Button type="primary" onClick={goHome}>

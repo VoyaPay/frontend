@@ -1,4 +1,4 @@
-import { Button, Form, Input, Radio } from "antd";
+import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
@@ -11,7 +11,6 @@ interface FormValues {
 	contactMobile: string;
 	contactPosition: string;
 	contactEmail: string;
-	isUSEntity: string;
 }
 
 const CompanyContractInfo = () => {
@@ -32,7 +31,6 @@ const CompanyContractInfo = () => {
 				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
 				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
 				contactEmail: parsedData.CompanyContractInfo?.contactEmail || "",
-				isUSEntity: parsedData.CompanyContractInfo?.isUSEntity || "us"
 			});
 		}
 	}, [form]);
@@ -44,7 +42,6 @@ const CompanyContractInfo = () => {
 			contactMobile: values.contactMobile,
 			contactPosition: values.contactPosition,
 			contactEmail: values.contactEmail,
-			isUSEntity: values.isUSEntity
 		};
 
 		// Retrieve existing data
@@ -116,23 +113,23 @@ const CompanyContractInfo = () => {
 								<div className="left">
 									<Form.Item
 										name="contactName"
-										label="联系人姓名 / Contact Name"
-										rules={[{ required: true, message: "请输入联系人姓名 / Please enter contact name" }]}
+										label="联系人姓名 / Contact Name:"
+										rules={[{ required: true, message: "请输入联系人姓名 / Please enter contact name:" }]}
 									>
 										<Input placeholder="请输入联系人姓名 / Please enter contact name" />
 									</Form.Item>
 
 									<Form.Item
 										name="contactPhone"
-										label="联系人联系电话（固话） / Contact Work Number"
-										rules={[{ required: true, message: "请输入联系人联系电话 / Please enter contact work number" }]}
+										label="联系人联系电话（固话） / Contact Work Number:"
+										rules={[{ required: true, message: "请输入联系人联系电话 / Please enter contact work number:" }]}
 									>
 										<Input placeholder="请输入联系人联系电话（固话） / Please enter work number" />
 									</Form.Item>
 
 									<Form.Item
 										name="contactMobile"
-										label="联系人联系电话（手机） / Contact Mobile Number"
+										label="联系人联系电话（手机） / Contact Mobile Number:"
 										rules={[{ required: true, message: "请输入联系人联系电话（手机） / Please enter mobile number" }]}
 									>
 										<Input placeholder="请输入联系人联系电话（手机） / Please enter mobile number" />
@@ -140,7 +137,7 @@ const CompanyContractInfo = () => {
 
 									<Form.Item
 										name="contactPosition"
-										label="联系人部门与职位 / Contact's Position"
+										label="联系人部门与职位 / Contact's Position:"
 										rules={[{ required: true, message: "请输入联系人部门与职位 / Please enter contact's position" }]}
 									>
 										<Input placeholder="请输入联系人部门与职位 / Please enter contact's position" />
@@ -148,22 +145,12 @@ const CompanyContractInfo = () => {
 
 									<Form.Item
 										name="contactEmail"
-										label="联系人联系邮箱 / Contact Email"
+										label="联系人联系邮箱 / Contact Email:"
 										rules={[{ required: true, type: "email", message: "请输入有效的邮箱地址 / Please enter a valid email" }]}
 									>
 										<Input placeholder="请输入联系人联系邮箱 / Please enter contact email" />
 									</Form.Item>
 
-									<Form.Item
-										name="isUSEntity"
-										label="是否通过美国主体入驻打款 / Is US Entity?"
-										rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
-									>
-										<Radio.Group>
-											<Radio value="us">是 / Yes</Radio>
-											<Radio value="hk">否 / No</Radio>
-										</Radio.Group>
-									</Form.Item>
 								</div>
 							</div>
 							<div className="btns">

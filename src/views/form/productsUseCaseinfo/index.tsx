@@ -124,7 +124,7 @@ const ProductsUseCaseInfo = () => {
 							{/* Requested Products */}
 							<Form.Item
 								name="requestedProducts"
-								label="拟开通产品服务 / Requested Products"
+								label="拟开通产品服务 / Requested Products:"
 								rules={[{ required: true, message: "请选择拟开通产品 / Please select requested products" }]}
 							>
 								<Select placeholder="请选择拟开通产品 / Please select requested products">
@@ -136,7 +136,7 @@ const ProductsUseCaseInfo = () => {
 							{/* Estimated Monthly Spend */}
 							<Form.Item
 								name="estimatedMonthlySpend"
-								label="预计月消耗量范围（USD） / Estimated Monthly Spend (USD)"
+								label="预计月消耗量范围（USD） / Estimated Monthly Spend (USD):"
 								rules={[{ required: true, message: "请选择预计月消耗量 / Please select estimated monthly spend" }]}
 							>
 								<Select placeholder="请选择预计月消耗量 / Please select estimated monthly spend">
@@ -152,7 +152,7 @@ const ProductsUseCaseInfo = () => {
 							{/* Spending Use Case */}
 							<Form.Item
 								name="spendingUseCase"
-								label="消费场景 / Spending Use Case"
+								label="消费场景 / Spending Use Case:"
 								rules={[{ required: true, message: "请选择消费场景 / Please select a spending use case" }]}
 							>
 								<Select placeholder="请选择消费场景 / Please select spending use case">
@@ -167,7 +167,7 @@ const ProductsUseCaseInfo = () => {
 							{/* If "Others", list other use cases */}
 							<Form.Item
 								name="otherUseCase"
-								label='如果选择“其他”，请罗列其他的消费场景 / If "Others", please list the other use cases'
+								label='如果选择“其他”，请罗列其他的消费场景 / If "Others", please list the other use cases:'
 								rules={[{ required: false }]} // This field is optional
 							>
 								<Input.TextArea placeholder="请列出其他消费场景 / Please list other use cases" />
@@ -176,7 +176,7 @@ const ProductsUseCaseInfo = () => {
 							{/* Business Model */}
 							<Form.Item
 								name="businessModel"
-								label="业务模式 / Business Model"
+								label="业务模式 / Business Model:"
 								rules={[{ required: true, message: "请选择业务模式 / Please select the business model" }]}
 							>
 								<Select placeholder="请选择业务模式 / Please select the business model" onChange={handleBusinessModelChange}>
@@ -190,7 +190,7 @@ const ProductsUseCaseInfo = () => {
 								<>
 									<Form.Item
 										name="b2bClientNumber"
-										label="预估企业客户数 / Estimated Client Number (B2B)"
+										label="预估企业客户数 / Estimated Client Number (B2B):"
 										rules={[{ required: true, message: "请输入预估企业客户数 / Please enter estimated client number" }]}
 									>
 										<Input placeholder="请输入预估企业客户数 / Please enter estimated client number" />
@@ -198,7 +198,7 @@ const ProductsUseCaseInfo = () => {
 
 									<Form.Item
 										name="b2bClientSpend"
-										label="预估月平均消耗量 / Estimated Monthly Spend (B2B)"
+										label="预估月平均消耗量 / Estimated Monthly Spend (B2B):"
 										rules={[{ required: true, message: "请输入预估月平均消耗量 / Please enter estimated monthly spend" }]}
 									>
 										<Input placeholder="请输入预估月平均消耗量 / Please enter estimated monthly spend" />
@@ -211,7 +211,7 @@ const ProductsUseCaseInfo = () => {
 								<>
 									<Form.Item
 										name="b2cClientNumber"
-										label="预估个人客户数 / Estimated Client Number (B2C)"
+										label="预估个人客户数 / Estimated Client Number (B2C):"
 										rules={[{ required: true, message: "请输入预估个人客户数 / Please enter estimated client number" }]}
 									>
 										<Input placeholder="请输入预估个人客户数 / Please enter estimated client number" />
@@ -219,7 +219,7 @@ const ProductsUseCaseInfo = () => {
 
 									<Form.Item
 										name="b2cClientSpend"
-										label="预估月平均消耗量 / Estimated Monthly Spend (B2C)"
+										label="预估月平均消耗量 / Estimated Monthly Spend (B2C):"
 										rules={[{ required: true, message: "请输入预估月平均消耗量 / Please enter estimated monthly spend" }]}
 									>
 										<Input placeholder="请输入预估月平均消耗量 / Please enter estimated monthly spend" />
