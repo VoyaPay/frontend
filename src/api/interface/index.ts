@@ -67,6 +67,9 @@ export interface Result {
 	userConfig: configDetail;
 	number?: string;
 	status?:string;
+	fileID?:string;
+	length?:string;
+
 }
 
 // * 请求响应参数(包含data)

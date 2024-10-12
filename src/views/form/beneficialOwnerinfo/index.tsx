@@ -64,6 +64,10 @@ const BeneficialOwnerInfo = () => {
 				beneficialOwnerInfo: beneficialOwnersPayload
 			};
 		}
+		if (beneficialOwnersPayload.beneficialOwners.length < 1) {
+			message.error("至少需要填写一名控权股东");
+			return;
+		}
 
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 		console.log("Combined Payload:", combinedPayload);
@@ -125,7 +129,7 @@ const BeneficialOwnerInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "individualName"]}
-															label="自然人名称 / Individual Name"
+															label="自然人名称 / Individual Name:"
 															rules={[{ required: true, message: "请输入自然人名称 / Please enter the individual's name" }]}
 														>
 															<Input placeholder="请输入自然人名称 / Please enter the individual's name" />
@@ -136,7 +140,7 @@ const BeneficialOwnerInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "nationality"]}
-															label="国籍 / Nationality"
+															label="国籍 / Nationality:"
 															rules={[{ required: true, message: "请输入国籍 / Please enter nationality" }]}
 														>
 															<Input placeholder="请输入国籍 / Please enter nationality" />
@@ -147,7 +151,7 @@ const BeneficialOwnerInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "address"]}
-															label="住址 / Residential Address"
+															label="住址 / Residential Address:"
 															rules={[{ required: true, message: "请输入住址 / Please enter residential address" }]}
 														>
 															<Input placeholder="请输入住址 / Please enter residential address" />
@@ -158,7 +162,7 @@ const BeneficialOwnerInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "ownershipPercentage"]}
-															label="股权占比（%） / Ownership Percentage (%)"
+															label="股权占比（%） / Ownership Percentage (%):"
 															rules={[{ required: true, message: "请输入股权占比 / Please enter ownership percentage" }]}
 														>
 															<InputNumber
@@ -173,7 +177,7 @@ const BeneficialOwnerInfo = () => {
 														<Form.Item
 															{...restField}
 															name={[name, "uploadFile"]}
-															label="持股25%以上股东的身份证或护照（正反面照片） / ID or Passport of Shareholder"
+															label="持股25%以上股东的身份证或护照（正反面照片） / ID or Passport of Shareholder:"
 															valuePropName="fileList"
 															getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)} // Ensure the file list is properly handled
 															rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}

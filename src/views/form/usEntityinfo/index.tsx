@@ -138,7 +138,7 @@ const UsEntityInfo = () => {
 						<Form form={form} name="usEntityForm" layout="vertical" onFinish={onSubmit}>
 							<Form.Item
 								name="usEntityName"
-								label="美国主体全称：US Entity Legal Name"
+								label="美国主体全称 / US Entity Legal Name:"
 								rules={[
 									{ required: true, message: "请输入美国主体全称 / Please enter the US Entity Legal Name" },
 									{ validator: validateAlphanumeric }
@@ -149,7 +149,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="companyWebsite"
-								label="企业网站链接：Company Website"
+								label="企业网站链接 / Company Website:"
 								rules={[{ required: true, type: "url", message: "请输入有效的网站链接 / Please enter a valid URL" }]}
 							>
 								<Input placeholder="请输入企业网站链接 / Please enter Company Website" />
@@ -157,7 +157,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="usEntityType"
-								label="美国主体类型：US Entity Type"
+								label="美国主体类型 / US Entity Type:"
 								rules={[{ required: true, message: "请选择美国主体类型 / Please select the US Entity Type" }]}
 							>
 								<Select placeholder="请选择美国主体类型 / Select US Entity Type">
@@ -171,7 +171,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="usEntityEIN"
-								label="美国主体EIN(9位数）：US Entity EIN"
+								label="美国主体EIN(9位数) / US Entity EIN:"
 								rules={[
 									{ required: true, message: "请输入美国主体EIN / Please enter US Entity EIN" },
 									{ len: 9, message: "EIN必须是9位数字 / EIN must be 9 digits long" }
@@ -182,7 +182,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="usEntityFormationDate"
-								label="美国主体成立时间：US Entity Formation Date"
+								label="美国主体成立时间 / US Entity Formation Date:"
 								rules={[{ required: true, message: "请选择美国主体成立时间 / Please select the US Entity Formation Date" }]}
 							>
 								<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
@@ -190,7 +190,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="usEntityRegisteredState"
-								label="美国主体注册州：US Entity Registered State"
+								label="美国主体注册州 / US Entity Registered State:"
 								rules={[{ required: true, message: "请输入美国主体注册州 / Please enter US Entity Registered State" }]}
 							>
 								<Input placeholder="请输入美国主体注册州 / Please enter US Entity Registered State" />
@@ -198,7 +198,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="usEntityRegisteredAddress"
-								label="美国主体注册地址：US Entity Registered Address"
+								label="美国主体注册地址 / US Entity Registered Address:"
 								rules={[{ required: true, message: "请输入美国主体注册地址 / Please enter US Entity Registered Address" }]}
 							>
 								<Input placeholder="请输入美国主体注册地址 / Please enter US Entity Registered Address" />
@@ -206,7 +206,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="usEntityOperatingAddress"
-								label="美国主体运营地址：US Entity Operating Address"
+								label="美国主体运营地址 / US Entity Operating Address:"
 								rules={[{ required: true, message: "请输入美国主体运营地址 / Please enter US Entity Operating Address" }]}
 							>
 								<Input placeholder="请输入美国主体运营地址 / Please enter US Entity Operating Address" />
@@ -214,7 +214,7 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="totalEmployees"
-								label="企业总员工人数：Total Number of Employees"
+								label="企业总员工人数 / Total Number of Employees:"
 								rules={[
 									{ required: true, message: "请输入企业总员工人数 / Please enter Total Number of Employees" },
 									{ validator: validateAlphanumeric }
@@ -225,30 +225,48 @@ const UsEntityInfo = () => {
 
 							<Form.Item
 								name="companyFormationFile"
-								label="公司注册文件：Company Formation Article"
+								label="公司注册文件 / Company Formation Article:"
 								rules={[{ required: true, message: "请上传公司注册文件 / Please upload the Company Formation Article" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload
+									beforeUpload={file => {
+										// Manually handle the file selection here, for example:
+										form.setFieldsValue({ companyFormationFile: file });
+										return false; // Prevent automatic upload
+									}}
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
 
 							<Form.Item
 								name="einDocumentFile"
-								label="雇主税号文件（EIN）：EIN Document"
+								label="雇主税号文件（EIN）/ EIN Document:"
 								rules={[{ required: true, message: "请上传雇主税号文件 / Please upload the EIN Document" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload
+									beforeUpload={file => {
+										// Manually handle the file selection here, for example:
+										form.setFieldsValue({ einDocumentFile: file });
+										return false; // Prevent automatic upload
+									}}
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
 
 							<Form.Item
 								name="operatingAgreementFile"
-								label="公司章程：Operating Agreement"
+								label="公司章程 / Operating Agreement:"
 								rules={[{ required: true, message: "请上传公司章程 / Please upload the Operating Agreement" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload
+									beforeUpload={file => {
+										// Manually handle the file selection here, for example:
+										form.setFieldsValue({ OperatingAgreement: file });
+										return false; // Prevent automatic upload
+									}}
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>

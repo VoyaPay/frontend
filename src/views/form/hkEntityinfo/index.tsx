@@ -95,8 +95,7 @@ const HKEntityInfo = () => {
 
 					<div className="content">
 						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
+							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
 						</span>
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
@@ -113,7 +112,7 @@ const HKEntityInfo = () => {
 						<Form form={form} name="hkEntityForm" layout="vertical" onFinish={onSubmit} onFinishFailed={onFinishFailed}>
 							<Form.Item
 								name="hkEntityName"
-								label="香港主体全称 / HK Entity Legal Name"
+								label="香港主体全称 / HK Entity Legal Name:"
 								rules={[
 									{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" },
 									{ validator: validateAlphanumeric }
@@ -124,7 +123,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="companyWebsite"
-								label="入网企业企业网站链接 / Company Website"
+								label="入网企业企业网站链接 / Company Website:"
 								rules={[
 									{ required: true, message: "请输入公司网站链接 / Please enter the website link" },
 									{ type: "url", message: "请输入有效的网址 / Please enter a valid URL" }
@@ -135,7 +134,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="certificateNo"
-								label="商业登记证号码 / Certificate No."
+								label="商业登记证号码 / Certificate No.:"
 								rules={[
 									{ required: true, message: "请输入商业登记证号码 / Please enter certificate number" },
 									{ validator: validateAlphanumeric }
@@ -146,7 +145,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="commencementDate"
-								label="生效日期 / Date of Commencement"
+								label="生效日期 / Date of Commencement:"
 								rules={[{ required: true, message: "请输入生效日期 / Please enter the date of commencement" }]}
 							>
 								<Input placeholder="请输入生效日期 / Please enter the commencement date" />
@@ -154,7 +153,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="expiryDate"
-								label="届满日期 / Date of Expiry"
+								label="届满日期 / Date of Expiry:"
 								rules={[{ required: true, message: "请输入届满日期 / Please enter the expiry date" }]}
 							>
 								<Input placeholder="请输入届满日期 / Please enter the expiry date" />
@@ -162,7 +161,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="registeredAddress"
-								label="香港主体注册地址 / HK Entity Registered Address"
+								label="香港主体注册地址 / HK Entity Registered Address:"
 								rules={[
 									{ required: true, message: "请输入注册地址 / Please enter registered address" },
 									{ validator: validateAlphanumeric }
@@ -173,7 +172,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="totalEmployees"
-								label="企业总员工人数 / Total Number of Employees"
+								label="企业总员工人数 / Total Number of Employees:"
 								rules={[{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }]}
 							>
 								<InputNumber placeholder="请输入员工总人数 / Please enter total number of employees" style={{ width: "100%" }} />
@@ -182,7 +181,7 @@ const HKEntityInfo = () => {
 							{/* File Uploads */}
 							<Form.Item
 								name="businessRegistration"
-								label="商业登记证（BR） / Business Registration"
+								label="商业登记证（BR） / Business Registration:"
 								valuePropName="fileList"
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传商业登记证 / Please upload the business registration" }]}
@@ -194,7 +193,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="companyIncorporation"
-								label="公司注册书（CI） / Company Incorporation"
+								label="公司注册书（CI） / Company Incorporation:"
 								valuePropName="fileList"
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传公司注册书 / Please upload the company incorporation" }]}
@@ -206,7 +205,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="incorporationForm"
-								label="法团成立表（NNC1） / Incorporation Form (NNC1)"
+								label="法团成立表（NNC1） / Incorporation Form (NNC1):"
 								valuePropName="fileList"
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传法团成立表 / Please upload the incorporation form" }]}
@@ -218,7 +217,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="annualReturn"
-								label="周年申报表（NAR1） / Annual Return (NAR1)"
+								label="周年申报表（NAR1） / Annual Return (NAR1):"
 								valuePropName="fileList"
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传周年申报表 / Please upload the annual return" }]}
@@ -230,7 +229,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="companyArticles"
-								label="公司章程（M&A） / Company Articles (M&A)"
+								label="公司章程（M&A） / Company Articles (M&A):"
 								valuePropName="fileList"
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传公司章程 / Please upload the company articles" }]}

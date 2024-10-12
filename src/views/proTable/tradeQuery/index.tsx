@@ -170,7 +170,7 @@ const TradeQuery = () => {
 			width: "100px",
 			render: (cardType: string) => (cardType === "PrePaid" ? "预充卡" : "共享卡")
 		},
-		
+
 		{
 			title: "开卡时间",
 			dataIndex: "createCardTime",
@@ -189,7 +189,7 @@ const TradeQuery = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width:"200px", // Fixed width in pixels
+			width: "200px", // Fixed width in pixels
 			render: (cardName: string) => (
 				<Tooltip title={cardName.length > 17 ? cardName : ""}>
 					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
@@ -212,12 +212,7 @@ const TradeQuery = () => {
 			key: "createdAt",
 			align: "center"
 		},
-		{
-			title: "授权ID",
-			dataIndex: "orderNumber",
-			key: "orderNumber",
-			align: "center"
-		},
+		
 		{
 			title: "卡号",
 			dataIndex: "cardNum",
@@ -258,6 +253,12 @@ const TradeQuery = () => {
 			title: "金额",
 			dataIndex: "amount",
 			key: "amount",
+			align: "center"
+		},
+		{
+			title: "授权ID",
+			dataIndex: "orderNumber",
+			key: "orderNumber",
 			align: "center"
 		},
 		{
@@ -331,7 +332,7 @@ const TradeQuery = () => {
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					key: tran.id,
-					amount: "$ "+tran.amount,
+					amount: "$ " + tran.amount,
 					...tran,
 					createdAt: formatDate(tran.createdAt),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
@@ -447,13 +448,15 @@ const TradeQuery = () => {
 							{/*	className="transactionType"*/}
 							{/*/>*/}
 							<Input
-								placeholder={cardData.cardNo || "请输入卡号"} // Provide a default placeholder
+								placeholder={"请输入卡号"} // 提供默认的 placeholder
 								style={{ width: 200 }}
+								value={cardData.cardNo || ""} // 绑定输入框的值到状态中的 cardNo
 								onChange={(e: any) => {
-									setCardNoSearch(e.target.value);
-									console.log("card No search " + cardNoSearch + " target value：" + e.target.value);
+									setCardNoSearch(e.target.value); // 更新状态
+									console.log("card No search: " + cardNoSearch + " target value: " + e.target.value);
 								}}
 							/>
+
 							<Button type="primary" onClick={onClickSearch}>
 								查询
 							</Button>
