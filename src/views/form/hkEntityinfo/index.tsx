@@ -69,6 +69,11 @@ const HKEntityInfo = () => {
 	const onFinishFailed = (errorInfo: any) => {
 		console.log("Failed:", errorInfo);
 	};
+	const onUploadFileChange = (event: { file: any }) => {
+		if (event.file.status === "done") {
+			console.log("upload success, fileId=", event.file.response.fileId);
+		}
+	};
 
 	// Alphanumeric validation
 	const validateAlphanumeric = (_: any, value: string) => {
@@ -186,7 +191,7 @@ const HKEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传商业登记证 / Please upload the business registration" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -198,7 +203,7 @@ const HKEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传公司注册书 / Please upload the company incorporation" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -210,7 +215,7 @@ const HKEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传法团成立表 / Please upload the incorporation form" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -222,7 +227,7 @@ const HKEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传周年申报表 / Please upload the annual return" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -234,7 +239,7 @@ const HKEntityInfo = () => {
 								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
 								rules={[{ required: true, message: "请上传公司章程 / Please upload the company articles" }]}
 							>
-								<Upload beforeUpload={() => false}>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>

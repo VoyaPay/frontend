@@ -118,7 +118,7 @@ const ControllingShareholderInfo = () => {
 											<Space key={key} style={{ marginBottom: "50px" }} align="baseline">
 												{/* Controlling Party/Entity Name */}
 												<div className="row">
-													<Col span={15}>
+													<Col span={20}>
 														<Form.Item
 															{...restField}
 															name={[name, "entityName"]}
@@ -131,7 +131,7 @@ const ControllingShareholderInfo = () => {
 														</Form.Item>
 													</Col>
 													{/* Nationality or Company Location */}
-													<Col span={15}>
+													<Col span={20}>
 														<Form.Item
 															{...restField}
 															name={[name, "nationalityOrLocation"]}
@@ -146,7 +146,7 @@ const ControllingShareholderInfo = () => {
 															<Input placeholder="请输入国籍或企业所在地 / Please enter nationality or company location" />
 														</Form.Item>
 													</Col>
-													<Col span={15}>
+													<Col span={20}>
 														{/* Position */}
 														<Form.Item
 															{...restField}

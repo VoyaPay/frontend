@@ -6,7 +6,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import { createKYCapi, FileApi } from "@/api/modules/form";
+import { createKYCapi } from "@/api/modules/form";
 
 // Define the types for form values
 interface FormValues {
@@ -22,7 +22,6 @@ interface FormValues {
 const ChineseParentCompanyInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
-	const [fileList, setFileList] = useState<any[]>([]);
 	const navigate = useNavigate();
 
 	// Populate form with existing data from localStorage when the component mounts
@@ -52,24 +51,6 @@ const ChineseParentCompanyInfo = () => {
 		if (!email) {
 			console.error("Email not found in localStorage");
 			return;
-		}
-
-		// 上传文件并处理响应
-		if (fileList.length > 0) {
-			const file = fileList[0].originFileObj; // 获取上传的文件对象
-			try {
-				const response = await FileApi(file, email); // 使用 FileApi 上传文件
-				if (response) {
-					message.success("文件上传成功 / File uploaded successfully");
-					values.businessLicense = response.fileID; // 假设 API 返回文件 URL
-				} else {
-					message.error("文件上传失败 / File upload failed");
-					return;
-				}
-			} catch (error) {
-				message.error("文件上传时发生错误 / Error occurred during file upload");
-				return;
-			}
 		}
 
 		// Create the payload for the Chinese parent company info
@@ -108,6 +89,11 @@ const ChineseParentCompanyInfo = () => {
 		// Open confirmation modal
 		setOpen(true);
 	};
+	const onUploadFileChange = (event: { file: any }) => {
+		if (event.file.status === "done") {
+			console.log("upload success, fileId=", event.file.response.fileId);
+		}
+	};
 
 	const handleCancel = () => {
 		setOpen(false);
@@ -139,10 +125,6 @@ const ChineseParentCompanyInfo = () => {
 				message.error("发生未知错误，请稍后再试");
 			}
 		}
-	};
-
-	const onFileChange = ({ fileList }: any) => {
-		setFileList(fileList); // 更新文件列表状态
 	};
 
 	return (
@@ -234,7 +216,18 @@ const ChineseParentCompanyInfo = () => {
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 							>
-								<Upload beforeUpload={() => false} onChange={onFileChange}>
+								<Upload
+									action="http://api-staging.voyapay.com/file/upload"
+									// data={() => {
+									// 	const storedData = JSON.parse(localStorage.getItem("data") || "{}");
+									// 	const contactEmail = storedData?.CompanyContractInfo?.contactEmail || "_";
+									// 	return {
+									// 		usage: `kyc${contactEmail} Chinese Affiliate Company Business License`
+									// 	};
+									// }}
+									data={{ usage: "kyc" }} 
+									onChange={onUploadFileChange}
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -250,10 +243,18 @@ const ChineseParentCompanyInfo = () => {
 								]}
 							>
 								<Checkbox>
-									*我作为本公司负责人，确认本调查问卷中填写及提供的信息真实、完整、准确，能够实际反映本公司的合规、反洗钱及反恐怖主义融资相关内容。
-									*As the authorized representative of the company, I confirm that the information filled out and provided in this
-									questionnaire is true, complete, and accurate, and accurately reflects the company’s compliance, anti-money
-									laundering, and counter-terrorist financing related matters.
+									<div>
+										<span>
+											*我作为本公司负责人，确认本调查问卷中填写及提供的信息真实、完整、准确，能够实际反映本公司的合规、反洗钱及反恐怖主义融资相关内容。
+										</span>
+									</div>
+									<div>
+										<span>
+											*As the authorized representative of the company, I confirm that the information filled out and provided in
+											this questionnaire is true, complete, and accurate, and accurately reflects the company’s compliance,
+											anti-money laundering, and counter-terrorist financing related matters.
+										</span>
+									</div>
 								</Checkbox>
 							</Form.Item>
 

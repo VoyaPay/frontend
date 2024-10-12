@@ -111,7 +111,7 @@ const LayoutMenu = (props: any) => {
 		<div className="menu">
 			<Spin spinning={loading} tip="Loading...">
 				<Logo></Logo>
-				<div>
+				<div style={{ pointerEvents: 'none' }}>
 					<Menu
 						theme="dark"
 						mode="inline"
