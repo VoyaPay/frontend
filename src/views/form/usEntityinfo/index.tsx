@@ -49,6 +49,12 @@ const UsEntityInfo = () => {
 		}
 	}, [form]);
 
+	const onUploadFileChange = (event: { file: any }) => {
+		if (event.file.status === "done") {
+			console.log("upload success, fileId=", event.file.response.fileId);
+		}
+	};
+
 	// Handle form submission
 	const onSubmit = (values: FormValues) => {
 		// Create payload for US Entity Info
@@ -228,13 +234,7 @@ const UsEntityInfo = () => {
 								label="公司注册文件 / Company Formation Article:"
 								rules={[{ required: true, message: "请上传公司注册文件 / Please upload the Company Formation Article" }]}
 							>
-								<Upload
-									beforeUpload={file => {
-										// Manually handle the file selection here, for example:
-										form.setFieldsValue({ companyFormationFile: file });
-										return false; // Prevent automatic upload
-									}}
-								>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -244,13 +244,7 @@ const UsEntityInfo = () => {
 								label="雇主税号文件（EIN）/ EIN Document:"
 								rules={[{ required: true, message: "请上传雇主税号文件 / Please upload the EIN Document" }]}
 							>
-								<Upload
-									beforeUpload={file => {
-										// Manually handle the file selection here, for example:
-										form.setFieldsValue({ einDocumentFile: file });
-										return false; // Prevent automatic upload
-									}}
-								>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
@@ -260,13 +254,7 @@ const UsEntityInfo = () => {
 								label="公司章程 / Operating Agreement:"
 								rules={[{ required: true, message: "请上传公司章程 / Please upload the Operating Agreement" }]}
 							>
-								<Upload
-									beforeUpload={file => {
-										// Manually handle the file selection here, for example:
-										form.setFieldsValue({ OperatingAgreement: file });
-										return false; // Prevent automatic upload
-									}}
-								>
+								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>

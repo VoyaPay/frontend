@@ -212,7 +212,7 @@ const TradeQuery = () => {
 			key: "createdAt",
 			align: "center"
 		},
-		
+
 		{
 			title: "卡号",
 			dataIndex: "cardNum",
@@ -276,7 +276,7 @@ const TradeQuery = () => {
 	];
 	const [columns, setColumns] = useState(transactionColumns);
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
-	const [cardNoSearch, setCardNoSearch] = useState("");
+	const [cardNoSearch, setCardNoSearch] = useState(cardData.cardNo||"");
 	const [merchant, setMerchant] = useState("");
 	const [tranStatus, setTranStatus] = useState(undefined);
 
@@ -438,22 +438,17 @@ const TradeQuery = () => {
 								options={Object.entries(StatusMapping).map(([key, label]) => ({ value: key, label }))}
 								className="transactionType"
 							/>
-							{/*<Select*/}
-							{/*	placeholder="交易币种"*/}
-							{/*	mode="multiple"*/}
-							{/*	allowClear*/}
-							{/*	style={{ width: 120 }}*/}
-							{/*	onChange={handleChange}*/}
-							{/*	options={[{ value: "USD", label: "USD" }]}*/}
-							{/*	className="transactionType"*/}
-							{/*/>*/}
+
 							<Input
-								placeholder={"请输入卡号"} // 提供默认的 placeholder
+								placeholder="卡号"
 								style={{ width: 200 }}
-								value={cardData.cardNo || ""} // 绑定输入框的值到状态中的 cardNo
+								value={cardNoSearch}
 								onChange={(e: any) => {
-									setCardNoSearch(e.target.value); // 更新状态
-									console.log("card No search: " + cardNoSearch + " target value: " + e.target.value);
+										const value = e.target.value;
+										// 使用正则表达式过滤掉非数字字符
+										const filteredValue = value.replace(/[^0-9*]/g, ""); // \D 表示非数字
+										setCardNoSearch(filteredValue); // 更新用户输入的值
+										console.log("card No search: " + filteredValue);
 								}}
 							/>
 

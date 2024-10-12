@@ -37,6 +37,11 @@ const BeneficialOwnerInfo = () => {
 			message.error("股权占比不能超过100%");
 		}
 	};
+	const onUploadFileChange = (event: { file: any }) => {
+		if (event.file.status === "done") {
+			console.log("upload success, fileId=", event.file.response.fileId);
+		}
+	};
 
 	const onSubmit = (values: any) => {
 		const email = localStorage.getItem("data") || "";
@@ -183,10 +188,18 @@ const BeneficialOwnerInfo = () => {
 															rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 														>
 															<Upload
-																beforeUpload={() => false} // Prevent automatic upload
-																listType="picture" // Display file as a picture
+																action="http://api-staging.voyapay.com/file/upload"
+																// data={() => {
+																// 	const storedData = JSON.parse(localStorage.getItem("data") || "{}");
+																// 	const contactEmail = storedData?.CompanyContractInfo?.contactEmail || "_";
+																// 	return {
+																// 		usage: `kyc${contactEmail} Chinese Affiliate Company Business License`
+																// 	};
+																// }}
+																data={{ usage: "kyc" }}
+																onChange={onUploadFileChange}
 															>
-																<Button icon={<UploadOutlined />}>上传文件 / Upload Document</Button>
+																<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 															</Upload>
 														</Form.Item>
 													</Col>

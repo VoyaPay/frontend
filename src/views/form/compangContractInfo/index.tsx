@@ -99,8 +99,8 @@ const CompanyContractInfo = () => {
 
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">企业联系人信息</div>
-						<div className="title">Company Contact Information</div>
+						<div className="title">企业负责人</div>
+						<div className="title">Company Representative</div>
 
 						<Form
 							form={form}

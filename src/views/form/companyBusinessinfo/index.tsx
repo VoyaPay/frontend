@@ -144,8 +144,8 @@ const CompanyBusinessInfo = () => {
 										rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
 									>
 										<Radio.Group>
-											<Radio value="us">是 / Yes</Radio>
-											<Radio value="hk">否 / No</Radio>
+											<Radio value="us">美国 / US</Radio>
+											<Radio value="hk">香港 / HK</Radio>
 										</Radio.Group>
 									</Form.Item>
 
