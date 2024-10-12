@@ -1,6 +1,6 @@
 // import md5 from "js-md5";
 import { useState } from "react";
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Upload } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 // import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
-import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined, CloseCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import "./index.less";
 import logo from "@/assets/images/voya.png";
 import { NavLink } from "react-router-dom";
@@ -73,6 +73,12 @@ const LoginForm = (props: any) => {
 		console.log("Failed:", errorInfo);
 	};
 
+	const onUploadFileChange = (event: { file: any }) => {
+		if (event.file.status === "done") {
+			console.log("upload success, fileId=", event.file.response.fileId);
+		}
+	};
+
 	return (
 		<div className="loginform-container">
 			<a href="https://www.voyapay.com/zh" target="_blank" rel="noopener noreferrer">
@@ -119,6 +125,9 @@ const LoginForm = (props: any) => {
 				<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 					<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 				</Form.Item>
+				<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+					<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
+				</Upload>
 				<Form.Item className="login-btn">
 					<Button
 						onClick={() => {
