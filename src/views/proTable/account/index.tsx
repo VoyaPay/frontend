@@ -9,7 +9,8 @@ import { AccountApi } from "@/api/modules/user";
 
 interface FormattedTransaction {
 	key: string;
-	transactionType: string;
+	typeLabel: string;
+	type: string;
 	dynamicAccountType: string;
 	amount: string;
 	currency: string;
@@ -17,11 +18,20 @@ interface FormattedTransaction {
 	transactionDetail: string;
 }
 
+const TransferTypeMapping = {
+	cardPurchase: "购卡",
+	cardTopup: "卡充值",
+	deposit: "账户充值",
+	fee: "手续费",
+	closeCardRefund: "销卡返还",
+	other: "其他"
+};
+
 const Account = () => {
 	const { RangePicker } = DatePicker;
 	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
 	const [filteredDataSource, setFilteredDataSource] = useState<FormattedTransaction[]>([]);
-	const [selectedTransactionTypes, setSelectedTransactionTypes] = useState<string[]>([]);
+	const [selectedTransferType, setSelectedTransferType] = useState<string>();
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [accountBalance, setAccountBalance] = useState(0);
 
@@ -38,7 +48,7 @@ const Account = () => {
 	const getBalance = async () => {
 		try {
 			const response = await GetBalanceApi();
-			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2))  : 0;
+			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
 			setAccountBalance(balance);
 		} catch (error) {
 			console.log("Cannot get balance of the account:", error);
@@ -50,20 +60,9 @@ const Account = () => {
 			const response = await UserTransfersApi();
 			if (Array.isArray(response)) {
 				const formattedData = response.map(transaction => ({
-					
 					key: transaction.id,
-					transactionType:
-						transaction.type === "cardPurchase"
-							? "购卡"
-							: transaction.type === "cardTopup"
-							? "卡充值"
-							: transaction.type === "deposit"
-							? "账户充值"
-							: transaction.type === "fee"
-							? "手续费"
-							: transaction.type === "closeCardRefund"
-							? "销卡返还"
-							: "其他",
+					typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
+					type: transaction.type,
 					dynamicAccountType: transaction.origin || "N/A",
 					amount: "$" + String(Math.abs(parseFloat(transaction.amount)).toFixed(2)),
 					currency: "USD",
@@ -92,7 +91,13 @@ const Account = () => {
 
 	const getCSV = async (): Promise<void> => {
 		try {
-			const response = await LedgerCSVApi();
+			const response = await LedgerCSVApi({
+				where: {
+					startDate: selectedTimeRange[0],
+					endDate: selectedTimeRange[1],
+					type: selectedTransferType
+				}
+			});
 			console.log(response);
 		} catch (e: any) {
 			console.log(e);
@@ -100,7 +105,7 @@ const Account = () => {
 	};
 
 	const columns: any[] = [
-		{ title: "交易类型", dataIndex: "transactionType", key: "transactionType", align: "center", width: "200px" },
+		{ title: "交易类型", dataIndex: "typeLabel", key: "typeLabel", align: "center", width: "200px" },
 		{
 			title: "金额",
 			dataIndex: "amount",
@@ -108,8 +113,8 @@ const Account = () => {
 			align: "center",
 			width: "300px",
 			sorter: (a: any, b: any) => {
-				const amountA = parseFloat(a.amount.replace('$', '').replace(',', ''));
-				const amountB = parseFloat(b.amount.replace('$', '').replace(',', ''));
+				const amountA = parseFloat(a.amount.replace("$", "").replace(",", ""));
+				const amountB = parseFloat(b.amount.replace("$", "").replace(",", ""));
 				return amountA - amountB;
 			}
 		},
@@ -131,8 +136,8 @@ const Account = () => {
 	];
 
 	// Update selected transaction types
-	const handleTransactionTypeChange = (selectedTypes: string[]) => {
-		setSelectedTransactionTypes(selectedTypes);
+	const handleTransactionTypeChange = (selectedType: string) => {
+		setSelectedTransferType(selectedType);
 	};
 
 	// Update selected date range
@@ -145,8 +150,9 @@ const Account = () => {
 		let filteredData = dataSource; // 初始为所有数据
 
 		// 只根据 selectedTransactionTypes 进行筛选
-		if (selectedTransactionTypes.length > 0) {
-			filteredData = filteredData.filter(transaction => selectedTransactionTypes.includes(transaction.transactionType));
+		console.log("selectedTransferType", selectedTransferType);
+		if (selectedTransferType) {
+			filteredData = filteredData.filter(transaction => transaction.type === selectedTransferType);
 		}
 
 		if (selectedTimeRange.length > 0) {
@@ -183,17 +189,13 @@ const Account = () => {
 						<RangePicker onChange={handleTimeChange} />
 						<Select
 							placeholder="请选择交易类型"
-							mode="multiple"
+							// mode="multiple"
 							allowClear
 							style={{ width: 200 }}
 							onChange={handleTransactionTypeChange}
-							options={[
-								{ value: "转入", label: "转入" },
-								{ value: "转出", label: "转出" },
-								{ value: "充值", label: "充值" },
-								{ value: "手续费", label: "手续费" },
-								{ value: "其他", label: "其他" }
-							]}
+							options={Object.entries(TransferTypeMapping).map(([key, type]) => {
+								return { label: type, value: key };
+							})}
 							className="transactionType"
 						/>
 						<Button type="primary" onClick={applyFilters}>
