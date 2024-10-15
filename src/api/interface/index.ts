@@ -66,10 +66,9 @@ export interface Result {
 	balance?: number;
 	userConfig: configDetail;
 	number?: string;
-	status?:string;
-	fileID?:string;
-	length?:string;
-
+	status?: string;
+	fileID?: string;
+	length?: string;
 }
 
 // * 请求响应参数(包含data)
@@ -96,7 +95,7 @@ export namespace Login {
 	export interface ReqLoginForm {
 		username: string;
 		password: string;
-		email?:string
+		email?: string;
 	}
 	export interface ResLogin {
 		access_token: string;
@@ -106,7 +105,7 @@ export namespace Login {
 	}
 }
 
-export class Where {
+export class SearchTransactionWhere {
 	cardNumber?: string;
 	startDate?: Date;
 	endDate?: Date;
@@ -115,7 +114,17 @@ export class Where {
 }
 
 export interface SearchTransactionRequest extends ReqPage {
-	where?: Where;
+	where?: SearchTransactionWhere;
 	sortBy: "createdAt";
 	asc: false;
+}
+
+export class SearchTransferWhere {
+	type?: string;
+	startDate?: Date;
+	endDate?: Date;
+}
+
+export interface SearchTransferRequest extends ReqPage {
+	where?: SearchTransferWhere;
 }
