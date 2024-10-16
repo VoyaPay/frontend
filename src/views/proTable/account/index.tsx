@@ -96,7 +96,9 @@ const Account = () => {
 					startDate: selectedTimeRange[0],
 					endDate: selectedTimeRange[1],
 					type: selectedTransferType
-				}
+				},
+				pageNum: 1, 
+				pageSize: 100
 			});
 			console.log(response);
 		} catch (e: any) {
