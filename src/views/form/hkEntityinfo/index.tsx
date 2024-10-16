@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber, Upload } from "antd";
+import { Button, Form, Input, InputNumber, DatePicker, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -6,6 +6,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useEffect } from "react";
 import moment from "moment";
+import { FileApi } from "@/api/modules/form";
 
 // Define the types for form values
 interface FormValues {
@@ -44,16 +45,19 @@ const HKEntityInfo = () => {
 					? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
 					: null,
 				registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
-				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || ""
+				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || "",
+				businessRegistration: parsedData.hkEntityInfo?.businessRegistration,
+				companyIncorporation: parsedData.hkEntityInfo?.companyIncorporation,
+				incorporationForm: parsedData.hkEntityInfo?.incorporationForm,
+				annualReturn: parsedData.hkEntityInfo?.annualReturn,
+				companyArticles: parsedData.hkEntityInfo?.companyArticles
 			});
 		}
 	}, [form]);
 
-	// Handle form submission
-	const onSubmit = (values: FormValues) => {
-		// Save the form data to localStorage
+	const saveFormData = (values: FormValues) => {
 		const existingData = localStorage.getItem("data") || "";
-		const parsedData = JSON.parse(existingData);
+		const parsedData = existingData ? JSON.parse(existingData) : {};
 
 		const updatedData = {
 			...parsedData,
@@ -61,8 +65,23 @@ const HKEntityInfo = () => {
 		};
 
 		localStorage.setItem("data", JSON.stringify(updatedData));
+	};
+
+	// Handle form submission
+	const onSubmit = (values: FormValues) => {
+		saveFormData(values); // Save the form data to localStorage
 		console.log("Submitted Values:", values);
 		navigate("/form/shareholder");
+	};
+
+	// Handle form submission failur
+
+	// Handle navigating to the previous step
+	const handlePrevStep = () => {
+		const values = form.getFieldsValue();
+		console.log(values);
+		saveFormData(values); // Save the current form data
+		navigate("/form/companyBusiness"); // Navigate to the previous step
 	};
 
 	// Handle form submission failure
@@ -129,10 +148,7 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="companyWebsite"
 								label="入网企业企业网站链接 / Company Website:"
-								rules={[
-									{ required: true, message: "请输入公司网站链接 / Please enter the website link" },
-									{ type: "url", message: "请输入有效的网址 / Please enter a valid URL" }
-								]}
+								rules={[{ required: true, message: "请输入公司网站链接 / Please enter the website link" }]}
 							>
 								<Input placeholder="请输入公司网站链接 / Please enter company website" />
 							</Form.Item>
@@ -153,7 +169,7 @@ const HKEntityInfo = () => {
 								label="生效日期 / Date of Commencement:"
 								rules={[{ required: true, message: "请输入生效日期 / Please enter the date of commencement" }]}
 							>
-								<Input placeholder="请输入生效日期 / Please enter the commencement date" />
+								<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
 							</Form.Item>
 
 							<Form.Item
@@ -161,7 +177,7 @@ const HKEntityInfo = () => {
 								label="届满日期 / Date of Expiry:"
 								rules={[{ required: true, message: "请输入届满日期 / Please enter the expiry date" }]}
 							>
-								<Input placeholder="请输入届满日期 / Please enter the expiry date" />
+								<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
 							</Form.Item>
 
 							<Form.Item
@@ -184,67 +200,192 @@ const HKEntityInfo = () => {
 							</Form.Item>
 
 							{/* File Uploads */}
+
 							<Form.Item
 								name="businessRegistration"
 								label="商业登记证（BR） / Business Registration:"
 								valuePropName="fileList"
-								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ required: true, message: "请上传商业登记证 / Please upload the business registration" }]}
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="companyIncorporation"
 								label="公司注册书（CI） / Company Incorporation:"
 								valuePropName="fileList"
-								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ required: true, message: "请上传公司注册书 / Please upload the company incorporation" }]}
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="incorporationForm"
 								label="法团成立表（NNC1） / Incorporation Form (NNC1):"
 								valuePropName="fileList"
-								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ required: true, message: "请上传法团成立表 / Please upload the incorporation form" }]}
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="annualReturn"
 								label="周年申报表（NAR1） / Annual Return (NAR1):"
 								valuePropName="fileList"
-								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ required: true, message: "请上传周年申报表 / Please upload the annual return" }]}
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="companyArticles"
 								label="公司章程（M&A） / Company Articles (M&A):"
 								valuePropName="fileList"
-								getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
-								rules={[{ required: true, message: "请上传公司章程 / Please upload the company articles" }]}
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
 
 							<div className="btns">
+								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>

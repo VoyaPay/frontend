@@ -1,10 +1,11 @@
-import { Form, Input, Button, Space, InputNumber, Checkbox, Upload, Modal, Col, Row, message } from "antd";
-import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Space, InputNumber, Checkbox, Upload, Modal, Col, Row, message, Tooltip } from "antd";
+import { DeleteOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { FileApi } from "@/api/modules/form";
 
 const BeneficialOwnerInfo = () => {
 	const [form] = Form.useForm();
@@ -70,7 +71,7 @@ const BeneficialOwnerInfo = () => {
 			};
 		}
 		if (beneficialOwnersPayload.beneficialOwners.length < 1) {
-			message.error("至少需要填写一名控权股东");
+			message.error("需要填写所有直接或者间接拥有25%及以上公司股权的受益人信息");
 			return;
 		}
 
@@ -78,6 +79,34 @@ const BeneficialOwnerInfo = () => {
 		console.log("Combined Payload:", combinedPayload);
 
 		setOpen(true);
+	};
+	const handlePrevStep = () => {
+		const formData = form.getFieldsValue(); // Get the current form values
+		const existingData = localStorage.getItem("data") || "";
+		let combinedPayload = {};
+
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			combinedPayload = {
+				...parsedData,
+				beneficialOwnerInfo: { beneficialOwners: formData.beneficialOwners }
+			};
+		} else {
+			combinedPayload = {
+				beneficialOwnerInfo: { beneficialOwners: formData.beneficialOwners }
+			};
+		}
+
+		localStorage.setItem("data", JSON.stringify(combinedPayload)); // Save updated data
+		const data = JSON.parse(existingData);
+
+		const isUSEntity = data?.companyBusinessInfo?.isUSEntity === "us";
+
+		if (isUSEntity) {
+			navigate("/form/usEntityinfo");
+		} else {
+			navigate("/form/shareholder");
+		}
 	};
 
 	return (
@@ -180,32 +209,51 @@ const BeneficialOwnerInfo = () => {
 
 													<Col span={12}>
 														<Form.Item
-															{...restField}
 															name={[name, "uploadFile"]}
 															label="持股25%以上股东的身份证或护照（正反面照片） / ID or Passport of Shareholder:"
 															valuePropName="fileList"
-															getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)} // Ensure the file list is properly handled
+															getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)} // 确保文件列表正确处理
 															rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 														>
 															<Upload
-																action="http://api-staging.voyapay.com/file/upload"
-																// data={() => {
-																// 	const storedData = JSON.parse(localStorage.getItem("data") || "{}");
-																// 	const contactEmail = storedData?.CompanyContractInfo?.contactEmail || "_";
-																// 	return {
-																// 		usage: `kyc${contactEmail} Chinese Affiliate Company Business License`
-																// 	};
-																// }}
-																data={{ usage: "kyc" }}
-																onChange={onUploadFileChange}
+																// 使用 customRequest 自定义上传逻辑
+																customRequest={async ({ file, onSuccess, onError }) => {
+																	const formData = new FormData();
+																	formData.append("file", file); // 将文件添加到 formData
+																	formData.append("usage", "kyc"); // 添加其他参数
+
+																	try {
+																		const response = await FileApi(formData); // 等待 FileApi 返回结果
+																		console.log("File uploaded successfully, file ID:", response.fileID);
+
+																		// 检查 onSuccess 是否存在
+																		if (onSuccess) {
+																			onSuccess(response); // 成功回调，通知上传成功
+																		}
+																	} catch (error) {
+																		console.error("File upload failed:", error);
+
+																		// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+																		if (onError) {
+																			onError(error as any); // 失败回调，通知上传失败
+																		}
+																	}
+																}}
+																onChange={onUploadFileChange} // 处理文件状态变化
 															>
 																<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 															</Upload>
 														</Form.Item>
 													</Col>
-
-													<MinusCircleOutlined onClick={() => remove(name)} />
 												</Row>
+												<Col>
+													<Tooltip title="删除此受益人">
+														<DeleteOutlined
+															onClick={() => remove(name)}
+															style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+														/>
+													</Tooltip>
+												</Col>
 											</Space>
 										))}
 
@@ -241,13 +289,25 @@ const BeneficialOwnerInfo = () => {
 								]}
 							>
 								<Checkbox>
-									我确认我已完整如实填写所有直接或者间接拥有超过25%公司股权或者表决权的受益人信息 (I confirm that I have fully and
-									truthfully provided the information of all beneficial owners who directly or indirectly hold more than 25% of
-									the company’s equity or voting rights.)
+									<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
+									<p>
+										I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
+										indirectly own 25% or more of the company’s shares or voting rights.
+									</p>
 								</Checkbox>
 							</Form.Item>
 
 							<Form.Item>
+								<Button
+									type="primary"
+									htmlType="submit"
+									disabled={totalOwnership > 100}
+									style={{ marginRight: "10px" }}
+									onClick={handlePrevStep}
+								>
+									上一步 / Prev Step
+								</Button>
+
 								<Button type="primary" htmlType="submit" disabled={totalOwnership > 100}>
 									下一步 / Next Step
 								</Button>
@@ -255,10 +315,10 @@ const BeneficialOwnerInfo = () => {
 						</Form>
 
 						<Modal title="受益人" visible={open} onOk={handleOk} onCancel={handleCancel}>
-							<p>我确认我已完整如实填写所有直接或者间接拥有超过25%公司股权或者表决权的受益人信息</p>
+							<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
 							<p>
 								I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
-								indirectly hold more than 25% of the company’s equity or voting rights.
+								indirectly own 25% or more of the company’s shares or voting rights.
 							</p>
 						</Modal>
 					</div>

@@ -1,5 +1,5 @@
-import { Form, Input, Button, Space, InputNumber, Modal, Col, message } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Space, InputNumber, Modal, Col, message, Tooltip } from "antd";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
@@ -44,41 +44,46 @@ const ControllingShareholderInfo = () => {
 		}
 	}, [form]);
 
-	const onSubmit = (values: FormValues) => {
-		// Create the payload for controlling shareholders info
+	const saveFormData = (values: FormValues) => {
 		const controllingShareholdersPayload = {
 			shareholders: values.shareholders
 		};
 
-		// Retrieve existing data under the user's email
 		const existingData = localStorage.getItem("data");
 		let combinedPayload = {};
 
-		// If there is existing data, merge it with the new controlling shareholders info
 		if (existingData) {
 			const parsedData = JSON.parse(existingData);
 			combinedPayload = {
-				...parsedData, // Spread existing data
-				controllingShareholderInfo: controllingShareholdersPayload // Add new shareholder info
+				...parsedData,
+				controllingShareholderInfo: controllingShareholdersPayload
 			};
 		} else {
-			// If no existing data, just store the controlling shareholders info
 			combinedPayload = {
 				controllingShareholderInfo: controllingShareholdersPayload
 			};
 		}
-		if (controllingShareholdersPayload.shareholders.length < 1) {
+
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+	};
+
+	// Form submission handler
+	const onSubmit = (values: FormValues) => {
+		if (values.shareholders.length < 1) {
 			message.error("至少需要填写一名控权股东");
 			return;
 		}
 
-		// Save the combined payload back into localStorage under the email key
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-
-		console.log("Combined Payload:", combinedPayload);
-
-		// Show the modal after submission
+		// Save data and proceed to the next step
+		saveFormData(values);
 		setOpen(true);
+	};
+
+	// Handle navigation to the previous step, saving data before navigating
+	const handlePrevStep = () => {
+		const values = form.getFieldsValue();
+		saveFormData(values);
+		navigate("/form/hkEntityContact");
 	};
 
 	return (
@@ -181,8 +186,15 @@ const ControllingShareholderInfo = () => {
 															/>
 														</Form.Item>
 													</Col>
-													<MinusCircleOutlined onClick={() => remove(name)} />
 												</div>
+												<Col>
+													<Tooltip title="删除此控股股东">
+														<DeleteOutlined
+															onClick={() => remove(name)}
+															style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+														/>
+													</Tooltip>
+												</Col>
 											</Space>
 										))}
 
@@ -197,6 +209,9 @@ const ControllingShareholderInfo = () => {
 							</Form.List>
 
 							<div className="btns">
+								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>

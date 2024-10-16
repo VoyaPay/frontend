@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import moment from "moment";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
+import { FileApi } from "@/api/modules/form";
 
 interface FormValues {
 	usEntityName: string;
@@ -27,24 +28,25 @@ const UsEntityInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
-	// Automatically populate form data if available in localStorage
 	useEffect(() => {
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
-			// Set form values if data exists
 			form.setFieldsValue({
 				usEntityName: parsedData.usEntityInfo?.usEntityName || "",
 				companyWebsite: parsedData.usEntityInfo?.companyWebsite || "",
 				usEntityType: parsedData.usEntityInfo?.usEntityType || "",
 				usEntityEIN: parsedData.usEntityInfo?.usEntityEIN || "",
 				usEntityFormationDate: parsedData.usEntityInfo?.usEntityFormationDate
-					? moment(parsedData.usEntityInfo?.usEntityFormationDate) // Convert date to moment
+					? moment(parsedData.usEntityInfo?.usEntityFormationDate)
 					: null,
 				usEntityRegisteredState: parsedData.usEntityInfo?.usEntityRegisteredState || "",
 				usEntityRegisteredAddress: parsedData.usEntityInfo?.usEntityRegisteredAddress || "",
 				usEntityOperatingAddress: parsedData.usEntityInfo?.usEntityOperatingAddress || "",
-				totalEmployees: parsedData.usEntityInfo?.totalEmployees || ""
+				totalEmployees: parsedData.usEntityInfo?.totalEmployees || "",
+				companyFormationFile: parsedData.usEntityInfo?.companyFormationFile || [],
+				einDocumentFile: parsedData.usEntityInfo?.einDocumentFile || [],
+				operatingAgreementFile: parsedData.usEntityInfo?.operatingAgreementFile || []
 			});
 		}
 	}, [form]);
@@ -55,17 +57,13 @@ const UsEntityInfo = () => {
 		}
 	};
 
-	// Handle form submission
 	const onSubmit = (values: FormValues) => {
-		// Create payload for US Entity Info
 		const usEntityPayload = {
 			usEntityName: values.usEntityName,
 			companyWebsite: values.companyWebsite,
 			usEntityType: values.usEntityType,
 			usEntityEIN: values.usEntityEIN,
-			usEntityFormationDate: values.usEntityFormationDate
-				? values.usEntityFormationDate.format("YYYY-MM-DD") // Convert moment to string
-				: "",
+			usEntityFormationDate: values.usEntityFormationDate ? values.usEntityFormationDate.format("YYYY-MM-DD") : "",
 			usEntityRegisteredState: values.usEntityRegisteredState,
 			usEntityRegisteredAddress: values.usEntityRegisteredAddress,
 			usEntityOperatingAddress: values.usEntityOperatingAddress,
@@ -75,34 +73,54 @@ const UsEntityInfo = () => {
 			operatingAgreementFile: values.operatingAgreementFile
 		};
 
-		// Get existing data from localStorage
 		const prevInfo = localStorage.getItem("data");
 		let combinedPayload = {};
 
 		if (prevInfo) {
 			const lastInformation = JSON.parse(prevInfo);
-			// Merge with previous data
 			combinedPayload = {
 				...lastInformation,
 				usEntityInfo: usEntityPayload
 			};
 		} else {
-			// If no previous data, just save the US Entity Info
 			combinedPayload = {
 				usEntityInfo: usEntityPayload
 			};
 		}
 
-		// Save the combined data to localStorage
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 
 		message.success("US Entity Information saved successfully!");
 
-		// Navigate to the next page
 		navigate("/form/beneficical");
 	};
 
-	// Alphanumeric validation
+	const handlePrevStep = () => {
+		const values = form.getFieldsValue();
+		const usEntityPayload = {
+			...values,
+			usEntityFormationDate: values.usEntityFormationDate ? values.usEntityFormationDate.format("YYYY-MM-DD") : ""
+		};
+
+		const prevInfo = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		if (prevInfo) {
+			const lastInformation = JSON.parse(prevInfo);
+			combinedPayload = {
+				...lastInformation,
+				usEntityInfo: usEntityPayload
+			};
+		} else {
+			combinedPayload = {
+				usEntityInfo: usEntityPayload
+			};
+		}
+
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		navigate("/form/companyBusiness");
+	};
+
 	const validateAlphanumeric = (_: any, value: string) => {
 		const regex = /^[a-zA-Z0-9\s]*$/;
 		if (value && !regex.test(value)) {
@@ -124,7 +142,6 @@ const UsEntityInfo = () => {
 				<div className="chargeTips">
 					<div className="title">VoyaPay入驻企业合规尽职调查表</div>
 					<div className="title">VoyaPay Compliance & KYC Form</div>
-
 					<div className="content">
 						<span className="pre">
 							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
@@ -156,7 +173,7 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="companyWebsite"
 								label="企业网站链接 / Company Website:"
-								rules={[{ required: true, type: "url", message: "请输入有效的网站链接 / Please enter a valid URL" }]}
+								rules={[{ required: true, message: "请选择企业网站链接 / Please select the US Entity Type" }]}
 							>
 								<Input placeholder="请输入企业网站链接 / Please enter Company Website" />
 							</Form.Item>
@@ -228,38 +245,119 @@ const UsEntityInfo = () => {
 							>
 								<Input placeholder="请输入总员工人数 / Please enter total number of employees" />
 							</Form.Item>
-
 							<Form.Item
 								name="companyFormationFile"
 								label="公司注册文件 / Company Formation Article:"
-								rules={[{ required: true, message: "请上传公司注册文件 / Please upload the Company Formation Article" }]}
+								valuePropName="fileList"
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="einDocumentFile"
 								label="雇主税号文件（EIN）/ EIN Document:"
-								rules={[{ required: true, message: "请上传雇主税号文件 / Please upload the EIN Document" }]}
+								valuePropName="fileList"
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="operatingAgreementFile"
 								label="公司章程 / Operating Agreement:"
-								rules={[{ required: true, message: "请上传公司章程 / Please upload the Operating Agreement" }]}
+								valuePropName="fileList"
+								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
-								<Upload action="http://api-staging.voyapay.com/file/upload" data={{ usage: "kyc" }} onChange={onUploadFileChange}>
+								<Upload
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
+								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
 
 							<div className="btns">
+								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>
