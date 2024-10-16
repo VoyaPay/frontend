@@ -30,7 +30,7 @@ const CompanyContractInfo = () => {
 				contactPhone: parsedData.CompanyContractInfo?.contactPhone || "",
 				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
 				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
-				contactEmail: parsedData.CompanyContractInfo?.contactEmail || "",
+				contactEmail: parsedData.CompanyContractInfo?.contactEmail || ""
 			});
 		}
 	}, [form]);
@@ -41,7 +41,7 @@ const CompanyContractInfo = () => {
 			contactPhone: values.contactPhone,
 			contactMobile: values.contactMobile,
 			contactPosition: values.contactPosition,
-			contactEmail: values.contactEmail,
+			contactEmail: values.contactEmail
 		};
 
 		// Retrieve existing data
@@ -150,7 +150,6 @@ const CompanyContractInfo = () => {
 									>
 										<Input placeholder="请输入联系人联系邮箱 / Please enter contact email" />
 									</Form.Item>
-
 								</div>
 							</div>
 							<div className="btns">

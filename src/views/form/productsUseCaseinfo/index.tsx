@@ -15,7 +15,6 @@ interface FormValues {
 	b2bClientNumber?: string;
 	b2bClientSpend?: string;
 	b2cClientNumber?: string;
-	b2cClientSpend?: string;
 }
 
 const ProductsUseCaseInfo = () => {
@@ -43,16 +42,14 @@ const ProductsUseCaseInfo = () => {
 				businessModel: parsedData.productsUseCaseInfo?.businessModel || "",
 				b2bClientNumber: parsedData.productsUseCaseInfo?.b2bClientNumber || "",
 				b2bClientSpend: parsedData.productsUseCaseInfo?.b2bClientSpend || "",
-				b2cClientNumber: parsedData.productsUseCaseInfo?.b2cClientNumber || "",
-				b2cClientSpend: parsedData.productsUseCaseInfo?.b2cClientSpend || ""
+				b2cClientNumber: parsedData.productsUseCaseInfo?.b2cClientNumber || ""
 			});
 			setBusinessModel(parsedData.productsUseCaseInfo?.businessModel || null);
 		}
 	}, [form]);
 
 	// Form submission handler
-	const onSubmit = (values: FormValues) => {
-		// Create the payload for product use case info
+	const saveFormData = (values: FormValues) => {
 		const productsUseCasePayload = {
 			requestedProducts: values.requestedProducts,
 			estimatedMonthlySpend: values.estimatedMonthlySpend,
@@ -61,15 +58,12 @@ const ProductsUseCaseInfo = () => {
 			businessModel: values.businessModel,
 			b2bClientNumber: values.b2bClientNumber,
 			b2bClientSpend: values.b2bClientSpend,
-			b2cClientNumber: values.b2cClientNumber,
-			b2cClientSpend: values.b2cClientSpend
+			b2cClientNumber: values.b2cClientNumber
 		};
 
-		// Retrieve existing data under the user's email
 		const existingData = localStorage.getItem("data");
 		let combinedPayload = {};
 
-		// If there is existing data, merge it with the new product use case info
 		if (existingData) {
 			const parsedData = JSON.parse(existingData);
 			combinedPayload = {
@@ -77,18 +71,25 @@ const ProductsUseCaseInfo = () => {
 				productsUseCaseInfo: productsUseCasePayload // Add new product use case info
 			};
 		} else {
-			// If no existing data, just store the product use case info
 			combinedPayload = {
 				productsUseCaseInfo: productsUseCasePayload
 			};
 		}
 
-		// Save the combined payload back into localStorage under the email key
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
+	};
 
-		console.log("Combined Payload:", combinedPayload);
-		// navigate("/form/shareholder");
+	// Form submission handler
+	const onSubmit = (values: FormValues) => {
+		saveFormData(values);
 		navigate("/form/companyBusiness");
+	};
+
+	// Handle navigating to the previous step
+	const handlePrevStep = () => {
+		const values = form.getFieldsValue();
+		saveFormData(values); // Save the current form data
+		navigate("/company"); // Navigate to the previous step
 	};
 
 	return (
@@ -188,20 +189,8 @@ const ProductsUseCaseInfo = () => {
 							{/* Conditional Fields for B2B */}
 							{businessModel === "b2b" && (
 								<>
-									<Form.Item
-										name="b2bClientNumber"
-										label="预估企业客户数 / Estimated Client Number (B2B):"
-										rules={[{ required: true, message: "请输入预估企业客户数 / Please enter estimated client number" }]}
-									>
+									<Form.Item name="b2bClientNumber" label="预估企业客户数 / Estimated Client Number (B2B):">
 										<Input placeholder="请输入预估企业客户数 / Please enter estimated client number" />
-									</Form.Item>
-
-									<Form.Item
-										name="b2bClientSpend"
-										label="预估月平均消耗量 / Estimated Monthly Spend (B2B):"
-										rules={[{ required: true, message: "请输入预估月平均消耗量 / Please enter estimated monthly spend" }]}
-									>
-										<Input placeholder="请输入预估月平均消耗量 / Please enter estimated monthly spend" />
 									</Form.Item>
 								</>
 							)}
@@ -209,25 +198,17 @@ const ProductsUseCaseInfo = () => {
 							{/* Conditional Fields for B2C */}
 							{businessModel === "b2c" && (
 								<>
-									<Form.Item
-										name="b2cClientNumber"
-										label="预估个人客户数 / Estimated Client Number (B2C):"
-										rules={[{ required: true, message: "请输入预估个人客户数 / Please enter estimated client number" }]}
-									>
+									<Form.Item name="b2cClientNumber" label="预估个人客户数 / Estimated Client Number (B2C):">
 										<Input placeholder="请输入预估个人客户数 / Please enter estimated client number" />
-									</Form.Item>
-
-									<Form.Item
-										name="b2cClientSpend"
-										label="预估月平均消耗量 / Estimated Monthly Spend (B2C):"
-										rules={[{ required: true, message: "请输入预估月平均消耗量 / Please enter estimated monthly spend" }]}
-									>
-										<Input placeholder="请输入预估月平均消耗量 / Please enter estimated monthly spend" />
 									</Form.Item>
 								</>
 							)}
 
 							<div className="btns">
+								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+									上一步 / Prev Step
+								</Button>
+
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>

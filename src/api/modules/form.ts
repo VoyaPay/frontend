@@ -35,13 +35,6 @@ export const KYCStateApi = (email: string) => {
 	return http.get<ResultData>(PORT3 + "/kyc/" + email, undefined, { headers });
 };
 
-export const FileApi = (file: File, usage: string) => {
-	// 创建一个新的 FormData 实例
-	const formData = new FormData();
-
-	// 将文件和其他字段添加到 FormData
-	formData.append("file", ""); // 假设你的文件字段名为 "file"
-	formData.append("usage", usage); // 例如，将 "usage" 设置为一个 email 字符串
-
+export const FileApi = (formData: FormData) => {
 	return http.post<ResultData>(PORT3 + "/file/upload", formData);
 };

@@ -5,7 +5,7 @@ import questionsImage from "@/assets/images/instruction.jpg";
 
 const OpeningDetail = () => {
 	const handleOpeningDetail = () => {
-		const pdfUrl = "https://drive.google.com/file/d/1MvnLJ62gCzHsdaXSG3Q5PelEFRBHOxVV/view?usp=sharing";
+		const pdfUrl = "https://docs.google.com/document/d/1fae-BmIODfcyhe2eI-NO3EEPVMqvGmnzF_AFrX_kz0c/edit?usp=sharing";
 		const link = document.createElement("a");
 		link.href = pdfUrl;
 		link.target = "_blank"; 
