@@ -76,7 +76,7 @@ export const formStatus = JSON.parse(localStorage.getItem("data") || "{}");
 export const menu2: any = [
 	{
 		icon: "AppstoreOutlined",
-		title: "企业联系人信息",
+		title: "企业负责人信息",
 		path: "/company",
 		hide: false
 	},

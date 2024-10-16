@@ -285,9 +285,10 @@ const BeneficialOwnerInfo = () => {
 								]}
 							>
 								<Checkbox>
-									我确认我已完整如实填写所有直接或者间接拥有超过25%公司股权或者表决权的受益人信息 (I confirm that I have fully and
-									truthfully provided the information of all beneficial owners who directly or indirectly hold more than 25% of
-									the company’s equity or voting rights.)
+									<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
+									<p>
+										I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
+										indirectly own 25% or more of the company’s shares or voting rights.</p>
 								</Checkbox>
 							</Form.Item>
 
@@ -309,10 +310,10 @@ const BeneficialOwnerInfo = () => {
 						</Form>
 
 						<Modal title="受益人" visible={open} onOk={handleOk} onCancel={handleCancel}>
-							<p>我确认我已完整如实填写所有直接或者间接拥有超过25%公司股权或者表决权的受益人信息</p>
+							<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
 							<p>
 								I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
-								indirectly hold more than 25% of the company’s equity or voting rights.
+								indirectly own 25% or more of the company’s shares or voting rights.
 							</p>
 						</Modal>
 					</div>
