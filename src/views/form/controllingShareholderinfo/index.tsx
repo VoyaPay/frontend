@@ -1,4 +1,4 @@
-import { Form, Input, Button, Space, InputNumber, Modal, Col, message } from "antd";
+import { Form, Input, Button, Space, InputNumber, Modal, Col, message, Tooltip } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -186,10 +186,15 @@ const ControllingShareholderInfo = () => {
 															/>
 														</Form.Item>
 													</Col>
-													<Col>
-														<DeleteOutlined onClick={() => remove(name)} />
-													</Col>
 												</div>
+												<Col>
+													<Tooltip title="删除此控股股东">
+														<DeleteOutlined
+															onClick={() => remove(name)}
+															style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+														/>
+													</Tooltip>
+												</Col>
 											</Space>
 										))}
 

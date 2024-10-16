@@ -1,4 +1,4 @@
-import { Form, Input, Button, Space, InputNumber, Checkbox, Upload, Modal, Col, Row, message } from "antd";
+import { Form, Input, Button, Space, InputNumber, Checkbox, Upload, Modal, Col, Row, message, Tooltip } from "antd";
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -245,11 +245,15 @@ const BeneficialOwnerInfo = () => {
 															</Upload>
 														</Form.Item>
 													</Col>
-
-													<Col>
-														<DeleteOutlined onClick={() => remove(name)} />
-													</Col>
 												</Row>
+												<Col>
+													<Tooltip title="删除此受益人">
+														<DeleteOutlined
+															onClick={() => remove(name)}
+															style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+														/>
+													</Tooltip>
+												</Col>
 											</Space>
 										))}
 
@@ -288,7 +292,8 @@ const BeneficialOwnerInfo = () => {
 									<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
 									<p>
 										I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
-										indirectly own 25% or more of the company’s shares or voting rights.</p>
+										indirectly own 25% or more of the company’s shares or voting rights.
+									</p>
 								</Checkbox>
 							</Form.Item>
 
