@@ -30,7 +30,7 @@ const CompanyContractInfo = () => {
 				contactPhone: parsedData.CompanyContractInfo?.contactPhone || "",
 				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
 				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
-				contactEmail: parsedData.CompanyContractInfo?.contactEmail || "",
+				contactEmail: parsedData.CompanyContractInfo?.contactEmail || ""
 			});
 		}
 	}, [form]);
@@ -41,7 +41,7 @@ const CompanyContractInfo = () => {
 			contactPhone: values.contactPhone,
 			contactMobile: values.contactMobile,
 			contactPosition: values.contactPosition,
-			contactEmail: values.contactEmail,
+			contactEmail: values.contactEmail
 		};
 
 		// Retrieve existing data
@@ -99,8 +99,8 @@ const CompanyContractInfo = () => {
 
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">企业负责人</div>
-						<div className="title">Company Representative</div>
+						<div className="title">企业负责人信息</div>
+						<div className="title">Company Representative Information</div>
 
 						<Form
 							form={form}
@@ -113,44 +113,35 @@ const CompanyContractInfo = () => {
 								<div className="left">
 									<Form.Item
 										name="contactName"
-										label="联系人姓名 / Contact Name:"
-										rules={[{ required: true, message: "请输入联系人姓名 / Please enter contact name:" }]}
+										label="负责人姓名 / Representative Name:"
+										rules={[{ required: true, message: "请输入负责人姓名 / Please enter representative name:" }]}
 									>
-										<Input placeholder="请输入联系人姓名 / Please enter contact name" />
-									</Form.Item>
-
-									<Form.Item
-										name="contactPhone"
-										label="联系人联系电话（固话） / Contact Work Number:"
-										rules={[{ required: true, message: "请输入联系人联系电话 / Please enter contact work number:" }]}
-									>
-										<Input placeholder="请输入联系人联系电话（固话） / Please enter work number" />
+										<Input placeholder="请输入负责人姓名 / Please enter representative name" />
 									</Form.Item>
 
 									<Form.Item
 										name="contactMobile"
-										label="联系人联系电话（手机） / Contact Mobile Number:"
-										rules={[{ required: true, message: "请输入联系人联系电话（手机） / Please enter mobile number" }]}
+										label="负责人联系电话 / Representative Mobile Number:"
+										rules={[{ required: true, message: "请输入负责人联系电话 / Please enter mobile number" }]}
 									>
-										<Input placeholder="请输入联系人联系电话（手机） / Please enter mobile number" />
+										<Input placeholder="请输入负责人联系电话 / Please enter mobile number" />
 									</Form.Item>
 
 									<Form.Item
 										name="contactPosition"
-										label="联系人部门与职位 / Contact's Position:"
-										rules={[{ required: true, message: "请输入联系人部门与职位 / Please enter contact's position" }]}
+										label="负责人部门与职位 / Representative's Position:"
+										rules={[{ required: true, message: "请输入负责人部门与职位 / Please enter representative's position" }]}
 									>
-										<Input placeholder="请输入联系人部门与职位 / Please enter contact's position" />
+										<Input placeholder="请输入负责人部门与职位 / Please enter representative's position" />
 									</Form.Item>
 
 									<Form.Item
 										name="contactEmail"
-										label="联系人联系邮箱 / Contact Email:"
+										label="负责人联系邮箱 / Representative Email:"
 										rules={[{ required: true, type: "email", message: "请输入有效的邮箱地址 / Please enter a valid email" }]}
 									>
-										<Input placeholder="请输入联系人联系邮箱 / Please enter contact email" />
+										<Input placeholder="请输入负责人联系邮箱 / Please enter representative email" />
 									</Form.Item>
-
 								</div>
 							</div>
 							<div className="btns">

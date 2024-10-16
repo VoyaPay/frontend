@@ -35,41 +35,46 @@ const CompanyBusinessInfo = () => {
 	}, [form]);
 
 	// Form submission handler
-	const onSubmit = (values: FormValues) => {
-		const businessInfoPayload = {
-			industry: values.industry,
-			businessDescription: values.businessDescription,
-			monthlySpend: values.monthlySpend,
-			isUSEntity: values.isUSEntity
-		};
+	const saveFormData = (values: FormValues) => {
+    const businessInfoPayload = {
+      industry: values.industry,
+      businessDescription: values.businessDescription,
+      monthlySpend: values.monthlySpend,
+      isUSEntity: values.isUSEntity
+    };
 
-		// Retrieve the current data stored under the email
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
+    const existingData = localStorage.getItem("data");
+    let combinedPayload = {};
 
-		// If there is existing data, merge it with the new business info
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData, // Spread existing data
-				companyBusinessInfo: businessInfoPayload // Add new business info
-			};
-		} else {
-			// If no existing data, create a new object
-			combinedPayload = {
-				companyBusinessInfo: businessInfoPayload
-			};
-		}
+    if (existingData) {
+      const parsedData = JSON.parse(existingData);
+      combinedPayload = {
+        ...parsedData,
+        companyBusinessInfo: businessInfoPayload
+      };
+    } else {
+      combinedPayload = {
+        companyBusinessInfo: businessInfoPayload
+      };
+    }
 
-		// Save the combined data back into localStorage under the email key
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+    localStorage.setItem("data", JSON.stringify(combinedPayload));
+  };
 
-		console.log("Combined Payload:", combinedPayload);
+  // Form submission handler
+  const onSubmit = (values: FormValues) => {
+    saveFormData(values);
 
-		navigate(businessInfoPayload.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+    // Navigate to the next step based on the isUSEntity field
+    navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+  };
 
-	};
-
+  // Handle the previous step, saving form data before navigating
+  const handlePrevStep = () => {
+    const values = form.getFieldsValue(); // Get current form values
+    saveFormData(values); // Save form data
+    navigate("/form/product"); // Navigate to the previous page
+  };
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
@@ -139,17 +144,20 @@ const CompanyBusinessInfo = () => {
 								</Select>
 							</Form.Item>
 							<Form.Item
-										name="isUSEntity"
-										label="请选择入驻境外主体的所属的国家和地区 / Please select the country or region where the overseas entity is located:"
-										rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
-									>
-										<Radio.Group>
-											<Radio value="us">美国 / US</Radio>
-											<Radio value="hk">香港 / HK</Radio>
-										</Radio.Group>
-									</Form.Item>
+								name="isUSEntity"
+								label="请选择入驻境外主体的所属的国家和地区 / Please select the country or region where the overseas entity is located:"
+								rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
+							>
+								<Radio.Group>
+									<Radio value="us">美国 / US</Radio>
+									<Radio value="hk">香港 / HK</Radio>
+								</Radio.Group>
+							</Form.Item>
 
 							<div className="btns">
+								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>

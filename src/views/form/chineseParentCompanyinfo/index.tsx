@@ -7,6 +7,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { createKYCapi } from "@/api/modules/form";
+import { FileApi } from "@/api/modules/form";
 
 // Define the types for form values
 interface FormValues {
@@ -46,12 +47,7 @@ const ChineseParentCompanyInfo = () => {
 
 	// Handle form submission
 	const onSubmit = async (values: FormValues) => {
-		// Retrieve the user's email from localStorage
-		const email = localStorage.getItem("email") || "";
-		if (!email) {
-			console.error("Email not found in localStorage");
-			return;
-		}
+		// Retrieve the user's email from localStorag
 
 		// Create the payload for the Chinese parent company info
 		const chineseParentCompanyPayload = {
@@ -84,10 +80,37 @@ const ChineseParentCompanyInfo = () => {
 
 		// Save the updated payload to localStorage under the user's email
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
-		console.log("Combined Payload:", localStorage.getItem("data"));
 
 		// Open confirmation modal
 		setOpen(true);
+	};
+	const handlePrevStep = () => {
+		const values = form.getFieldsValue();
+		const chineseParentCompanyPayload = {
+			...values,
+			establishmentDate: values.establishmentDate ? values.establishmentDate.format("YYYY-MM-DD") : null,
+			licenseExpiryDate: values.licenseExpiryDate ? values.licenseExpiryDate.format("YYYY-MM-DD") : null
+		};
+
+		const existingData = localStorage.getItem("data");
+		let combinedPayload = {};
+
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			combinedPayload = {
+				...parsedData,
+				chineseParentCompanyInfo: chineseParentCompanyPayload
+			};
+		} else {
+			combinedPayload = {
+				chineseParentCompanyInfo: chineseParentCompanyPayload
+			};
+		}
+
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+
+		// Navigate to the previous step
+		navigate("/form/beneficical");
 	};
 	const onUploadFileChange = (event: { file: any }) => {
 		if (event.file.status === "done") {
@@ -217,16 +240,30 @@ const ChineseParentCompanyInfo = () => {
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 							>
 								<Upload
-									action="http://api-staging.voyapay.com/file/upload"
-									// data={() => {
-									// 	const storedData = JSON.parse(localStorage.getItem("data") || "{}");
-									// 	const contactEmail = storedData?.CompanyContractInfo?.contactEmail || "_";
-									// 	return {
-									// 		usage: `kyc${contactEmail} Chinese Affiliate Company Business License`
-									// 	};
-									// }}
-									data={{ usage: "kyc" }} 
-									onChange={onUploadFileChange}
+									// 使用 customRequest 自定义上传逻辑
+									customRequest={async ({ file, onSuccess, onError }) => {
+										const formData = new FormData();
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
+
+										try {
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											console.log("File uploaded successfully, file ID:", response.fileID);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
+										} catch (error) {
+											console.error("File upload failed:", error);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
+										}
+									}}
+									onChange={onUploadFileChange} // 处理文件状态变化
 								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
@@ -257,7 +294,9 @@ const ChineseParentCompanyInfo = () => {
 									</div>
 								</Checkbox>
 							</Form.Item>
-
+							<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+								上一步 / Prev Step
+							</Button>
 							<Button type="primary" htmlType="submit">
 								提交 / Submit
 							</Button>

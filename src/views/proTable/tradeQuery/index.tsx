@@ -22,6 +22,10 @@ const formatDate = (dateString: string) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const formatMoney= (amount:string)=>{
+	return "$ "+ amount
+}
+
 const StatusMapping = {
 	Authorized: "已授权",
 	Settled: "已结算",
@@ -78,7 +82,7 @@ const TradeQuery = () => {
 		cardName: "defaultCardName",
 		cardOwner: "defaultOwner",
 		cardGroup: "defaultGroup",
-		cardNo: "0000",
+		cardNo: "",
 		cardStatus: "defaultStatus",
 		banlance: "0",
 		createCardTime: "2023-01-01 00:00:00"
@@ -332,7 +336,7 @@ const TradeQuery = () => {
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					key: tran.id,
-					amount: "$ " + tran.amount,
+					amount: formatMoney(tran.amount),
 					...tran,
 					createdAt: formatDate(tran.createdAt),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
