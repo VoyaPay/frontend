@@ -248,8 +248,10 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="companyFormationFile"
 								label="公司注册文件 / Company Formation Article:"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -284,8 +286,10 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="einDocumentFile"
 								label="雇主税号文件（EIN）/ EIN Document:"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -320,8 +324,10 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="operatingAgreementFile"
 								label="公司章程 / Operating Agreement:"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload

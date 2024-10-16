@@ -204,8 +204,10 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="businessRegistration"
 								label="商业登记证（BR） / Business Registration:"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -240,8 +242,10 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="companyIncorporation"
 								label="公司注册书（CI） / Company Incorporation:"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -276,8 +280,10 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="incorporationForm"
 								label="法团成立表（NNC1） / Incorporation Form (NNC1):"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -312,8 +318,10 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="annualReturn"
 								label="周年申报表（NAR1） / Annual Return (NAR1):"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -348,8 +356,10 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="companyArticles"
 								label="公司章程（M&A） / Company Articles (M&A):"
-								valuePropName="fileList"
-								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								valuePropName="fileList" // 使用fileList来传递多个文件
+								getValueFromEvent={e => {
+									return e && e.fileList ? e.fileList : [];
+								}}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
