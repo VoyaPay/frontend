@@ -173,7 +173,7 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="companyWebsite"
 								label="企业网站链接 / Company Website:"
-								rules={[{ required: true, message: "请输入企业网站链接 / Please enter Company Website" }]}
+								rules={[{ required: true, message: "请选择企业网站链接 / Please select the US Entity Type" }]}
 							>
 								<Input placeholder="请输入企业网站链接 / Please enter Company Website" />
 							</Form.Item>
@@ -250,33 +250,43 @@ const UsEntityInfo = () => {
 								label="公司注册文件 / Company Formation Article:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
+									// 使用 customRequest 自定义上传逻辑
 									customRequest={async ({ file, onSuccess, onError }) => {
 										const formData = new FormData();
-										formData.append("file", file);
-										formData.append("usage", "kyc");
+										formData.append("file", file); // 将文件添加到 formData
+										formData.append("usage", "kyc"); // 添加其他参数
 
 										try {
-											const response = await FileApi(formData);
+											const response = await FileApi(formData); // 等待 FileApi 返回结果
 											console.log("File uploaded successfully, file ID:", response.fileID);
-											if (onSuccess) onSuccess(response);
+
+											// 检查 onSuccess 是否存在
+											if (onSuccess) {
+												onSuccess(response); // 成功回调，通知上传成功
+											}
 										} catch (error) {
 											console.error("File upload failed:", error);
-											if (onError) onError(error as any);
+
+											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
+											if (onError) {
+												onError(error as any); // 失败回调，通知上传失败
+											}
 										}
 									}}
-									onChange={onUploadFileChange} // 确保单个文件可以正确处理
+									onChange={onUploadFileChange} // 处理文件状态变化
 								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
-
 							<Form.Item
 								name="einDocumentFile"
 								label="雇主税号文件（EIN）/ EIN Document:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑
@@ -312,6 +322,7 @@ const UsEntityInfo = () => {
 								label="公司章程 / Operating Agreement:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑

@@ -45,7 +45,12 @@ const HKEntityInfo = () => {
 					? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
 					: null,
 				registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
-				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || ""
+				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || "",
+				businessRegistration: parsedData.hkEntityInfo?.businessRegistration,
+				companyIncorporation: parsedData.hkEntityInfo?.companyIncorporation,
+				incorporationForm: parsedData.hkEntityInfo?.incorporationForm,
+				annualReturn: parsedData.hkEntityInfo?.annualReturn,
+				companyArticles: parsedData.hkEntityInfo?.companyArticles
 			});
 		}
 	}, [form]);
@@ -74,6 +79,7 @@ const HKEntityInfo = () => {
 	// Handle navigating to the previous step
 	const handlePrevStep = () => {
 		const values = form.getFieldsValue();
+		console.log(values);
 		saveFormData(values); // Save the current form data
 		navigate("/form/companyBusiness"); // Navigate to the previous step
 	};
@@ -200,6 +206,7 @@ const HKEntityInfo = () => {
 								label="商业登记证（BR） / Business Registration:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑
@@ -235,6 +242,7 @@ const HKEntityInfo = () => {
 								label="公司注册书（CI） / Company Incorporation:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑
@@ -270,6 +278,7 @@ const HKEntityInfo = () => {
 								label="法团成立表（NNC1） / Incorporation Form (NNC1):"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑
@@ -305,6 +314,7 @@ const HKEntityInfo = () => {
 								label="周年申报表（NAR1） / Annual Return (NAR1):"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑
@@ -340,6 +350,7 @@ const HKEntityInfo = () => {
 								label="公司章程（M&A） / Company Articles (M&A):"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									// 使用 customRequest 自定义上传逻辑
