@@ -57,6 +57,15 @@ const proTableRouter: Array<RouteObject> = [
 				}
 			},
 			{
+				path: "/cashback/index",
+				element: lazyLoad(React.lazy(() => import("@/views/proTable/cashback/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "预付卡提现",
+					key: "cashback"
+				}
+			},
+			{
 				path: "/addPrepaidCard/index",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/addPrepaidCard/index"))),
 				meta: {
@@ -92,6 +101,7 @@ const proTableRouter: Array<RouteObject> = [
 					key: "prepaidCard"
 				}
 			},
+			
 		]
 	}
 ];
