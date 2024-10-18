@@ -34,7 +34,7 @@ const StatusMapping = {
 };
 
 const CardTypeMapping = {
-	PrePaid: "预充卡",
+	PrefundCredit: "预充卡",
 	Shared: "共享卡"
 };
 
@@ -133,7 +133,7 @@ const TradeQuery = () => {
 				console.log(response);
 				if (Array.isArray(response)) {
 					const formattedData = response
-						.filter(card => card.type === "PrePaid")
+						.filter(card => card.type === "PrefundCredit")
 						.map(card => ({
 							key: card.id,
 							cardName: card.alias,
@@ -172,7 +172,7 @@ const TradeQuery = () => {
 			key: "cardType",
 			align: "center",
 			width: "100px",
-			render: (cardType: string) => (cardType === "PrePaid" ? "预充卡" : "共享卡")
+			render: (cardType: string) => (cardType === "PrefundCredit" ? "预充卡" : "共享卡")
 		},
 
 		{
