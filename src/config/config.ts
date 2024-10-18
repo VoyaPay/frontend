@@ -41,6 +41,12 @@ export const menu: any = [
 	},
 	{
 		icon: "AreaChartOutlined",
+		title: "预付卡提现",
+		path: "/cashback/index",
+		hide: true
+	},
+	{
+		icon: "AreaChartOutlined",
 		title: "新增预付卡",
 		path: "/addPrepaidCard/index",
 		hide: true

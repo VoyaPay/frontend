@@ -295,6 +295,25 @@ const Detail = () => {
 			}
 		});
 	};
+	const handlecashback = (record: CardData) => {
+		if (cardData.cardStatus === "Closed") {
+			// Display error message and prevent editing
+			message.error("无法充值已注销的卡片");
+			return;
+		}
+		navigate("/cashback/index", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
+	};
 
 	const goCheck = (record: CardData) => {
 		navigate("/proTable/tradeQuery", {
@@ -531,6 +550,15 @@ const Detail = () => {
 						disabled={cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose"}
 					>
 						充值
+					</Button>
+					<Button
+						type="primary"
+						className="actionBtn"
+						size="large"
+						onClick={() => handlecashback(cardData)}
+						disabled={cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose"}
+					>
+						提现
 					</Button>
 					<Button
 						type="primary"
