@@ -173,6 +173,20 @@ const PrepaidCard = () => {
 			}
 		});
 	};
+	const cashback= (record: FormattedCard) => {
+		navigate("/cashback/index", {
+			state: {
+				key: record.key,
+				cardName: record.cardName,
+				cardOwner: record.cardOwner,
+				cardGroup: record.cardGroup,
+				cardNo: record.cardNo,
+				cardStatus: record.cardStatus,
+				banlance: record.banlance,
+				createCardTime: record.createCardTime
+			}
+		});
+	};
 
 	const getBalance = async () => {
 		try {
@@ -281,6 +295,9 @@ const PrepaidCard = () => {
 					</Button>
 					<Button type="link" size="small" onClick={() => goCheck(record)}>
 						消费记录
+					</Button>
+					<Button type="link" size="small" onClick={() => cashback(record)}>
+						提现
 					</Button>
 				</Space>
 			)
