@@ -11,6 +11,7 @@ export const createKYCapi = async (): Promise<ResultData<any>> => {
 		email: storedData.CompanyContractInfo?.contactEmail,
 		fields: storedData
 	};
+	console.log("send data is "+ localStorage.getItem("data"))
 	// 使用封装的http实例发送POST请求
 	try {
 		const response = await http.post(PORT3 + `/kyc`, requestData, { headers: { "Content-Type": "application/json" } });

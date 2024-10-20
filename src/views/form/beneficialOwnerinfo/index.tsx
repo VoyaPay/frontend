@@ -71,7 +71,9 @@ const BeneficialOwnerInfo = () => {
 			};
 		}
 		if (beneficialOwnersPayload.beneficialOwners.length < 1) {
-			message.error("需要填写所有直接或者间接拥有25%及以上公司股权的受益人信息");
+			message.error(
+				"需要填写所有直接或者间接拥有25%及以上公司股权的受益人信息 / Please provide information for all beneficial owners who directly or indirectly own 25% or more of the company's shares or voting rights."
+			);
 			return;
 		}
 
@@ -136,8 +138,12 @@ const BeneficialOwnerInfo = () => {
 				</div>
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">受益所有人信息</div>
-						<div className="title">Beneficial Owner Information</div>
+						<div className="title">
+							<span style={{ color: "red", marginRight: "10px" }}>*</span>受益所有人信息
+						</div>
+						<div className="title">
+							<span style={{ color: "red", marginRight: "10px" }}>*</span>Beneficial Owner Information
+						</div>
 
 						<Form
 							form={form}
@@ -231,10 +237,12 @@ const BeneficialOwnerInfo = () => {
 																			onSuccess(response); // 成功回调，通知上传成功
 																		}
 																	} catch (error) {
+																		message.error("文件传输失败");
 																		console.error("File upload failed:", error);
 
 																		// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 																		if (onError) {
+																			message.error("文件传输失败");
 																			onError(error as any); // 失败回调，通知上传失败
 																		}
 																	}
@@ -289,10 +297,14 @@ const BeneficialOwnerInfo = () => {
 								]}
 							>
 								<Checkbox>
-									<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
 									<p>
-										I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
-										indirectly own 25% or more of the company’s shares or voting rights.
+										<span style={{ color: "red", marginRight: "10px" }}>*</span>
+										我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息
+									</p>
+									<p>
+										<span style={{ color: "red", marginRight: "10px" }}>*</span>I confirm that I have fully and truthfully
+										provided the information of all beneficial owners who directly or indirectly own 25% or more of the company’s
+										shares or voting rights.
 									</p>
 								</Checkbox>
 							</Form.Item>
@@ -315,10 +327,14 @@ const BeneficialOwnerInfo = () => {
 						</Form>
 
 						<Modal title="受益人" visible={open} onOk={handleOk} onCancel={handleCancel}>
-							<p>我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息</p>
 							<p>
-								I confirm that I have fully and truthfully provided the information of all beneficial owners who directly or
-								indirectly own 25% or more of the company’s shares or voting rights.
+								<span style={{ color: "red", marginRight: "10px" }}>*</span>
+								我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息
+							</p>
+							<p>
+								<span style={{ color: "red", marginRight: "10px" }}>*</span>I confirm that I have fully and truthfully provided
+								the information of all beneficial owners who directly or indirectly own 25% or more of the company’s shares or
+								voting rights.
 							</p>
 						</Modal>
 					</div>
