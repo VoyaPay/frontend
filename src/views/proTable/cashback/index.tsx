@@ -125,6 +125,7 @@ const cashback = () => {
 						<div className="pre">待提现预充卡：</div>
 						<div className="text">{cardData.cardName}</div>
 						<div className="text">&nbsp;{"  ( " + cardData.cardNo + " )"}</div>
+						<div className="text">&nbsp;{" ( 卡余额： $ " + cardData.banlance + " )"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">接收账户：</div>
@@ -136,7 +137,7 @@ const cashback = () => {
 						<div className="pre">提现金额:</div>
 						<div className="input-wrapper">
 							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$" />
-							<div className="input-tips">注意：提现金额不能大于沃易卡账户的余额</div> {/* 提示文字在输入框下方 */}
+							<div className="input-tips">注意：提现金额不能大于该预充卡余额</div>
 						</div>
 					</div>
 					<div className="btns">

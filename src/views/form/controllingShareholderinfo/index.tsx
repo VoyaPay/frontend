@@ -113,8 +113,8 @@ const ControllingShareholderInfo = () => {
 				</div>
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">控股股东或实控人信息</div>
-						<div className="title">Controlling Shareholder or Actual Controller Information</div>
+						<div className="title"><span style={{ color: "red", marginRight: "10px" }}>*</span>控股股东或实控人信息</div>
+						<div className="title"><span style={{ color: "red", marginRight: "10px" }}>*</span>Controlling Shareholder or Actual Controller Information</div>
 						<Form form={form} name="controllingShareholderForm" layout="vertical" onFinish={onSubmit}>
 							<Form.List name="shareholders">
 								{(fields, { add, remove }) => (
@@ -219,6 +219,7 @@ const ControllingShareholderInfo = () => {
 						</Form>
 						<Modal title="股东" visible={open} onOk={handleOk} onCancel={handleCancel}>
 							<p>确认已经填完所有股东?</p>
+							<p>Confirm that all shareholders have been filled in?</p>
 						</Modal>
 					</div>
 				</div>

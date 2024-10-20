@@ -2,7 +2,7 @@ import { Button, Form, Input, Select, Upload, DatePicker, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
@@ -27,6 +27,11 @@ const UsEntityInfo = () => {
 	const { Option } = Select;
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [uploadSuccess, setUploadSuccess] = useState({
+		companyFormationFile: true,
+		einDocumentFile: true,
+		operatingAgreementFile: true
+	});
 
 	useEffect(() => {
 		const storedData = localStorage.getItem("data");
@@ -51,13 +56,25 @@ const UsEntityInfo = () => {
 		}
 	}, [form]);
 
-	const onUploadFileChange = (event: { file: any }) => {
+	// Track upload success
+	const onUploadFileChange = (fileType: string) => (event: { file: any }) => {
 		if (event.file.status === "done") {
 			console.log("upload success, fileId=", event.file.response.fileId);
+			setUploadSuccess(prev => ({ ...prev, [fileType]: true }));
+		} else if (event.file.status === "error") {
+			console.log("upload failed");
+			setUploadSuccess(prev => ({ ...prev, [fileType]: false }));
+			message.error("文件传输失败，请重试");
 		}
 	};
 
 	const onSubmit = (values: FormValues) => {
+		// Check if all uploads were successful before proceeding
+		if (!uploadSuccess.companyFormationFile || !uploadSuccess.einDocumentFile || !uploadSuccess.operatingAgreementFile) {
+			message.error("请确保所有文件上传成功 / Please ensure all files are uploaded successfully");
+			return;
+		}
+
 		const usEntityPayload = {
 			usEntityName: values.usEntityName,
 			companyWebsite: values.companyWebsite,
@@ -91,7 +108,6 @@ const UsEntityInfo = () => {
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 
 		message.success("US Entity Information saved successfully!");
-
 		navigate("/form/beneficical");
 	};
 
@@ -249,9 +265,7 @@ const UsEntityInfo = () => {
 								name="companyFormationFile"
 								label="公司注册文件 / Company Formation Article:"
 								valuePropName="fileList" // 使用fileList来传递多个文件
-								getValueFromEvent={e => {
-									return e && e.fileList ? e.fileList : [];
-								}}
+								getValueFromEvent={e => e?.fileList ?? []}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
@@ -265,20 +279,19 @@ const UsEntityInfo = () => {
 											const response = await FileApi(formData); // 等待 FileApi 返回结果
 											console.log("File uploaded successfully, file ID:", response.fileID);
 
-											// 检查 onSuccess 是否存在
 											if (onSuccess) {
 												onSuccess(response); // 成功回调，通知上传成功
 											}
-										} catch (error) {
+										} catch (error:any) {
+											message.error("文件传输失败");
 											console.error("File upload failed:", error);
 
-											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 											if (onError) {
-												onError(error as any); // 失败回调，通知上传失败
+												onError(error); // 失败回调，通知上传失败
 											}
 										}
 									}}
-									onChange={onUploadFileChange} // 处理文件状态变化
+									onChange={onUploadFileChange("companyFormationFile")} // 处理文件状态变化
 								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
@@ -286,37 +299,33 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="einDocumentFile"
 								label="雇主税号文件（EIN）/ EIN Document:"
-								valuePropName="fileList" // 使用fileList来传递多个文件
-								getValueFromEvent={e => {
-									return e && e.fileList ? e.fileList : [];
-								}}
+								valuePropName="fileList"
+								getValueFromEvent={e => e?.fileList ?? []}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
-									// 使用 customRequest 自定义上传逻辑
 									customRequest={async ({ file, onSuccess, onError }) => {
 										const formData = new FormData();
-										formData.append("file", file); // 将文件添加到 formData
-										formData.append("usage", "kyc"); // 添加其他参数
+										formData.append("file", file);
+										formData.append("usage", "kyc");
 
 										try {
-											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											const response = await FileApi(formData);
 											console.log("File uploaded successfully, file ID:", response.fileID);
 
-											// 检查 onSuccess 是否存在
 											if (onSuccess) {
-												onSuccess(response); // 成功回调，通知上传成功
+												onSuccess(response);
 											}
-										} catch (error) {
+										} catch (error:any) {
+											message.error("文件传输失败");
 											console.error("File upload failed:", error);
 
-											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 											if (onError) {
-												onError(error as any); // 失败回调，通知上传失败
+												onError(error);
 											}
 										}
 									}}
-									onChange={onUploadFileChange} // 处理文件状态变化
+									onChange={onUploadFileChange("einDocumentFile")}
 								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
@@ -324,47 +333,55 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="operatingAgreementFile"
 								label="公司章程 / Operating Agreement:"
-								valuePropName="fileList" // 使用fileList来传递多个文件
-								getValueFromEvent={e => {
-									return e && e.fileList ? e.fileList : [];
-								}}
+								valuePropName="fileList"
+								getValueFromEvent={e => e?.fileList ?? []}
 								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
-									// 使用 customRequest 自定义上传逻辑
 									customRequest={async ({ file, onSuccess, onError }) => {
 										const formData = new FormData();
-										formData.append("file", file); // 将文件添加到 formData
-										formData.append("usage", "kyc"); // 添加其他参数
+										formData.append("file", file);
+										formData.append("usage", "kyc");
 
 										try {
-											const response = await FileApi(formData); // 等待 FileApi 返回结果
+											const response = await FileApi(formData);
 											console.log("File uploaded successfully, file ID:", response.fileID);
 
-											// 检查 onSuccess 是否存在
 											if (onSuccess) {
-												onSuccess(response); // 成功回调，通知上传成功
+												onSuccess(response);
 											}
-										} catch (error) {
+										} catch (error: any) {
+											message.error("文件传输失败");
 											console.error("File upload failed:", error);
 
-											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 											if (onError) {
-												onError(error as any); // 失败回调，通知上传失败
+												onError(error);
 											}
 										}
 									}}
-									onChange={onUploadFileChange} // 处理文件状态变化
+									onChange={onUploadFileChange("operatingAgreementFile")}
 								>
 									<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 								</Upload>
 							</Form.Item>
 
 							<div className="btns">
-								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+								<Button
+									type="primary"
+									style={{ marginRight: "10px" }}
+									onClick={handlePrevStep}
+								>
 									上一步 / Prev Step
 								</Button>
-								<Button type="primary" htmlType="submit">
+								<Button
+									type="primary"
+									htmlType="submit"
+									disabled={
+										!uploadSuccess.companyFormationFile ||
+										!uploadSuccess.einDocumentFile ||
+										!uploadSuccess.operatingAgreementFile
+									}
+								>
 									下一步 / Next Step
 								</Button>
 							</div>

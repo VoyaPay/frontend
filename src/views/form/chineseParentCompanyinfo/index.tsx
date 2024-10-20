@@ -255,10 +255,12 @@ const ChineseParentCompanyInfo = () => {
 												onSuccess(response); // 成功回调，通知上传成功
 											}
 										} catch (error) {
+											message.error("文件传输失败")
 											console.error("File upload failed:", error);
 
 											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 											if (onError) {
+												message.error("文件传输失败")
 												onError(error as any); // 失败回调，通知上传失败
 											}
 										}
@@ -282,12 +284,14 @@ const ChineseParentCompanyInfo = () => {
 								<Checkbox>
 									<div>
 										<span>
-											*我作为本公司负责人，确认本调查问卷中填写及提供的信息真实、完整、准确，能够实际反映本公司的合规、反洗钱及反恐怖主义融资相关内容。
+											<span style={{ color: "red", marginRight: "10px" }}>*</span>
+											我作为本公司负责人，确认本调查问卷中填写及提供的信息真实、完整、准确，能够实际反映本公司的合规、反洗钱及反恐怖主义融资相关内容。
 										</span>
 									</div>
 									<div>
 										<span>
-											*As the authorized representative of the company, I confirm that the information filled out and provided in
+											<span style={{ color: "red", marginRight: "10px" }}>*</span>
+											As the authorized representative of the company, I confirm that the information filled out and provided in
 											this questionnaire is true, complete, and accurate, and accurately reflects the company’s compliance,
 											anti-money laundering, and counter-terrorist financing related matters.
 										</span>
