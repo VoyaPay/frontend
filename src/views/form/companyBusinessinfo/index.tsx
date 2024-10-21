@@ -19,7 +19,6 @@ const CompanyBusinessInfo = () => {
 	const navigate = useNavigate();
 
 	// Automatically populate the form if data exists in localStorage
-
 	useEffect(() => {
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
@@ -29,52 +28,53 @@ const CompanyBusinessInfo = () => {
 				industry: parsedData.companyBusinessInfo?.industry || "",
 				businessDescription: parsedData.companyBusinessInfo?.businessDescription || "",
 				monthlySpend: parsedData.companyBusinessInfo?.monthlySpend || "",
-				isUSEntity: parsedData.CompanyContractInfo?.isUSEntity || "us"
+				isUSEntity: parsedData.companyBusinessInfo?.isUSEntity || "" // Ensure isUSEntity is populated
 			});
 		}
 	}, [form]);
 
 	// Form submission handler
 	const saveFormData = (values: FormValues) => {
-    const businessInfoPayload = {
-      industry: values.industry,
-      businessDescription: values.businessDescription,
-      monthlySpend: values.monthlySpend,
-      isUSEntity: values.isUSEntity
-    };
+		const businessInfoPayload = {
+			industry: values.industry,
+			businessDescription: values.businessDescription,
+			monthlySpend: values.monthlySpend,
+			isUSEntity: values.isUSEntity,
+		};
 
-    const existingData = localStorage.getItem("data");
-    let combinedPayload = {};
+		const existingData = localStorage.getItem("data");
+		let combinedPayload = {};
 
-    if (existingData) {
-      const parsedData = JSON.parse(existingData);
-      combinedPayload = {
-        ...parsedData,
-        companyBusinessInfo: businessInfoPayload
-      };
-    } else {
-      combinedPayload = {
-        companyBusinessInfo: businessInfoPayload
-      };
-    }
+		if (existingData) {
+			const parsedData = JSON.parse(existingData);
+			combinedPayload = {
+				...parsedData,
+				companyBusinessInfo: businessInfoPayload,
+			};
+		} else {
+			combinedPayload = {
+				companyBusinessInfo: businessInfoPayload,
+			};
+		}
 
-    localStorage.setItem("data", JSON.stringify(combinedPayload));
-  };
+		localStorage.setItem("data", JSON.stringify(combinedPayload));
+	};
 
-  // Form submission handler
-  const onSubmit = (values: FormValues) => {
-    saveFormData(values);
+	// Form submission handler
+	const onSubmit = (values: FormValues) => {
+		saveFormData(values);
 
-    // Navigate to the next step based on the isUSEntity field
-    navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
-  };
+		// Navigate to the next step based on the isUSEntity field
+		navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+	};
 
-  // Handle the previous step, saving form data before navigating
-  const handlePrevStep = () => {
-    const values = form.getFieldsValue(); // Get current form values
-    saveFormData(values); // Save form data
-    navigate("/form/product"); // Navigate to the previous page
-  };
+	// Handle the previous step, saving form data before navigating
+	const handlePrevStep = () => {
+		const values = form.getFieldsValue(); // Get current form values
+		saveFormData(values); // Save form data
+		navigate("/form/product"); // Navigate to the previous page
+	};
+
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
