@@ -4,7 +4,7 @@ import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
-// import { KYCStateApi } from "@/api/modules/form";
+import { KYCStateApi } from "@/api/modules/form";
 // import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
@@ -13,7 +13,6 @@ import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import "./index.less";
 import logo from "@/assets/images/voya.png";
-import { NavLink } from "react-router-dom";
 
 const LoginForm = (props: any) => {
 	// const { t } = useTranslation();
@@ -47,23 +46,30 @@ const LoginForm = (props: any) => {
 			console.log("Received token:", access_token);
 			setToken("access token is " + access_token);
 			setTabsList([]);
-			message.success("登录成功！");
 			localStorage.setItem("access_token", access_token);
-			// if (loginForm.email) {
-			// 	const kycResponse = await KYCStateApi(loginForm.email);
+			if (loginForm.email) {
+				const kycResponse = await KYCStateApi(loginForm.email);
+				// unreviewed
+				// underReview
+				// rejected
+				// approved
 
-			// 	if (kycResponse.status === "approved") {
-			// 		localStorage.setItem("kyc_state", "successful");
-			// 		console.log(kycResponse.status)
-			// 		navigate("/proTable/account");
-			// 	} else {
-			// 		localStorage.setItem("kyc_state", kycResponse.status || "");
-			// 		console.log(kycResponse.status)
-			// 		navigate("/company");
-			// 	}
-
-			// }
-			navigate("/proTable/account");
+				if (kycResponse.status === "approved") {
+					localStorage.setItem("kyc_state", "successful");
+					console.log(kycResponse.status);
+					message.success("登录成功！");
+					navigate("/proTable/account");
+					return;
+				} else if (kycResponse.status === "underReview") {
+					navigate("/form/kycprocess");
+					return;
+				} else {
+					localStorage.setItem("kyc_state", kycResponse.status || "");
+					localStorage.setItem("login_email", loginForm.email)
+					navigate("/company");
+					return;
+				}
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -140,11 +146,6 @@ const LoginForm = (props: any) => {
 				<a href="https://www.voyapay.com/zh/contact-4" target="_blank" rel="noopener noreferrer">
 					立即注册
 				</a>
-				<span style={{ marginLeft: "20px" }}>
-					<NavLink to="/company" target="_blank" rel="noopener noreferrer">
-						实名认证
-					</NavLink>
-				</span>
 
 				{/* <span>忘记密码</span> */}
 			</div>

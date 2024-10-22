@@ -100,8 +100,7 @@ const proTableRouter: Array<RouteObject> = [
 					title: "预付卡",
 					key: "prepaidCard"
 				}
-			},
-			
+			}
 		]
 	}
 ];

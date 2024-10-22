@@ -19,7 +19,7 @@ interface FormattedTransaction {
 }
 
 const TransferTypeMapping = {
-	cardPurchase: "购卡",
+	cardPurchase: "卡首充",
 	cardTopup: "卡充值",
 	deposit: "账户充值",
 	fee: "手续费",

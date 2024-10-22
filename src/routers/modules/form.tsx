@@ -84,7 +84,17 @@ const formRouter: Array<RouteObject> = [
 					title: "入驻企业中国母公司主要信息",
 					key: "Chinese Parent Company Information"
 				}
-			}
+			},
+			{
+				path: "/form/kycprocess",
+				element: lazyLoad(React.lazy(() => import("@/views/form/kycprocess"))),
+				meta: {
+					requiresAuth: false,
+					title: "kyc审核中",
+					key: "KycProcess"
+				}
+			},
+			
 		]
 	}
 ];

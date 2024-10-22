@@ -8,7 +8,7 @@ import http from "@/api";
 export const createKYCapi = async (): Promise<ResultData<any>> => {
 	const storedData = JSON.parse(localStorage.getItem("data") || "{}");
 	const requestData = {
-		email: storedData.CompanyContractInfo?.contactEmail,
+		email: localStorage.getItem("login_email"),
 		fields: storedData
 	};
 	console.log("send data is "+ localStorage.getItem("data"))
