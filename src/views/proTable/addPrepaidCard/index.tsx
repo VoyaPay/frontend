@@ -198,7 +198,7 @@ const AddPrepaidCard = () => {
 	};
 	const handleSubmit = async () => {
 		const payload = {
-			type: "PrePaid",
+			type: "PrefundCredit",
 			initialLimit: amount,
 			alias: cardName,
 			cardHolderFirstName: firstName,
