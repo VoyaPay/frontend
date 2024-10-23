@@ -222,7 +222,7 @@ const AddPrepaidCard = () => {
 
 			console.log("transaction is " + formattedData.transaction?.status);
 
-			if (response && formattedData.transaction?.status) {
+			if (response) {
 				navigate("/applySuccess/index");
 			} else {
 				// Show error message
