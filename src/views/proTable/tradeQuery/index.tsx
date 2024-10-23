@@ -8,6 +8,7 @@ import "./index.less";
 import { SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { SearchTransactionRequest, TransactionListItem } from "@/api/interface";
+import { SorterResult } from "antd/es/table/interface";
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
@@ -22,9 +23,12 @@ const formatDate = (dateString: string) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-const formatMoney= (amount:string)=>{
-	return "$ "+ amount
-}
+const formatMoney = (amount: string) => {
+	return "$" + amount;
+};
+
+const TRANSACTION_DEFAULT_SORT_FIELD = "transactionTime";
+const TRANSACTION_DEFAULT_PAGE_SIZE = 10;
 
 const StatusMapping = {
 	Authorized: "已授权",
@@ -34,7 +38,7 @@ const StatusMapping = {
 };
 
 const CardTypeMapping = {
-	PrePaid: "预充卡",
+	PrefundCredit: "预充卡",
 	Shared: "共享卡"
 };
 
@@ -45,7 +49,7 @@ interface FormattedCard {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: string;
+	balance: string;
 	createCardTime: string;
 }
 
@@ -56,7 +60,7 @@ interface CardData {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: string;
+	balance: string;
 	createCardTime: string;
 	address?: string;
 	expirationDate?: string;
@@ -65,8 +69,8 @@ interface CardData {
 
 interface TableParams {
 	pagination?: TablePaginationConfig;
-	// sortField?: SorterResult<any>['field'];
-	// sortOrder?: SorterResult<any>['order'];
+	sortField?: SorterResult<any>["field"];
+	sortOrder?: SorterResult<any>["order"];
 	// filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
 }
 
@@ -84,7 +88,7 @@ const TradeQuery = () => {
 		cardGroup: "defaultGroup",
 		cardNo: "",
 		cardStatus: "defaultStatus",
-		banlance: "0",
+		balance: "0",
 		createCardTime: "2023-01-01 00:00:00"
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
@@ -100,9 +104,11 @@ const TradeQuery = () => {
 	const [transactionTableParams, setTransactionTableParams] = useState<TableParams>({
 		pagination: {
 			current: 1,
-			pageSize: 10,
+			pageSize: TRANSACTION_DEFAULT_PAGE_SIZE,
 			showSizeChanger: false
-		}
+		},
+		sortField: TRANSACTION_DEFAULT_SORT_FIELD,
+		sortOrder: "descend"
 	});
 
 	const getCSV = async (): Promise<void> => {
@@ -115,10 +121,10 @@ const TradeQuery = () => {
 					merchant: merchant,
 					cardNumber: cardNoSearch
 				},
-				sortBy: "createdAt",
+				sortBy: TRANSACTION_DEFAULT_SORT_FIELD,
 				asc: false,
 				pageNum: 1,
-				pageSize: 10
+				pageSize: TRANSACTION_DEFAULT_PAGE_SIZE
 			});
 			console.log(response);
 		} catch (e: any) {
@@ -127,38 +133,11 @@ const TradeQuery = () => {
 	};
 
 	useEffect(() => {
-		const fetchUserCards = async () => {
-			try {
-				const response = await UserCardApi();
-				console.log(response);
-				if (Array.isArray(response)) {
-					const formattedData = response
-						.filter(card => card.type === "PrePaid")
-						.map(card => ({
-							key: card.id,
-							cardName: card.alias,
-							cardOwner: "NA",
-							cardGroup: card.network,
-							cardNo: card.number,
-							cardStatus: card.status,
-							banlance: card.initialLimit,
-							createCardTime: formatDate(card.createdAt),
-							cardType: card.type
-						}));
-
-					setDataSource(formattedData);
-					setFilteredData(formattedData);
-				}
-			} catch (error) {
-				console.error("Failed to fetch user cards:", error);
-			}
-		};
-
 		fetchUserCards();
-		searchTransaction(1, 10);
+		searchTransaction(1, TRANSACTION_DEFAULT_PAGE_SIZE);
 	}, []);
 
-	const createColumns: any[] = [
+	const createCardColumns: any[] = [
 		{
 			title: "卡号",
 			dataIndex: "cardNo",
@@ -172,7 +151,7 @@ const TradeQuery = () => {
 			key: "cardType",
 			align: "center",
 			width: "100px",
-			render: (cardType: string) => (cardType === "PrePaid" ? "预充卡" : "共享卡")
+			render: (cardType: string) => (cardType === "PrefundCredit" ? "预充卡" : "共享卡")
 		},
 
 		{
@@ -212,9 +191,10 @@ const TradeQuery = () => {
 	const transactionColumns: any[] = [
 		{
 			title: "时间",
-			dataIndex: "createdAt",
-			key: "createdAt",
-			align: "center"
+			dataIndex: TRANSACTION_DEFAULT_SORT_FIELD,
+			key: TRANSACTION_DEFAULT_SORT_FIELD,
+			align: "center",
+			sorter: true
 		},
 
 		{
@@ -257,7 +237,8 @@ const TradeQuery = () => {
 			title: "金额",
 			dataIndex: "amount",
 			key: "amount",
-			align: "center"
+			align: "center",
+			sorter: true
 		},
 		{
 			title: "授权ID",
@@ -280,7 +261,7 @@ const TradeQuery = () => {
 	];
 	const [columns, setColumns] = useState(transactionColumns);
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
-	const [cardNoSearch, setCardNoSearch] = useState(cardData.cardNo||"");
+	const [cardNoSearch, setCardNoSearch] = useState(cardData.cardNo || "");
 	const [merchant, setMerchant] = useState("");
 	const [tranStatus, setTranStatus] = useState(undefined);
 
@@ -296,7 +277,7 @@ const TradeQuery = () => {
 	const changeTradeType = (type: any) => {
 		setTradeType(type);
 		if (type == "create") {
-			setColumns(createColumns);
+			setColumns(createCardColumns);
 		}
 		if (type == "auth") {
 			setColumns(transactionColumns);
@@ -310,14 +291,60 @@ const TradeQuery = () => {
 				current: 1
 			}
 		});
-		searchTransaction(1, transactionTableParams.pagination?.pageSize ?? 10);
+		searchTransaction(1, transactionTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE);
 	};
 
-	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = config => {
-		searchTransaction(config.current ?? 1, config.pageSize ?? 10);
+	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = (pagination, filters, sorter) => {
+		const sortField = Array.isArray(sorter) ? TRANSACTION_DEFAULT_SORT_FIELD : sorter.field?.toString();
+		const sortOrder = Array.isArray(sorter) ? "ascend" : sorter.order;
+		setTransactionTableParams({
+			pagination: {
+				...transactionTableParams.pagination,
+				current: pagination.current,
+				pageSize: pagination.pageSize
+			},
+			sortField,
+			sortOrder
+		});
+		searchTransaction(
+			pagination.current ?? 1,
+			pagination.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE,
+			sortField,
+			sortOrder === "ascend"
+		);
 	};
 
-	function searchTransaction(current: number, pageSize: number) {
+	const fetchUserCards = async () => {
+		try {
+			const response = await UserCardApi();
+			console.log(response);
+			if (Array.isArray(response)) {
+				const formattedData = response.map(card => ({
+					key: card.id,
+					cardName: card.alias,
+					cardOwner: "NA",
+					cardGroup: card.network,
+					cardNo: card.number,
+					cardStatus: card.status,
+					balance: card.initialLimit,
+					createCardTime: formatDate(card.createdAt),
+					cardType: card.type
+				}));
+
+				setDataSource(formattedData);
+				setFilteredData(formattedData);
+			}
+		} catch (error) {
+			console.error("Failed to fetch user cards:", error);
+		}
+	};
+
+	const searchTransaction = (
+		current: number,
+		pageSize: number,
+		sortBy: string = TRANSACTION_DEFAULT_SORT_FIELD,
+		asc: boolean = false
+	) => {
 		const requestBody: SearchTransactionRequest = {
 			where: {
 				startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
@@ -326,19 +353,19 @@ const TradeQuery = () => {
 				merchant: merchant,
 				cardNumber: cardNoSearch
 			},
-			sortBy: "createdAt",
-			asc: false,
+			sortBy: sortBy,
+			asc: asc,
 			pageNum: current ?? 1,
-			pageSize: pageSize ?? 10
+			pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
 		};
 		SearchTransactionApi(requestBody).then(res => {
 			console.log("search result", res);
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
+					...tran,
 					key: tran.id,
 					amount: formatMoney(tran.amount),
-					...tran,
-					createdAt: formatDate(tran.createdAt),
+					transactionTime: formatDate(tran.transactionTime),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
 					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping],
 					wrongReason: tran.status === "Declined" ? tran.notes : ""
@@ -356,7 +383,7 @@ const TradeQuery = () => {
 				setTransactionPage(formattedData);
 			}
 		});
-	}
+	};
 
 	const applyFilters = () => {
 		let filtered = [...dataSource];
@@ -418,7 +445,7 @@ const TradeQuery = () => {
 							{/*	style={{ width: 120 }}*/}
 							{/*	onChange={handleChange}*/}
 							{/*	options={[*/}
-							{/*		{ value: "prepaid", label: "预充卡" },*/}
+							{/*		{ value: "PrefundCredit", label: "预充卡" },*/}
 							{/*		{ value: "share", label: "共享卡" }*/}
 							{/*	]}*/}
 							{/*	className="transactionType"*/}
@@ -448,11 +475,11 @@ const TradeQuery = () => {
 								style={{ width: 200 }}
 								value={cardNoSearch}
 								onChange={(e: any) => {
-										const value = e.target.value;
-										// 使用正则表达式过滤掉非数字字符
-										const filteredValue = value.replace(/[^0-9*]/g, ""); // \D 表示非数字
-										setCardNoSearch(filteredValue); // 更新用户输入的值
-										console.log("card No search: " + filteredValue);
+									const value = e.target.value;
+									// 使用正则表达式过滤掉非数字字符
+									const filteredValue = value.replace(/[^0-9*]/g, ""); // \D 表示非数字
+									setCardNoSearch(filteredValue); // 更新用户输入的值
+									console.log("card No search: " + filteredValue);
 								}}
 							/>
 
@@ -470,8 +497,8 @@ const TradeQuery = () => {
 								style={{ width: 120 }}
 								onChange={handleChange}
 								options={[
-									{ value: "prepaid", label: "预充卡" },
-									{ value: "share", label: "共享卡" }
+									{ value: "PrefundCredit", label: "预充卡" },
+									{ value: "Share", label: "共享卡" }
 								]}
 								className="transactionType"
 							/>
