@@ -118,7 +118,7 @@ const TradeQuery = () => {
 				sortBy: "createdAt",
 				asc: false,
 				pageNum: 1,
-				pageSize: 100000
+				pageSize: 10
 			});
 			console.log(response);
 		} catch (e: any) {
