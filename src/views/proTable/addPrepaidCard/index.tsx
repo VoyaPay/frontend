@@ -20,9 +20,9 @@ const AddPrepaidCard = () => {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [streetAddress, setStreetAddress] = useState("1201 North Market Street");
-  const [city, setCity] = useState("Wilmington");
-  const [state, setState] = useState("DE");
-  const [zipcode, setZipCode] = useState("19801");
+	const [city, setCity] = useState("Wilmington");
+	const [state, setState] = useState("DE");
+	const [zipcode, setZipCode] = useState("19801");
 	const [cardsfee, setcardsfee] = useState("0");
 	const [accountBalance, setAccountBalance] = useState(0);
 	const [dataSource, setDataSource] = useState<BinData[]>([]);

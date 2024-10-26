@@ -115,8 +115,8 @@ export class SearchTransactionWhere {
 
 export interface SearchTransactionRequest extends ReqPage {
 	where?: SearchTransactionWhere;
-	sortBy: "createdAt";
-	asc: false;
+	sortBy: string;
+	asc: boolean;
 }
 
 export class SearchTransferWhere {
