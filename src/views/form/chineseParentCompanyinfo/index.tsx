@@ -131,10 +131,9 @@ const ChineseParentCompanyInfo = () => {
 			// 检查响应是否成功
 			if (response && !response.message) {
 				// 成功消息提示
+				navigate("/form/kycprocess");
 				message.success("KYC 信息提交成功， 我们将尽快联系您！");
 
-				// 跳转到登录页面
-				navigate("/login");
 			} else {
 				// 如果有错误消息，显示错误提示
 				message.error(response.message || "提交失败，请稍后再试！");
@@ -255,12 +254,12 @@ const ChineseParentCompanyInfo = () => {
 												onSuccess(response); // 成功回调，通知上传成功
 											}
 										} catch (error) {
-											message.error("文件传输失败")
+											message.error("文件传输失败");
 											console.error("File upload failed:", error);
 
 											// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 											if (onError) {
-												message.error("文件传输失败")
+												message.error("文件传输失败");
 												onError(error as any); // 失败回调，通知上传失败
 											}
 										}

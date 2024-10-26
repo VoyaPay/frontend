@@ -19,7 +19,7 @@ interface FormattedTransaction {
 }
 
 const TransferTypeMapping = {
-	cardPurchase: "购卡",
+	cardPurchase: "卡首充",
 	cardTopup: "卡充值",
 	deposit: "账户充值",
 	fee: "手续费",
@@ -59,27 +59,37 @@ const Account = () => {
 		try {
 			const response = await UserTransfersApi();
 			if (Array.isArray(response)) {
-				const formattedData = response.map(transaction => ({
-					key: transaction.id,
-					typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
-					type: transaction.type,
-					dynamicAccountType: transaction.origin || "N/A",
-					amount: "$" + String(Math.abs(parseFloat(transaction.amount)).toFixed(2)),
-					currency: "USD",
-					time: formatDate(transaction.createdAt),
-					transactionDetail:
-						transaction.type === "cardPurchase"
-							? "“沃易卡账户”转出至“预充卡”"
-							: transaction.type === "cardTopup"
-							? "“沃易卡账户”转出至“预充卡”"
-							: transaction.type === "deposit"
-							? "您的资金转入至“沃易卡账户”"
-							: transaction.type === "closeCardRefund"
-							? "“预充卡”转入至 “沃易卡账户”"
-							: transaction.type === "fee"
-							? "手续费"
-							: "其他"
-				}));
+				const formattedData = response.map(transaction => {
+					let cardName = "预充卡";
+					if (transaction.card) {
+						cardName += ":";
+						if (transaction.card.alias) {
+							cardName += transaction.card.alias;
+						}
+						cardName += `[${transaction.card.number}]`;
+					}
+					return {
+						key: transaction.id,
+						typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
+						type: transaction.type,
+						dynamicAccountType: transaction.origin || "N/A",
+						amount: "$" + String(Math.abs(parseFloat(transaction.amount)).toFixed(2)),
+						currency: "USD",
+						time: formatDate(transaction.createdAt),
+						transactionDetail:
+							transaction.type === "cardPurchase"
+								? "沃易卡账户转出至" + cardName
+								: transaction.type === "cardTopup"
+								? "沃易卡账户转出至" + cardName
+								: transaction.type === "deposit"
+								? "您的资金转入至沃易卡账户"
+								: transaction.type === "closeCardRefund"
+								? cardName + "转入至沃易卡账户"
+								: transaction.type === "fee"
+								? "手续费"
+								: "其他"
+					};
+				});
 
 				setDataSource(formattedData);
 				setFilteredDataSource(formattedData); // Default to show all data initially
@@ -97,7 +107,7 @@ const Account = () => {
 					endDate: selectedTimeRange[1],
 					type: selectedTransferType
 				},
-				pageNum: 1, 
+				pageNum: 1,
 				pageSize: 100
 			});
 			console.log(response);

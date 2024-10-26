@@ -48,7 +48,7 @@ export interface configDetail {
 export interface Result {
 	code: string;
 	msg: string;
-	card?: object;
+	card?: { number: string; alias: string };
 	transaction?: NewTransaction;
 	currentBalance?: string;
 	cvc?: string;

@@ -51,12 +51,7 @@ export const menu: any = [
 		path: "/addPrepaidCard/index",
 		hide: true
 	},
-	{
-		icon: "AreaChartOutlined",
-		title: "卡片申请成功",
-		path: "/applySuccess/index",
-		hide: true
-	},
+
 	{
 		icon: "AreaChartOutlined",
 		title: "账户设置",
@@ -86,65 +81,43 @@ export const menu2: any = [
 		path: "/company",
 		hide: false
 	},
+
 	{
 		icon: "AppstoreOutlined",
 		title: "开通场景信息",
 		path: "/form/product",
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "Products Use Case Information"
-		}
+		hide: false
 	},
+	
 	{
 		icon: "AppstoreOutlined",
 		title: "企业展业情况",
 		path: "/form/companyBusiness",
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "Company Business Activities"
-		}
+		hide: false
 	},
 	{
 		icon: "AppstoreOutlined",
 		title: "境外入住企业主体信息",
 		path: "/form/hkEntityContact" || "/form/usEntityContact",
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "usEntityinfo"
-		}
+		hide: false
 	},
 
 	{
 		icon: "AppstoreOutlined",
 		title: "控股股东或实控人信息",
 		path: "/form/shareholder",
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "Controlling Shareholder or Actual Controller Information"
-		}
+		hide: false
 	},
 	{
 		icon: "AppstoreOutlined",
 		title: "受益所有人信息",
 		path: "/form/beneficical",
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "Beneficial Owner Information"
-		}
+		hide: false
 	},
 	{
 		icon: "AppstoreOutlined",
 		title: "入驻企业中国母公司主要信息",
 		path: "/form/chinesecompany",
-		hide: false,
-		meta: {
-			requiresAuth: false,
-			key: "Chinese Parent Company Information"
-		}
+		hide: false
 	}
 ];
