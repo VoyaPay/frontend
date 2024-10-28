@@ -6,6 +6,7 @@ import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
 import { AccountApi } from "@/api/modules/user";
+// import { triggerAsyncId } from "async_hooks";
 
 interface FormattedTransaction {
 	key: string;
@@ -60,13 +61,14 @@ const Account = () => {
 			const response = await UserTransfersApi();
 			if (Array.isArray(response)) {
 				const formattedData = response.map(transaction => {
-					let cardName = "预充卡";
+					let cardName = "预充卡 ";
 					if (transaction.card) {
-						cardName += ":";
 						if (transaction.card.alias) {
+							cardName += transaction.card.number;
+							cardName += " ( ";
 							cardName += transaction.card.alias;
+							cardName += " )";
 						}
-						cardName += `[${transaction.card.number}]`;
 					}
 					return {
 						key: transaction.id,
@@ -78,15 +80,15 @@ const Account = () => {
 						time: formatDate(transaction.createdAt),
 						transactionDetail:
 							transaction.type === "cardPurchase"
-								? "沃易卡账户转出至" + cardName
+								? "沃易卡账户 -> " + cardName
 								: transaction.type === "cardTopup"
-								? "沃易卡账户转出至" + cardName
+								? "沃易卡账户 -> " + cardName
 								: transaction.type === "deposit"
 								? "您的资金转入至沃易卡账户"
 								: transaction.type === "closeCardRefund"
-								? cardName + "转入至沃易卡账户"
+								? cardName + " -> 沃易卡账户"
 								: transaction.type === "fee"
-								? "手续费"
+								? cardName + " 开卡手续费"
 								: "其他"
 					};
 				});
@@ -188,7 +190,7 @@ const Account = () => {
 			<div className="accountInfo">
 				<div className="accountBlanceWrap">
 					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">$ {accountBalance}</span>
+					<span className="amount">{accountBalance > 0 ? `$ ${accountBalance}` : `-$ ${Math.abs(accountBalance)}`}</span>
 				</div>
 				<Button>
 					<NavLink to="/recharge/index">充值</NavLink>
