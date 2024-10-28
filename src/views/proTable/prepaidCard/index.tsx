@@ -118,7 +118,7 @@ const PrepaidCard = () => {
 			const maxCards = await userInformation();
 			const response = await UserCardApi();
 			console.log(response.length);
-			const totalcard = maxCards- parseFloat(response.length as string);
+			const totalcard = maxCards - parseFloat(response.length as string);
 			setTotalCardNumber(totalcard);
 
 			if (Array.isArray(response)) {
@@ -173,7 +173,7 @@ const PrepaidCard = () => {
 			}
 		});
 	};
-	const cashback= (record: FormattedCard) => {
+	const cashback = (record: FormattedCard) => {
 		navigate("/cashback/index", {
 			state: {
 				key: record.key,
@@ -264,7 +264,7 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "30px",
 			sorter: (a: any, b: any) => a.banlance - b.banlance,
-			render: (banlance: string) => `$${banlance}`
+			render: (balance: number) => (balance > 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
 		},
 		{
 			title: "开卡时间",
