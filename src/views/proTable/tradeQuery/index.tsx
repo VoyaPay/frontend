@@ -30,7 +30,8 @@ const StatusMapping = {
 	Authorized: "已授权",
 	Settled: "已结算",
 	Declined: "失败",
-	Reversed: "退款"
+	Reversed: "退款",
+	AuthDeleted: "撤销授权"
 };
 
 const CardTypeMapping = {
