@@ -60,7 +60,7 @@ const LoginForm = (props: any) => {
 					message.success("登录成功！");
 					navigate("/proTable/account");
 					return;
-				} else if (kycResponse.status === "underReview") {
+				} else if (kycResponse.status === "unreviewed") {
 					navigate("/form/kycprocess");
 					return;
 				} else {
