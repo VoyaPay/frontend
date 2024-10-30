@@ -64,11 +64,11 @@ const cashback = () => {
 	const handleOk = async () => {
 		try {
 			setConfirmLoading(true);
-			const response = await RechargeCardApi(cardData.key, { amount: amount });
+			const response = await RechargeCardApi(cardData.key, { amount: -amount });
 
 			// 检查是否成功并给出提示
 			if (response.id) {
-				message.success("充值成功 !"); // 成功消息
+				message.success("提现成功 !"); // 成功消息
 			}
 
 			setOpen(false);

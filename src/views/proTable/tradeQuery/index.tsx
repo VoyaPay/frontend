@@ -328,7 +328,7 @@ const TradeQuery = () => {
 					cardNo: card.number,
 					cardStatus: card.status,
 					balance: card.initialLimit,
-					createCardTime: formatDate(card.createdAt),
+					createCardTime: formatDate(card.transactionTime),
 					cardType: card.type
 				}));
 
