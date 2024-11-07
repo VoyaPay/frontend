@@ -157,14 +157,14 @@ const TradeQuery = () => {
 
 		{
 			title: "开卡时间",
-			dataIndex: "createCardTime",
-			key: "createCardTime",
+			dataIndex: "createTime",
+			key: "createTime",
 			align: "center",
 			width: "200px",
 			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => {
-				const dateA = new Date(a.createCardTime).getTime();
-				const dateB = new Date(b.createCardTime).getTime();
+				const dateA = new Date(a.createTime).getTime();
+				const dateB = new Date(b.createTime).getTime();
 				return dateA - dateB;
 			}
 		},
@@ -239,7 +239,13 @@ const TradeQuery = () => {
 			dataIndex: "amount",
 			key: "amount",
 			align: "center",
-			sorter: true
+			sorter: true,
+			render: (amount: string) => {
+				// Parse the amount as a float to handle conditional formatting
+				const numericAmount = parseFloat(amount);
+				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
+				return formattedAmount;
+			}
 		},
 		{
 			title: "授权ID",
@@ -329,6 +335,7 @@ const TradeQuery = () => {
 					cardStatus: card.status,
 					balance: card.initialLimit,
 					createCardTime: formatDate(card.transactionTime),
+					createTime: formatDate(card.createdAt),
 					cardType: card.type
 				}));
 
