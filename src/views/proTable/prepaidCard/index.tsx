@@ -264,7 +264,7 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "30px",
 			sorter: (a: any, b: any) => a.banlance - b.banlance,
-			render: (balance: number) => (balance >= 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
+			render: (balance: number) => (balance > 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
 		},
 		{
 			title: "开卡时间",

@@ -25,7 +25,6 @@ const TransferTypeMapping = {
 	deposit: "账户充值",
 	fee: "手续费",
 	closeCardRefund: "销卡返还",
-	cardWithdrawn: "卡提现返还",
 	other: "其他"
 };
 
@@ -90,8 +89,6 @@ const Account = () => {
 								? cardName + " -> 沃易卡账户"
 								: transaction.type === "fee"
 								? cardName + " 开卡手续费"
-								: transaction.type === "cardWithdrawn"
-								? cardName + " -> 沃易卡账户"
 								: "其他"
 					};
 				});
@@ -193,7 +190,7 @@ const Account = () => {
 			<div className="accountInfo">
 				<div className="accountBlanceWrap">
 					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">{accountBalance >= 0 ? `$ ${accountBalance}` : `-$ ${Math.abs(accountBalance)}`}</span>
+					<span className="amount">{accountBalance > 0 ? `$ ${accountBalance}` : `-$ ${Math.abs(accountBalance)}`}</span>
 				</div>
 				<Button>
 					<NavLink to="/recharge/index">充值</NavLink>
