@@ -59,12 +59,6 @@ export const menu: any = [
 		hide: true
 	},
 	{
-		icon: "AreaChartOutlined",
-		title: "成功",
-		path: "/applySuccess/index",
-		hide: true
-	},
-	{
 		icon: "ShoppingOutlined",
 		title: "预充卡",
 		path: "/proTable/prepaidCard"

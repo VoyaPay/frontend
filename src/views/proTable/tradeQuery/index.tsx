@@ -23,6 +23,10 @@ const formatDate = (dateString: string) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const formatMoney = (amount: string) => {
+	return "$" + amount;
+};
+
 const TRANSACTION_DEFAULT_SORT_FIELD = "transactionTime";
 const TRANSACTION_DEFAULT_PAGE_SIZE = 10;
 
@@ -153,14 +157,14 @@ const TradeQuery = () => {
 
 		{
 			title: "开卡时间",
-			dataIndex: "createTime",
-			key: "createTime",
+			dataIndex: "createCardTime",
+			key: "createCardTime",
 			align: "center",
 			width: "200px",
 			defaultSortOrder: "descend",
 			sorter: (a: any, b: any) => {
-				const dateA = new Date(a.createTime).getTime();
-				const dateB = new Date(b.createTime).getTime();
+				const dateA = new Date(a.createCardTime).getTime();
+				const dateB = new Date(b.createCardTime).getTime();
 				return dateA - dateB;
 			}
 		},
@@ -235,13 +239,7 @@ const TradeQuery = () => {
 			dataIndex: "amount",
 			key: "amount",
 			align: "center",
-			sorter: true,
-			render: (amount: string) => {
-				// Parse the amount as a float to handle conditional formatting
-				const numericAmount = parseFloat(amount);
-				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
-				return formattedAmount;
-			}
+			sorter: true
 		},
 		{
 			title: "授权ID",
@@ -331,7 +329,6 @@ const TradeQuery = () => {
 					cardStatus: card.status,
 					balance: card.initialLimit,
 					createCardTime: formatDate(card.transactionTime),
-					createTime: formatDate(card.createdAt),
 					cardType: card.type
 				}));
 
@@ -368,7 +365,7 @@ const TradeQuery = () => {
 				const t: FormattedTransaction = {
 					...tran,
 					key: tran.id,
-					amount: tran.amount,
+					amount: formatMoney(tran.amount),
 					transactionTime: formatDate(tran.transactionTime),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
 					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping],

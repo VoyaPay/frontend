@@ -48,7 +48,7 @@ const LoginForm = (props: any) => {
 			setTabsList([]);
 			localStorage.setItem("access_token", access_token);
 			if (loginForm.email) {
-				const kycResponse = await KYCStateApi();
+				const kycResponse = await KYCStateApi(loginForm.email);
 				// unreviewed
 				// underReview
 				// rejected
@@ -65,7 +65,7 @@ const LoginForm = (props: any) => {
 					return;
 				} else {
 					localStorage.setItem("kyc_state", kycResponse.status || "");
-					localStorage.setItem("login_email", loginForm.email);
+					localStorage.setItem("login_email", loginForm.email)
 					navigate("/company");
 					return;
 				}
