@@ -22,7 +22,7 @@ export const createKYCapi = async (): Promise<ResultData<any>> => {
 	}
 };
 
-export const KYCStateApi = (email: string) => {
+export const KYCStateApi = () => {
 	const token = localStorage.getItem("access_token");
 	console.log("Using token:", token);
 	if (!token) {
@@ -33,7 +33,7 @@ export const KYCStateApi = (email: string) => {
 		Authorization: `Bearer ${token}` // 在请求头中添加 token
 	};
 
-	return http.get<ResultData>(PORT3 + "/kyc/" + email, undefined, { headers });
+	return http.get<ResultData>(PORT3 + "/kyc" , undefined, { headers });
 };
 
 export const FileApi = (formData: FormData) => {
