@@ -9,7 +9,6 @@ import ApplySuccessImg from "@/assets/images/applySuccess.png";
 import "./index.less";
 
 const KycProcess = () => {
-
 	return (
 		<div className="applySuccess-wrap">
 			{/* <div className="nav">
@@ -21,8 +20,13 @@ const KycProcess = () => {
 			<div className="contentWrap">
 				<div className="tipsWrap">
 					<img src={ApplySuccessImg} alt="" className="icon" />
-					<span className="tips">请等待审核完成</span>
+					<span className="tips">您提交的 kyc 信息需要修改</span>
 				</div>
+				<Button type="primary" className="return">
+					<NavLink to="/company" className="myAccount">
+						修改
+					</NavLink>
+				</Button>
 				<Button type="primary" className="return">
 					<NavLink to="/login" className="myAccount">
 						返回
