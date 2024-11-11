@@ -48,25 +48,22 @@ const LoginForm = (props: any) => {
 			setTabsList([]);
 			localStorage.setItem("access_token", access_token);
 			if (loginForm.email) {
-				const kycResponse = await KYCStateApi(loginForm.email);
+				const kycResponse = await KYCStateApi();
 				// unreviewed
 				// underReview
 				// rejected
 				// approved
 
 				if (kycResponse.status === "approved") {
-					localStorage.setItem("kyc_state", "successful");
 					console.log(kycResponse.status);
 					message.success("登录成功！");
 					navigate("/proTable/account");
 					return;
-				} else if (kycResponse.status === "unreviewed") {
-					navigate("/form/kycprocess");
+				} else if (kycResponse.status === "unfilled") {
+					navigate("/company");
 					return;
 				} else {
-					localStorage.setItem("kyc_state", kycResponse.status || "");
-					localStorage.setItem("login_email", loginForm.email)
-					navigate("/company");
+					navigate("/form/kycprocess");
 					return;
 				}
 			}
