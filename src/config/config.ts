@@ -94,7 +94,7 @@ export const menu2: any = [
 		path: "/form/product",
 		hide: false
 	},
-	
+
 	{
 		icon: "AppstoreOutlined",
 		title: "企业展业情况",

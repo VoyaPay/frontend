@@ -24,8 +24,8 @@ const TransferTypeMapping = {
 	cardTopup: "卡充值",
 	deposit: "账户充值",
 	fee: "手续费",
-	closeCardRefund: "销卡返还",
 	cardWithdrawn: "卡提现返还",
+	closeCardRefund: "销卡返还",
 	other: "其他"
 };
 

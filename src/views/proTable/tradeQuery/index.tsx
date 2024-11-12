@@ -23,6 +23,10 @@ const formatDate = (dateString: string) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const formatMoney = (amount: string) => {
+	return "$" + amount;
+};
+
 const TRANSACTION_DEFAULT_SORT_FIELD = "transactionTime";
 const TRANSACTION_DEFAULT_PAGE_SIZE = 10;
 
@@ -368,7 +372,7 @@ const TradeQuery = () => {
 				const t: FormattedTransaction = {
 					...tran,
 					key: tran.id,
-					amount: tran.amount,
+					amount: formatMoney(tran.amount),
 					transactionTime: formatDate(tran.transactionTime),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
 					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping],
