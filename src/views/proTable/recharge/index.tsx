@@ -74,7 +74,7 @@ const Recharge = () => {
 								<div className="sub-pre">Wire Routing Number:</div>
 							</div>
 							<div className="pre">
-								<div className="sub-pre">WACH 汇款路线号:</div>
+								<div className="sub-pre">ACH 汇款路线号:</div>
 								<div className="sub-pre">ACH Routing Number:</div>
 							</div>
 						</div>

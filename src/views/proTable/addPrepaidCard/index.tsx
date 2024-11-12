@@ -231,7 +231,7 @@ const AddPrepaidCard = () => {
 			}
 		} catch (error) {
 			// Handle any errors
-			message.error("提交过程中发生错误");
+			message.error("沃易卡账户余额不足");
 		}
 	};
 	const userInformation = async () => {

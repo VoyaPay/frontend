@@ -547,7 +547,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
-						disabled={cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose"}
+						disabled={cardData.cardStatus !== "Active" }
 					>
 						充值
 					</Button>
@@ -556,7 +556,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlecashback(cardData)}
-						disabled={cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose"}
+						disabled={cardData.cardStatus !== "Active" }
 					>
 						提现
 					</Button>
