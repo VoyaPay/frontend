@@ -28,13 +28,11 @@ const Recharge = () => {
 					<span className="title">当前登录账户</span>
 					<div className="content">
 						<div className="left">
-							<div className="pre">登录手机号:</div>
 							<div className="pre">登录邮箱:</div>
 							<div className="pre">账户ID: </div>
 							<div className="pre">公司名称：</div>
 						</div>
 						<div className="middle">
-							<div className="pre">17131354267</div>
 							<div className="pre">{Authemail}</div>
 							<div className="pre">{Authid}</div>
 							<div className="pre">{Authcompany}</div>
