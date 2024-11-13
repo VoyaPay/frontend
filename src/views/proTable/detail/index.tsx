@@ -236,12 +236,12 @@ const Detail = () => {
 
 		setCardData(prevData => ({
 			...prevData,
-			cardStatus: "PreClose"
+			cardStatus: "Closed"
 		}));
 
 		// 构建更新数据
 		const updatedData = {
-			status: "PreClose",
+			status: "Closed",
 			alias: cardName
 		};
 
@@ -249,8 +249,7 @@ const Detail = () => {
 			const response: any = await updateCardInformation(cardData.key, updatedData);
 
 			if (response?.id) {
-				// 如果成功，更新为 "PreClose"
-				message.success("卡片状态更新为预注销");
+				message.success("操作成功");
 				setCardData(prevData => ({
 					...prevData,
 					cardStatus: updatedData.status // 更新状态
