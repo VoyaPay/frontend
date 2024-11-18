@@ -117,7 +117,7 @@ const PrepaidCard = () => {
 		try {
 			const maxCards = await userInformation();
 			const response = await UserCardApi();
-			console.log(response.length);
+
 			const totalcard = maxCards - parseFloat(response.length as string);
 			setTotalCardNumber(totalcard);
 
@@ -208,8 +208,8 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "40px", // Fixed width for this column
 			render: (cardName: string) => (
-				<Tooltip title={cardName.length > 17 ? cardName : ""}>
-					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+				<Tooltip title={cardName?.length > 17 ? cardName : ""}>
+					{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
 				</Tooltip>
 			)
 		},
@@ -220,8 +220,8 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "40px",
 			render: (cardHolderName: string) => (
-				<Tooltip title={cardHolderName.length > 17 ? cardHolderName : ""}>
-					{cardHolderName.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
+				<Tooltip title={cardHolderName?.length > 17 ? cardHolderName : ""}>
+					{cardHolderName?.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
 				</Tooltip>
 			)
 		},
@@ -356,7 +356,7 @@ const PrepaidCard = () => {
 		let filtered = [...dataSource];
 
 		// Apply date range filter
-		if (selectedTimeRange.length > 0) {
+		if (selectedTimeRange?.length > 0) {
 			const [start, end] = selectedTimeRange;
 			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
 
@@ -370,12 +370,12 @@ const PrepaidCard = () => {
 		}
 
 		// Apply card group filter
-		if (selectedGroups.length > 0) {
+		if (selectedGroups?.length > 0) {
 			filtered = filtered.filter(card => selectedGroups.includes(card.cardNo.slice(0, 6)));
 		}
 
 		// Apply card status filter
-		if (selectedStatuses.length > 0) {
+		if (selectedStatuses?.length > 0) {
 			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
 		}
 

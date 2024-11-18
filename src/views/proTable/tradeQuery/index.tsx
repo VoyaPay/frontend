@@ -219,7 +219,7 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
-			title: "美元金额",
+			title: "授权金额",
 			dataIndex: "amount",
 			key: "amount",
 			align: "center",
@@ -232,20 +232,7 @@ const TradeQuery = () => {
 			}
 		},
 		{
-			title: "美元总额",
-			dataIndex: "totalAmount",
-			key: "totalAmount",
-			align: "center",
-			sorter: true,
-			render: (amount: string) => {
-				// Parse the amount as a float to handle conditional formatting
-				const numericAmount = parseFloat(amount);
-				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
-				return formattedAmount;
-			}
-		},
-		{
-			title: "原币种金额",
+			title: "交易金额",
 			dataIndex: "merchantAmount",
 			key: "merchantAmount",
 			align: "center",
@@ -261,6 +248,19 @@ const TradeQuery = () => {
 					return <Tooltip title={`汇率: ${row.conversionRate}`}>{formattedAmount + " " + row.currencyCode}</Tooltip>;
 				}
 				return formattedAmount + " " + row.currencyCode;
+			}
+		},
+		{
+			title: "结算金额",
+			dataIndex: "totalAmount",
+			key: "totalAmount",
+			align: "center",
+			sorter: true,
+			render: (amount: string) => {
+				// Parse the amount as a float to handle conditional formatting
+				const numericAmount = parseFloat(amount);
+				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
+				return formattedAmount;
 			}
 		},
 		{
