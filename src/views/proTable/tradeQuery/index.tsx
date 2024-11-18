@@ -257,6 +257,9 @@ const TradeQuery = () => {
 			align: "center",
 			sorter: true,
 			render: (amount: string) => {
+				if (!amount) {
+					return "";
+				}
 				// Parse the amount as a float to handle conditional formatting
 				const numericAmount = parseFloat(amount);
 				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
