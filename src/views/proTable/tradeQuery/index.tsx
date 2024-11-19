@@ -219,19 +219,6 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
-			title: "授权金额",
-			dataIndex: "amount",
-			key: "amount",
-			align: "center",
-			sorter: true,
-			render: (amount: string) => {
-				// Parse the amount as a float to handle conditional formatting
-				const numericAmount = parseFloat(amount);
-				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
-				return formattedAmount;
-			}
-		},
-		{
 			title: "交易金额",
 			dataIndex: "merchantAmount",
 			key: "merchantAmount",
@@ -251,6 +238,21 @@ const TradeQuery = () => {
 			}
 		},
 		{
+			title: "授权金额",
+			dataIndex: "amount",
+			key: "amount",
+			align: "center",
+			sorter: true,
+			render: (amount: string) => {
+				if (!amount) {
+					return "0";
+				}
+				const numericAmount = parseFloat(amount);
+				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
+				return formattedAmount + " USD";
+			}
+		},
+		{
 			title: "结算金额",
 			dataIndex: "totalAmount",
 			key: "totalAmount",
@@ -260,10 +262,9 @@ const TradeQuery = () => {
 				if (!amount) {
 					return "";
 				}
-				// Parse the amount as a float to handle conditional formatting
 				const numericAmount = parseFloat(amount);
 				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
-				return formattedAmount;
+				return formattedAmount + " USD";
 			}
 		},
 		{
