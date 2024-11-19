@@ -11,7 +11,7 @@ interface CardData {
 	cardGroup: string,
 	cardNo: string, 
 	cardStatus: string,
-	banlance: string, 
+	balance: string,
 	createCardTime: string,
 	address?:string,
 	expirationDate?:string,
