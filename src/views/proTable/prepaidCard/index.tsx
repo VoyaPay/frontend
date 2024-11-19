@@ -3,7 +3,7 @@ import { AccountApi } from "@/api/modules/user";
 import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
-import accountBanlance from "@/assets/images/accountbanlace.png";
+import accountbalance from "@/assets/images/accountbanlace.png";
 // import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
@@ -40,7 +40,7 @@ interface FormattedCard {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: number;
+	balance: number;
 	createCardTime: string;
 	updateCardTime: string;
 	cardHolderAddressStreet: string;
@@ -129,7 +129,7 @@ const PrepaidCard = () => {
 					cardGroup: card.network,
 					cardNo: card.number,
 					cardStatus: card.status,
-					banlance: card.balance,
+					balance: card.balance,
 					createCardTime: formatDate(card.createdAt),
 					updateCardTime: formatDate(card.updatedAt),
 					cardHolderAddressStreet: card.cardHolderAddressStreet,
@@ -168,7 +168,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -182,7 +182,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -259,11 +259,11 @@ const PrepaidCard = () => {
 		},
 		{
 			title: "余额",
-			dataIndex: "banlance",
-			key: "banlance",
+			dataIndex: "balance",
+			key: "balance",
 			align: "center",
 			width: "30px",
-			sorter: (a: any, b: any) => a.banlance - b.banlance,
+			sorter: (a: any, b: any) => a.balance - b.balance,
 			render: (balance: number) => (balance >= 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
 		},
 		{
@@ -314,7 +314,7 @@ const PrepaidCard = () => {
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
 				updatecardTime: record.updateCardTime,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime,
 				cardHolderAddressStreet: record.cardHolderAddressStreet,
 				cardHolderAddressCity: record.cardHolderAddressCity,
@@ -347,7 +347,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -408,15 +408,15 @@ const PrepaidCard = () => {
 		<div className="newtable">
 			<div className="card content-box">
 				<div className="prepaidCardInfo">
-					<div className="banlanceWrap">
+					<div className="balanceWrap">
 						<span className="pre">沃易卡账户余额</span>
 						<div className="amountWrap">
-							<img src={accountBanlance} className="accountIcons" alt="沃易卡账户余额" />
+							<img src={accountbalance} className="accountIcons" alt="沃易卡账户余额" />
 							<span className="amount">${accountBalance}</span>
 						</div>
 					</div>
 
-					<div className="banlanceWrap">
+					<div className="balanceWrap">
 						<span className="pre">剩余可用开卡数</span>
 						<div className="amountWrap">
 							<img src={canuse} className="accountIcons" alt="剩余可用开卡数" />

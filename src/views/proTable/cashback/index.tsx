@@ -18,7 +18,7 @@ interface CardData {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: string;
+	balance: string;
 	createCardTime: string;
 	address?: string;
 	expirationDate?: string;
@@ -33,7 +33,7 @@ const cashback = () => {
 		cardGroup: "defaultGroup",
 		cardNo: "0000",
 		cardStatus: "defaultStatus",
-		banlance: "0",
+		balance: "0",
 		createCardTime: "2023-01-01 00:00:00"
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
@@ -47,7 +47,7 @@ const cashback = () => {
 		const valueAsNumber = Number(value);
 
 		if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
-			if (valueAsNumber > parseFloat(cardData.banlance)) {
+			if (valueAsNumber > parseFloat(cardData.balance)) {
 				message.error("该预充卡余额不足");
 				return;
 			}
@@ -125,7 +125,7 @@ const cashback = () => {
 						<div className="pre">待提现预充卡：</div>
 						<div className="text">{cardData.cardName}</div>
 						<div className="text">&nbsp;{"  ( " + cardData.cardNo + " )"}</div>
-						<div className="text">&nbsp;{" ( 卡余额： $ " + cardData.banlance + " )"}</div>
+						<div className="text">&nbsp;{" ( 卡余额： $ " + cardData.balance + " )"}</div>
 					</div>
 					<div className="content">
 						<div className="pre">接收账户：</div>

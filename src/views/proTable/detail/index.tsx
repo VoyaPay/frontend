@@ -16,7 +16,7 @@ interface CardData {
 	cardNo: string;
 	cardTotal: string;
 	cardStatus: string;
-	banlance: string;
+	balance: string;
 	createCardTime: string;
 	updatecardTime: string;
 	address?: string;
@@ -87,7 +87,7 @@ const Detail = () => {
 		cardGroup: "defaultGroup",
 		cardNo: "0000",
 		cardStatus: "defaultStatus",
-		banlance: "0",
+		balance: "0",
 		createCardTime: "2023-01-01",
 		updatecardTime: "1999-01-01",
 		cardTotal: "00000000000",
@@ -289,7 +289,7 @@ const Detail = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -308,7 +308,7 @@ const Detail = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -323,7 +323,7 @@ const Detail = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -512,7 +512,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">余额：</div>
-						<div className="text"> {cardData.banlance ? `$ ${cardData.banlance}` : "$0"}</div>
+						<div className="text"> {cardData.balance ? `$ ${cardData.balance}` : "$0"}</div>
 
 						<div className="check" onClick={() => goCheck(cardData)}>
 							查看消费记录
