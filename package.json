@@ -5,8 +5,10 @@
 	"scripts": {
 		"dev": "vite",
 		"serve": "vite",
+		"serve-preview": "vite --mode preview",
 		"build:dev": "tsc && vite build --mode development",
 		"build:test": "tsc && vite build --mode test",
+		"build:preview": "tsc && vite build --mode preview",
 		"build:pro": "tsc && vite build --mode production",
 		"preview": "vite preview",
 		"lint:eslint": "eslint --fix --ext .js,.ts,.tsx ./src",
