@@ -7,7 +7,7 @@ RUN yarn install --legacy-peer-deps
 COPY . .
 
 # Build
-RUN yarn run build:dev
+RUN yarn run build:preview
 
 # Stage 2: Serve the app using nginx
 FROM nginx:alpine
