@@ -18,7 +18,7 @@ interface CardData {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: string;
+	balance: string;
 	createCardTime: string;
 	address?: string;
 	expirationDate?: string;
@@ -33,7 +33,7 @@ const PrepaidRecharge = () => {
 		cardGroup: "defaultGroup",
 		cardNo: "0000",
 		cardStatus: "defaultStatus",
-		banlance: "0",
+		balance: "0",
 		createCardTime: "2023-01-01 00:00:00"
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;

@@ -37,6 +37,7 @@ export function wrapperEnv(envConf: Recordable): ViteEnv {
 		ret[envName] = realName;
 		process.env[envName] = realName;
 	}
+	console.log(`wrapperEnv(${envConf})'s result===>`, ret);
 	return ret;
 }
 
@@ -62,6 +63,7 @@ export function getEnvConfig(match = "VITE_GLOB_", confFiles = [".env"]) {
 			Reflect.deleteProperty(envConfig, key);
 		}
 	});
+	console.log(`getEnvConfig confFiles=${confFiles}, result===>`, envConfig);
 	return envConfig;
 }
 

@@ -3,7 +3,7 @@ import { AccountApi } from "@/api/modules/user";
 import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
-import accountBanlance from "@/assets/images/accountbanlace.png";
+import accountbalance from "@/assets/images/accountbanlace.png";
 // import accountextra from "@/assets/images/accountextra.png";
 import canuse from "@/assets/images/canuse.png";
 import "./index.less";
@@ -40,7 +40,7 @@ interface FormattedCard {
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	banlance: number;
+	balance: number;
 	createCardTime: string;
 	updateCardTime: string;
 	cardHolderAddressStreet: string;
@@ -117,7 +117,7 @@ const PrepaidCard = () => {
 		try {
 			const maxCards = await userInformation();
 			const response = await UserCardApi();
-			console.log(response.length);
+
 			const totalcard = maxCards - parseFloat(response.length as string);
 			setTotalCardNumber(totalcard);
 
@@ -129,7 +129,7 @@ const PrepaidCard = () => {
 					cardGroup: card.network,
 					cardNo: card.number,
 					cardStatus: card.status,
-					banlance: card.balance,
+					balance: card.balance,
 					createCardTime: formatDate(card.createdAt),
 					updateCardTime: formatDate(card.updatedAt),
 					cardHolderAddressStreet: card.cardHolderAddressStreet,
@@ -168,7 +168,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -182,7 +182,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -208,8 +208,8 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "40px", // Fixed width for this column
 			render: (cardName: string) => (
-				<Tooltip title={cardName.length > 17 ? cardName : ""}>
-					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+				<Tooltip title={cardName?.length > 17 ? cardName : ""}>
+					{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
 				</Tooltip>
 			)
 		},
@@ -220,8 +220,8 @@ const PrepaidCard = () => {
 			align: "center",
 			width: "40px",
 			render: (cardHolderName: string) => (
-				<Tooltip title={cardHolderName.length > 17 ? cardHolderName : ""}>
-					{cardHolderName.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
+				<Tooltip title={cardHolderName?.length > 17 ? cardHolderName : ""}>
+					{cardHolderName?.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
 				</Tooltip>
 			)
 		},
@@ -259,11 +259,11 @@ const PrepaidCard = () => {
 		},
 		{
 			title: "余额",
-			dataIndex: "banlance",
-			key: "banlance",
+			dataIndex: "balance",
+			key: "balance",
 			align: "center",
 			width: "30px",
-			sorter: (a: any, b: any) => a.banlance - b.banlance,
+			sorter: (a: any, b: any) => a.balance - b.balance,
 			render: (balance: number) => (balance >= 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
 		},
 		{
@@ -314,7 +314,7 @@ const PrepaidCard = () => {
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
 				updatecardTime: record.updateCardTime,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime,
 				cardHolderAddressStreet: record.cardHolderAddressStreet,
 				cardHolderAddressCity: record.cardHolderAddressCity,
@@ -347,7 +347,7 @@ const PrepaidCard = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -356,7 +356,7 @@ const PrepaidCard = () => {
 		let filtered = [...dataSource];
 
 		// Apply date range filter
-		if (selectedTimeRange.length > 0) {
+		if (selectedTimeRange?.length > 0) {
 			const [start, end] = selectedTimeRange;
 			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
 
@@ -370,12 +370,12 @@ const PrepaidCard = () => {
 		}
 
 		// Apply card group filter
-		if (selectedGroups.length > 0) {
+		if (selectedGroups?.length > 0) {
 			filtered = filtered.filter(card => selectedGroups.includes(card.cardNo.slice(0, 6)));
 		}
 
 		// Apply card status filter
-		if (selectedStatuses.length > 0) {
+		if (selectedStatuses?.length > 0) {
 			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
 		}
 
@@ -408,15 +408,15 @@ const PrepaidCard = () => {
 		<div className="newtable">
 			<div className="card content-box">
 				<div className="prepaidCardInfo">
-					<div className="banlanceWrap">
+					<div className="balanceWrap">
 						<span className="pre">沃易卡账户余额</span>
 						<div className="amountWrap">
-							<img src={accountBanlance} className="accountIcons" alt="沃易卡账户余额" />
+							<img src={accountbalance} className="accountIcons" alt="沃易卡账户余额" />
 							<span className="amount">${accountBalance}</span>
 						</div>
 					</div>
 
-					<div className="banlanceWrap">
+					<div className="balanceWrap">
 						<span className="pre">剩余可用开卡数</span>
 						<div className="amountWrap">
 							<img src={canuse} className="accountIcons" alt="剩余可用开卡数" />

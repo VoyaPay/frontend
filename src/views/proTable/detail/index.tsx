@@ -16,7 +16,7 @@ interface CardData {
 	cardNo: string;
 	cardTotal: string;
 	cardStatus: string;
-	banlance: string;
+	balance: string;
 	createCardTime: string;
 	updatecardTime: string;
 	address?: string;
@@ -55,14 +55,7 @@ const updateCardInformation = async (id: string, newDate: any) => {
 		console.error("Error updating card information:", error);
 	}
 };
-const formatDate = (dateString: string) => {
-	const date = new Date(dateString);
-	const year = String(date.getFullYear()).slice(-2);
-	const month = String(date.getMonth() + 1).padStart(2, "0");
 
-	// 返回格式为 yyyy-MM-dd hh:mm:ss
-	return `${month}/${year}`;
-};
 const formatDate2 = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
@@ -87,7 +80,7 @@ const Detail = () => {
 		cardGroup: "defaultGroup",
 		cardNo: "0000",
 		cardStatus: "defaultStatus",
-		banlance: "0",
+		balance: "0",
 		createCardTime: "2023-01-01",
 		updatecardTime: "1999-01-01",
 		cardTotal: "00000000000",
@@ -289,7 +282,7 @@ const Detail = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -308,7 +301,7 @@ const Detail = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -323,7 +316,7 @@ const Detail = () => {
 				cardGroup: record.cardGroup,
 				cardNo: record.cardNo,
 				cardStatus: record.cardStatus,
-				banlance: record.banlance,
+				balance: record.balance,
 				createCardTime: record.createCardTime
 			}
 		});
@@ -468,7 +461,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">有效期：</div>
-						<div className="text">{formatDate(cardData.expirationDate || "N/A")}</div>
+						<div className="text">{cardData.expirationDate}</div>
 					</div>
 
 					<div className="content">
@@ -512,7 +505,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">余额：</div>
-						<div className="text"> {cardData.banlance ? `$ ${cardData.banlance}` : "$0"}</div>
+						<div className="text"> {cardData.balance ? `$ ${cardData.balance}` : "$0"}</div>
 
 						<div className="check" onClick={() => goCheck(cardData)}>
 							查看消费记录
@@ -546,7 +539,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
-						disabled={cardData.cardStatus !== "Active" }
+						disabled={cardData.cardStatus !== "Active"}
 					>
 						充值
 					</Button>
@@ -555,7 +548,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlecashback(cardData)}
-						disabled={cardData.cardStatus !== "Active" }
+						disabled={cardData.cardStatus !== "Active"}
 					>
 						提现
 					</Button>
