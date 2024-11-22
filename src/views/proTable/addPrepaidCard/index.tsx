@@ -203,11 +203,11 @@ const AddPrepaidCard = () => {
 			alias: cardName,
 			cardHolderFirstName: firstName,
 			cardHolderLastName: lastName,
-			cardHolderAddressStreet: streetAddress,
-			cardHolderAddressCity: city,
-			cardHolderAddressState: state,
-			cardHolderAddressPostalCode: zipcode,
-			cardHolderAddressCountry: "USA",
+			// cardHolderAddressStreet: streetAddress,
+			// cardHolderAddressCity: city,
+			// cardHolderAddressState: state,
+			// cardHolderAddressPostalCode: zipcode,
+			// cardHolderAddressCountry: "USA",
 			cardBin: selectedCard
 		};
 		console.log("payload is " + payload);
@@ -346,8 +346,8 @@ const AddPrepaidCard = () => {
 				<div className="content">
 					<div className="pre">持卡人:</div>
 					<div className="name-group">
-						<Input value={firstName} onChange={changeFirstName} className="edit" placeholder="First Name" />
-						<Input value={lastName} onChange={changeLastName} className="edit" placeholder="Last Name" />
+						<Input value={firstName} onChange={changeFirstName} className="edit" placeholder="First Name" required />
+						<Input value={lastName} onChange={changeLastName} className="edit" placeholder="Last Name" required />
 						<span>
 							{combinedLength}/{maxLength}{" "}
 						</span>
@@ -356,11 +356,11 @@ const AddPrepaidCard = () => {
 
 				<div className="content">
 					<div className="pre">账单地址：</div>
-					<Input value={streetAddress} onChange={changeStreetAddress} className="edit" placeholder="Street Address" />
-					<Input value={city} onChange={changeCity} className="edit" placeholder="City" />
-					<Input value={state} onChange={changeState} className="edit" placeholder="State" />
+					<Input value={streetAddress} onChange={changeStreetAddress} className="edit" placeholder="Street Address" disabled />
+					<Input value={city} onChange={changeCity} className="edit" placeholder="City" disabled />
+					<Input value={state} onChange={changeState} className="edit" placeholder="State" disabled />
 					<Input value="USA" onChange={changeCountry} className="edit" placeholder="Country" disabled />
-					<Input value={zipcode} onChange={changeZipCode} className="edit" placeholder="Zip Code" />
+					<Input value={zipcode} onChange={changeZipCode} className="edit" placeholder="Zip Code" disabled />
 				</div>
 			</div>
 			<div className="contentWrap">
