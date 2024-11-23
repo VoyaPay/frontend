@@ -471,16 +471,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">账单地址：</div>
-						<div className="text">
-							{cardData.cardHolderAddressStreet +
-								" , " +
-								cardData.cardHolderAddressCity +
-								" ,    " +
-								cardData.cardHolderAddressState +
-								" , USA " +
-								" , " +
-								cardData.cardHolderAddressPostalCode || "address"}
-						</div>
+						<div className="text">1201 North Market Street , Wilmington , DE , USA , 19801</div>
 					</div>
 
 					<div className="content">

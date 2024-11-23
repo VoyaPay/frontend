@@ -238,7 +238,7 @@ const TradeQuery = () => {
 			}
 		},
 		{
-			title: "授权金额",
+			title: "授权金额(USD)",
 			dataIndex: "amount",
 			key: "amount",
 			align: "center",
@@ -247,13 +247,11 @@ const TradeQuery = () => {
 				if (!amount) {
 					return "0";
 				}
-				const numericAmount = parseFloat(amount);
-				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
-				return formattedAmount + " USD";
+				return parseFloat(amount);
 			}
 		},
 		{
-			title: "结算金额",
+			title: "结算金额(USD)",
 			dataIndex: "totalAmount",
 			key: "totalAmount",
 			align: "center",
@@ -262,9 +260,7 @@ const TradeQuery = () => {
 				if (!amount) {
 					return "";
 				}
-				const numericAmount = parseFloat(amount);
-				const formattedAmount = numericAmount >= 0 ? `$${numericAmount}` : `-$${Math.abs(numericAmount)}`;
-				return formattedAmount + " USD";
+				return parseFloat(amount);
 			}
 		},
 		{
