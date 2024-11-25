@@ -20,12 +20,28 @@ export const rootRouter: any = [
 	},
 	{
 		path: "/login",
-		element: <Login />,
+		element: <Login loginRouterType="login" />,
 		meta: {
 			requiresAuth: false,
 			title: "登录页",
 			key: "login"
 		}
+	},
+	{
+		path: "/register",
+		element: <Login loginRouterType="register" />
+	},
+	{
+		path: "/forgotPassword",
+		element: <Login loginRouterType="forgotPassword" />
+	},
+	{
+		path: "/setNewPassword",
+		element: <Login loginRouterType="setNewPassword" />
+	},
+	{
+		path: "/setNewPasswordSuccess",
+		element: <Login loginRouterType="setNewPasswordSuccess" />
 	},
 
 	...routerArray,

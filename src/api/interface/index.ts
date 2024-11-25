@@ -100,6 +100,16 @@ export namespace Login {
 	export interface ResLogin {
 		access_token: string;
 	}
+
+	export interface ReqCaptcha {
+		usage: string;
+	}
+
+	export interface ReqForgotPassword {
+		email: string;
+		captcha: string;
+	}
+
 	export interface ResAuthButtons {
 		[propName: string]: any;
 	}
