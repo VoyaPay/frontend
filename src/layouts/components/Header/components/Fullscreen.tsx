@@ -6,11 +6,21 @@ const Fullscreen = () => {
 	const [fullScreen, setFullScreen] = useState<boolean>(screenfull.isFullscreen);
 
 	useEffect(() => {
-		screenfull.on("change", () => {
-			if (screenfull.isFullscreen) setFullScreen(true);
-			else setFullScreen(false);
-			return () => screenfull.off("change", () => {});
-		});
+		try {
+			screenfull.on("change", () => {
+				if (screenfull.isFullscreen) setFullScreen(true);
+				else setFullScreen(false);
+			});
+		} catch (error) {
+			console.error("Error occurred while setting up fullscreen change listener:", error);
+		}
+		return () => {
+			try {
+				screenfull.off("change", () => {});
+			} catch (error) {
+				console.error("Error occurred while removing fullscreen change listener:", error);
+			}
+		};
 	}, []);
 
 	const handleFullScreen = () => {
