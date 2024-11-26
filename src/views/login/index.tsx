@@ -13,7 +13,7 @@ const Login = (props: LoginProps) => {
 				<div className="login-left">
 					<img src={bg} alt="login" />
 				</div>
-				<div className="login-form">
+				<div className={`login-form ${props.loginRouterType === "activation" ? "active" : ""}`}>
 					<LoginForm loginRouterType={props.loginRouterType} />
 				</div>
 			</div>

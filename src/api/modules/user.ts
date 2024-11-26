@@ -8,7 +8,6 @@ import http from "@/api";
 // * 获取按钮权限
 export const AccountApi = () => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token); 
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -20,9 +19,8 @@ export const AccountApi = () => {
 	return http.get<ResultData>(PORT3 + "/auth/me", undefined, { headers });
 };
 
-export const PasswordApi =  async (params:object) => {
+export const PasswordApi = async (params: object) => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token); 
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}

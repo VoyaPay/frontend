@@ -1,5 +1,4 @@
 import { Navigate, useRoutes } from "react-router-dom";
-// import { RouteObject } from "@/routers/interface";
 import Login from "@/views/login/index";
 
 // * 导入所有router
@@ -32,16 +31,16 @@ export const rootRouter: any = [
 		element: <Login loginRouterType="register" />
 	},
 	{
-		path: "/forgotPassword",
+		path: "/activation",
+		element: <Login loginRouterType="activation" />
+	},
+	{
+		path: "/forgot-password",
 		element: <Login loginRouterType="forgotPassword" />
 	},
 	{
-		path: "/setNewPassword",
-		element: <Login loginRouterType="setNewPassword" />
-	},
-	{
-		path: "/setNewPasswordSuccess",
-		element: <Login loginRouterType="setNewPasswordSuccess" />
+		path: "/set-password",
+		element: <Login loginRouterType="setPassword" />
 	},
 
 	...routerArray,

@@ -52,7 +52,7 @@ const LoginComponent = ({
 					</Form.Item>
 					<span
 						onClick={() => {
-							navigate("/forgotPassword");
+							navigate("/forgot-password");
 						}}
 						style={{ position: "absolute", bottom: "8px", right: "0", color: "#bfbfbf", cursor: "pointer" }}
 					>
@@ -75,7 +75,7 @@ const LoginComponent = ({
 				</Form.Item>
 			</Form>
 			<div className="otherText-wrap">
-				<a href="https://www.voyapay.com/zh/contact-4" style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer">
+				<a onClick={() => navigate("/register")} style={{ marginRight: 10 }}>
 					立即注册
 				</a>
 			</div>

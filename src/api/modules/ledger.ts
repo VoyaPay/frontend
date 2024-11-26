@@ -8,7 +8,6 @@ import http from "@/api";
 // * 获取按钮权限
 export const UserTransfersApi = () => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -35,7 +34,6 @@ export const GetBalanceApi = () => {
 
 export const LedgerCSVApi = async (req: SearchTransferRequest): Promise<void> => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 
 	if (!token) {
 		throw new Error("No token found. Please login first.");

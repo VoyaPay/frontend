@@ -1,7 +1,5 @@
 import { Login } from "@/api/interface/index";
 import { PORT1, PORT3 } from "@/api/config/servicePort";
-// import { PORT1 } from "@/api/config/servicePort";
-// import qs from "qs";
 
 import http from "@/api";
 
@@ -10,6 +8,18 @@ import http from "@/api";
  */
 export const loginApi = (params: Login.ReqLoginForm) => {
 	return http.post<Login.ResLogin>(PORT3 + `/auth/login`, params);
+};
+
+export const registerApi = (params: Login.ReqRegister) => {
+	return http.post<string>(PORT3 + `/users`, params);
+};
+
+export const activateAccountApi = (params: Login.ReqActivateAccount) => {
+	return http.post<string>(PORT3 + `/users/activate`, params);
+};
+
+export const resetPasswordApi = (params: Login.ReqResetPassword) => {
+	return http.post<string>(PORT3 + `/users/reset-password`, params);
 };
 
 export const getCaptchaApi = (params: Login.ReqCaptcha) => {

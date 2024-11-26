@@ -97,6 +97,24 @@ export namespace Login {
 		password: string;
 		email?: string;
 	}
+	export interface ReqRegister {
+		fullName: string;
+		email: string;
+		password: string;
+		repeatPassword: string;
+		companyName: string;
+		captcha: string;
+	}
+
+	export interface ReqActivateAccount {
+		token: string;
+	}
+
+	export interface ReqResetPassword {
+		token: string;
+		password: string;
+	}
+
 	export interface ResLogin {
 		access_token: string;
 	}

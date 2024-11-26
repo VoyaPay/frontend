@@ -197,3 +197,29 @@ export function randomNum(min: number, max: number): number {
 	let num = Math.floor(Math.random() * (min - max) + max);
 	return num;
 }
+
+export const debounce = (fn: Function, delay: number) => {
+	let timer: NodeJS.Timeout | undefined;
+	return (...args: any[]) => {
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(() => {
+			fn(...args);
+		}, delay);
+	};
+};
+
+export const throttle = (fn: Function, time: number) => {
+	let timer: NodeJS.Timeout | undefined = undefined;
+	return (...args: any[]) => {
+		if (timer) {
+			return;
+		} else {
+			fn(...args);
+			timer = setTimeout(() => {
+				timer = undefined;
+			}, time);
+		}
+	};
+};
