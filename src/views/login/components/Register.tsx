@@ -5,18 +5,9 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./Captcha.less";
 
-const RegisterComponent = ({
-	form,
-	onFinish,
-	onFinishFailed,
-	loading
-}: {
-	form: FormInstance;
-	onFinish: any;
-	onFinishFailed: any;
-	loading: boolean;
-}) => {
+const RegisterComponent = ({ form }: { form: FormInstance }) => {
 	const [captcha, setCaptcha] = useState<string>();
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		handleCaptchaRefresh();
@@ -24,6 +15,7 @@ const RegisterComponent = ({
 
 	const handleRegister = async () => {
 		const values = await form.validateFields();
+		setLoading(true);
 		await registerApi(values)
 			.then(() => {
 				message.success("注册成功，请前往邮箱激活。");
@@ -31,6 +23,7 @@ const RegisterComponent = ({
 			.catch(() => {
 				handleCaptchaRefresh();
 			});
+		setLoading(false);
 	};
 
 	const handleCaptchaRefresh = async () => {
@@ -51,8 +44,7 @@ const RegisterComponent = ({
 				name="basic"
 				labelCol={{ span: 5 }}
 				initialValues={{ remember: true }}
-				onFinish={onFinish}
-				onFinishFailed={onFinishFailed}
+				onFinish={handleRegister}
 				size="large"
 				autoComplete="off"
 			>
@@ -114,7 +106,7 @@ const RegisterComponent = ({
 					/>
 				</Form.Item>
 				<Form.Item className="login-btn">
-					<Button type="primary" onClick={handleRegister} loading={loading}>
+					<Button type="primary" htmlType="submit" loading={loading} style={{ width: "100%" }}>
 						注册
 					</Button>
 				</Form.Item>

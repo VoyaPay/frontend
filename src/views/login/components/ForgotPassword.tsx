@@ -6,19 +6,10 @@ import useUrlParams from "@/hooks/useUrlParams";
 import { useNavigate } from "react-router-dom";
 import "./Captcha.less";
 
-const ForgotPasswordComponent = ({
-	form,
-	onFinish,
-	onFinishFailed,
-	loading
-}: {
-	form: FormInstance;
-	onFinish: any;
-	onFinishFailed: any;
-	loading: boolean;
-}) => {
+const ForgotPasswordComponent = ({ form }: { form: FormInstance }) => {
 	const uuid = useUrlParams("uuid");
 	const [captcha, setCaptcha] = useState<string>();
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		handleCaptchaRefresh();
@@ -30,6 +21,7 @@ const ForgotPasswordComponent = ({
 
 	const handleSendEmail = async () => {
 		const values = await form.validateFields();
+		setLoading(true);
 		await sendResetPasswordEmailApi(values)
 			.then(() => {
 				message.success("重置密码的链接已发送到您的邮箱。");
@@ -37,11 +29,11 @@ const ForgotPasswordComponent = ({
 			.catch(() => {
 				handleCaptchaRefresh();
 			});
+		setLoading(false);
 	};
 
 	const handleCaptchaRefresh = async () => {
 		// @ts-ignore
-		// const response: string = await getCaptchaApi({ usage: 'RegisterCaptcha' });
 		const response: string = await getCaptchaApi({ usage: "ForgotPasswordCaptcha" });
 		setCaptcha(response);
 	};
@@ -58,8 +50,7 @@ const ForgotPasswordComponent = ({
 				name="basic"
 				labelCol={{ span: 5 }}
 				initialValues={{ remember: true }}
-				onFinish={onFinish}
-				onFinishFailed={onFinishFailed}
+				onFinish={handleSendEmail}
 				size="large"
 				autoComplete="off"
 			>
@@ -85,7 +76,7 @@ const ForgotPasswordComponent = ({
 					/>
 				</Form.Item>
 				<Form.Item className="login-btn">
-					<Button type="primary" onClick={handleSendEmail} loading={loading}>
+					<Button type="primary" htmlType="submit" loading={loading} style={{ width: "100%" }}>
 						提交
 					</Button>
 				</Form.Item>
