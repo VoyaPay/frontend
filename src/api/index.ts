@@ -9,21 +9,29 @@ import { setToken } from "@/redux/modules/global/action";
 import { message } from "antd";
 import { store } from "@/redux";
 
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+	isGlobalLoading?: boolean;
+}
+
+interface ErrorResponse {
+	message: string;
+}
+
 const axiosCanceler = new AxiosCanceler();
 
 const config = {
 	// 默认地址请求地址，可在 .env 开头文件中修改
 	baseURL: import.meta.env.VITE_API_URL as string,
 	// 设置超时时间（10s）
-	timeout: 10000
+	timeout: 10000,
 	// 跨域时候允许携带凭证
 	// withCredentials: true
+	isGlobalLoading: true
 };
 
 class RequestHttp {
 	service: AxiosInstance;
 	public constructor(config: AxiosRequestConfig) {
-		// 实例化axios
 		this.service = axios.create(config);
 
 		/**
@@ -32,12 +40,10 @@ class RequestHttp {
 		 * token校验(JWT) : 接受服务器返回的token,存储到redux/本地储存当中
 		 */
 		this.service.interceptors.request.use(
-			(config: AxiosRequestConfig) => {
+			(config: CustomAxiosRequestConfig) => {
 				NProgress.start();
-				// * 将当前请求添加到 pending 中
 				axiosCanceler.addPending(config);
-				// * 如果当前请求不需要显示 loading,在api服务中通过指定的第三个参数: { headers: { noLoading: true } }来控制不显示loading，参见loginApi
-				config.headers!.noLoading || showFullScreenLoading();
+				config?.isGlobalLoading && showFullScreenLoading();
 				const token: string = store.getState().global.token;
 				return { ...config, headers: { ...config.headers, "x-access-token": token } };
 			},
@@ -76,12 +82,12 @@ class RequestHttp {
 				const { response } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
-				// 请求超时单独判断，请求超时没有 response
 				if (error.message.indexOf("timeout") !== -1) message.error("请求超时，请稍后再试");
-				// 根据响应的错误状态码，做不同的处理
-				if (response) checkStatus(response.status);
-				// 服务器结果都没有返回(可能服务器错误可能客户端断网) 断网处理:可以跳转到断网页面
-				if (!window.navigator.onLine) window.location.hash = "/500";
+				if (response && response.status >= 400 && response.status < 500) {
+					message.error((response.data as ErrorResponse).message);
+				} else if (response && response.status >= 500) {
+					checkStatus(response.status);
+				} else if (!window.navigator.onLine) window.location.hash = "/500";
 				return Promise.reject(error);
 			}
 		);

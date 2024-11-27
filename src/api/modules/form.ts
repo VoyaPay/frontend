@@ -24,7 +24,6 @@ export const createKYCapi = async (): Promise<ResultData<any>> => {
 
 export const KYCStateApi = () => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -42,7 +41,6 @@ export const FileApi = (formData: FormData) => {
 
 export const UpdateKYCInfo = (info: any) => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}

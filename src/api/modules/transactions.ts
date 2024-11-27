@@ -8,7 +8,6 @@ import http from "@/api";
 // * 获取按钮权限
 export const UserTransactionApi = () => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -22,7 +21,6 @@ export const UserTransactionApi = () => {
 
 export const SearchTransactionApi = (req: SearchTransactionRequest) => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}
@@ -36,7 +34,6 @@ export const SearchTransactionApi = (req: SearchTransactionRequest) => {
 
 // export function SearchTransactionApi(req: SearchTransactionRequest): Promise<ResPage<TransactionListItem>>{
 // 	const token = localStorage.getItem("access_token");
-// 	console.log("Using token:", token);
 // 	if (!token) {
 // 		throw new Error("No token found. Please login first.");
 // 	}
@@ -50,7 +47,6 @@ export const SearchTransactionApi = (req: SearchTransactionRequest) => {
 
 export const TransactionsCSVApi = async (req: SearchTransactionRequest): Promise<void> => {
 	const token = localStorage.getItem("access_token");
-	console.log("Using token:", token);
 
 	if (!token) {
 		throw new Error("No token found. Please login first.");
