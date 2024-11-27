@@ -38,7 +38,7 @@ const SetNewPasswordComponent = () => {
 
 	return (
 		<div className="reset-password-container">
-			<div style={{ fontSize: "20px", fontWeight: "bold" }}>更改以下账号的密码：</div>
+			<div style={{ fontSize: "20px", fontWeight: "bold" }}>重置以下账号的密码：</div>
 			<p>{email}</p>
 			<Form form={form} name="resetPassword" labelCol={{ span: 5 }} size="large" onFinish={handleResetPassword}>
 				<Form.Item
@@ -71,7 +71,7 @@ const SetNewPasswordComponent = () => {
 					<Input.Password autoComplete="new-password" placeholder="确认密码" prefix={<LockOutlined />} />
 				</Form.Item>
 				<Form.Item>
-					<Button type="primary" htmlType="submit" loading={loading}>
+					<Button type="primary" htmlType="submit" loading={loading} style={{ width: "100%" }}>
 						重置密码
 					</Button>
 				</Form.Item>
