@@ -67,8 +67,8 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 					rules={[
 						{ required: true, message: "请输入密码" },
 						{
-							// eslint-disable-next-line
 							pattern:
+								// eslint-disable-next-line
 								/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]{8,}$/,
 							message: "密码至少8位，包含大小写字母、数字和特殊字符"
 						}
