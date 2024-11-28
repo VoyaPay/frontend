@@ -86,14 +86,14 @@ const LoginComponent = ({ form, loginType }: { form: FormInstance; loginType: nu
 					<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 						<Input.Password autoComplete="current-password" placeholder="密码" prefix={<LockOutlined />} />
 					</Form.Item>
-					<span
+					<a
 						onClick={() => {
 							navigate("/forgot-password");
 						}}
-						style={{ position: "absolute", bottom: "8px", right: "0", color: "#bfbfbf", cursor: "pointer" }}
+						style={{ position: "absolute", bottom: "8px", right: "0" }}
 					>
 						忘记密码
-					</span>
+					</a>
 				</div>
 				<Form.Item className="login-btn">
 					<Button
