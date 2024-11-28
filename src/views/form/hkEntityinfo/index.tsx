@@ -6,7 +6,8 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { FileApi } from "@/api/modules/form";
+import { FileApi } from "@/api/modules/kyc";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 // Define the types for form values
 interface FormValues {
@@ -37,6 +38,7 @@ const HKEntityInfo = () => {
 
 	// Load saved data from localStorage when the component is mounted
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -62,7 +64,11 @@ const HKEntityInfo = () => {
 		}
 	}, [form]);
 
-	const saveFormData = (values: FormValues) => {
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
+	const saveFormData = async (values: FormValues) => {
 		const existingData = localStorage.getItem("data") || "";
 		const parsedData = existingData ? JSON.parse(existingData) : {};
 
@@ -71,16 +77,18 @@ const HKEntityInfo = () => {
 			hkEntityInfo: values
 		};
 
-		localStorage.setItem("data", JSON.stringify(updatedData));
+		await setKYCApi({ fields: updatedData, status: "unfilled" }).then(() => {
+			localStorage.setItem("data", JSON.stringify(updatedData));
+		});
 	};
 
 	// Handle form submission
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = async (values: FormValues) => {
 		if (!Object.values(uploadSuccess).every(success => success)) {
 			message.error("请确保所有文件上传成功 / Please ensure all files are successfully uploaded.");
 			return;
 		}
-		saveFormData(values); // Save the form data to localStorage
+		await saveFormData(values); // Save the form data to localStorage
 		navigate("/form/shareholder");
 	};
 
@@ -217,17 +225,16 @@ const HKEntityInfo = () => {
 									<Form.Item
 										key={fileType}
 										name={fileType}
-										label={`${
-											fileType === "businessRegistration"
-												? "商业登记证（BR）"
-												: fileType === "companyIncorporation"
+										label={`${fileType === "businessRegistration"
+											? "商业登记证（BR）"
+											: fileType === "companyIncorporation"
 												? "公司注册书（CI）"
 												: fileType === "incorporationForm"
-												? "法团成立表（NNC1）"
-												: fileType === "annualReturn"
-												? "周年申报表（NAR1）"
-												: "公司章程（M&A）"
-										}`}
+													? "法团成立表（NNC1）"
+													: fileType === "annualReturn"
+														? "周年申报表（NAR1）"
+														: "公司章程（M&A）"
+											}`}
 										valuePropName="fileList"
 										getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 										rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}

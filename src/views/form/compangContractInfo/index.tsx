@@ -4,6 +4,7 @@ import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useEffect } from "react";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 interface FormValues {
 	contactName: string;
@@ -18,10 +19,8 @@ const CompanyContractInfo = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		// Automatically load stored data if the "email" key exists in localStorage
-
+		getKYCData();
 		const storedData = localStorage.getItem("data");
-		console.log(JSON.parse(localStorage.getItem("data") || "{}"));
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
 			// Auto-fill the form with stored data
@@ -35,7 +34,11 @@ const CompanyContractInfo = () => {
 		}
 	}, [form]);
 
-	const onSubmit = (values: FormValues) => {
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
+	const onSubmit = async (values: FormValues) => {
 		const newCompanyContractInfo = {
 			contactName: values.contactName,
 			contactPhone: values.contactPhone,
@@ -63,9 +66,10 @@ const CompanyContractInfo = () => {
 		}
 
 		// Save updated data to localStorage
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-		console.log("Updated Payload:", combinedPayload);
-		navigate("/form/product");
+		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
+			localStorage.setItem("data", JSON.stringify(combinedPayload));
+			navigate("/form/product");
+		});
 
 		// Navigate based on US entity status
 		// navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");

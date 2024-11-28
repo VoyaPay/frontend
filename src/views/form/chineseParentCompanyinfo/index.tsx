@@ -6,8 +6,8 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import moment from "moment";
-import { createKYCapi } from "@/api/modules/form";
-import { FileApi } from "@/api/modules/form";
+import { FileApi } from "@/api/modules/kyc";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 // Define the types for form values
 interface FormValues {
@@ -25,8 +25,13 @@ const ChineseParentCompanyInfo = () => {
 	const [open, setOpen] = useState(false);
 	const navigate = useNavigate();
 
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
 	// Populate form with existing data from localStorage when the component mounts
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -124,29 +129,13 @@ const ChineseParentCompanyInfo = () => {
 
 	const handleOk = async () => {
 		setOpen(false);
-		try {
-			// 调用 createKYCapi 函数，发送 KYC 信息
-			const response = await createKYCapi();
-
-			// 检查响应是否成功
-			if (response && !response.message) {
-				// 成功消息提示
-				navigate("/form/kycprocess");
-				message.success("KYC 信息提交成功， 我们将尽快联系您！");
-
-			} else {
-				// 如果有错误消息，显示错误提示
-				message.error(response.message || "提交失败，请稍后再试！");
-			}
-		} catch (error: any) {
-			if (error.response && error.response.data) {
-				// 显示来自服务器的错误消息
-				message.error(error.response.data.message);
-			} else {
-				// 显示通用错误信息
-				message.error("发生未知错误，请稍后再试");
-			}
-		}
+		const storedData = JSON.parse(localStorage.getItem("data") || "{}");
+		await setKYCApi({ fields: storedData, status: "underReview" }).then(() => {
+			navigate("/form/kycprocess");
+			message.success("KYC 信息提交成功， 我们将尽快联系您！");
+		}).catch((error) => {
+			message.error(error.message || "提交失败，请稍后再试！");
+		});
 	};
 
 	return (

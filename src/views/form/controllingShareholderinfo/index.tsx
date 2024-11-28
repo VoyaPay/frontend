@@ -5,6 +5,7 @@ import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 // Define the types for form values
 interface Shareholder {
@@ -32,8 +33,13 @@ const ControllingShareholderInfo = () => {
 		navigate("/form/beneficical");
 	};
 
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
 	// Auto-populate form with existing data from localStorage
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -44,7 +50,7 @@ const ControllingShareholderInfo = () => {
 		}
 	}, [form]);
 
-	const saveFormData = (values: FormValues) => {
+	const saveFormData = async (values: FormValues) => {
 		const controllingShareholdersPayload = {
 			shareholders: values.shareholders
 		};
@@ -64,18 +70,20 @@ const ControllingShareholderInfo = () => {
 			};
 		}
 
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
+			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		});
 	};
 
 	// Form submission handler
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = async (values: FormValues) => {
 		if (values.shareholders.length < 1) {
 			message.error("至少需要填写一名控权股东");
 			return;
 		}
 
 		// Save data and proceed to the next step
-		saveFormData(values);
+		await saveFormData(values);
 		setOpen(true);
 	};
 

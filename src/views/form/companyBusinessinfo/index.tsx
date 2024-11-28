@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 // Define the types for form values
 interface FormValues {
@@ -20,6 +21,7 @@ const CompanyBusinessInfo = () => {
 
 	// Automatically populate the form if data exists in localStorage
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -33,8 +35,12 @@ const CompanyBusinessInfo = () => {
 		}
 	}, [form]);
 
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
 	// Form submission handler
-	const saveFormData = (values: FormValues) => {
+	const saveFormData = async (values: FormValues) => {
 		const businessInfoPayload = {
 			industry: values.industry,
 			businessDescription: values.businessDescription,
@@ -56,13 +62,14 @@ const CompanyBusinessInfo = () => {
 				companyBusinessInfo: businessInfoPayload,
 			};
 		}
-
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
+			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		});
 	};
 
 	// Form submission handler
-	const onSubmit = (values: FormValues) => {
-		saveFormData(values);
+	const onSubmit = async (values: FormValues) => {
+		await saveFormData(values);
 
 		// Navigate to the next step based on the isUSEntity field
 		navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");

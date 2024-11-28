@@ -83,16 +83,16 @@ const Account = () => {
 							transaction.type === "cardPurchase"
 								? "沃易卡账户 -> " + cardName
 								: transaction.type === "cardTopup"
-								? "沃易卡账户 -> " + cardName
-								: transaction.type === "deposit"
-								? "您的资金转入至沃易卡账户"
-								: transaction.type === "closeCardRefund"
-								? cardName + " -> 沃易卡账户"
-								: transaction.type === "fee"
-								? cardName + " 开卡手续费"
-								: transaction.type === "cardWithdrawn"
-								? cardName + " -> 沃易卡账户"
-								: "其他"
+									? "沃易卡账户 -> " + cardName
+									: transaction.type === "deposit"
+										? "您的资金转入至沃易卡账户"
+										: transaction.type === "closeCardRefund"
+											? cardName + " -> 沃易卡账户"
+											: transaction.type === "fee"
+												? cardName + " 开卡手续费"
+												: transaction.type === "cardWithdrawn"
+													? cardName + " -> 沃易卡账户"
+													: "其他"
 					};
 				});
 
@@ -250,7 +250,6 @@ const formatDate = (dateString: string) => {
 const userInformation = async () => {
 	try {
 		const response = await AccountApi();
-		console.log(response.userConfig.maximumCardsAllowed);
 		const formattedData = {
 			id: response.id || 0,
 			fullName: response.fullName || "N/A",

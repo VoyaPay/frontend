@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 // Define the types for form values
 interface FormValues {
@@ -30,6 +31,7 @@ const ProductsUseCaseInfo = () => {
 
 	// Auto-populate form with existing data from localStorage
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -48,8 +50,12 @@ const ProductsUseCaseInfo = () => {
 		}
 	}, [form]);
 
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
 	// Form submission handler
-	const saveFormData = (values: FormValues) => {
+	const saveFormData = async (values: FormValues) => {
 		const productsUseCasePayload = {
 			requestedProducts: values.requestedProducts,
 			estimatedMonthlySpend: values.estimatedMonthlySpend,
@@ -75,13 +81,13 @@ const ProductsUseCaseInfo = () => {
 				productsUseCaseInfo: productsUseCasePayload
 			};
 		}
-
+		await setKYCApi({ fields: combinedPayload, status: "unfilled" });
 		localStorage.setItem("data", JSON.stringify(combinedPayload));
 	};
 
 	// Form submission handler
-	const onSubmit = (values: FormValues) => {
-		saveFormData(values);
+	const onSubmit = async (values: FormValues) => {
+		await saveFormData(values);
 		navigate("/form/companyBusiness");
 	};
 

@@ -4,7 +4,7 @@ import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
-import { KYCStateApi } from "@/api/modules/form";
+import { KYCStateApi } from "@/api/modules/kyc";
 // import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";

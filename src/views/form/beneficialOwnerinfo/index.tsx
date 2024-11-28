@@ -5,7 +5,8 @@ import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { FileApi } from "@/api/modules/form";
+import { FileApi } from "@/api/modules/kyc";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 const BeneficialOwnerInfo = () => {
 	const [form] = Form.useForm();
@@ -17,7 +18,13 @@ const BeneficialOwnerInfo = () => {
 	const handleCancel = () => {
 		setOpen(false);
 	};
+
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -44,7 +51,7 @@ const BeneficialOwnerInfo = () => {
 		}
 	};
 
-	const onSubmit = (values: any) => {
+	const onSubmit = async (values: any) => {
 		const email = localStorage.getItem("data") || "";
 		if (!email) {
 			console.error("Email not found in localStorage");
@@ -77,9 +84,9 @@ const BeneficialOwnerInfo = () => {
 			return;
 		}
 
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-		console.log("Combined Payload:", combinedPayload);
-
+		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
+			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		});
 		setOpen(true);
 	};
 	const handlePrevStep = () => {
@@ -153,8 +160,8 @@ const BeneficialOwnerInfo = () => {
 							onValuesChange={(_, allValues) => {
 								const totalOwnershipPercentage = allValues.beneficialOwners
 									? allValues.beneficialOwners.reduce((sum: number, owner: any) => {
-											return sum + (owner?.ownershipPercentage || 0); // Safely access ownershipPercentage
-									  }, 0)
+										return sum + (owner?.ownershipPercentage || 0); // Safely access ownershipPercentage
+									}, 0)
 									: 0; // Default to 0 if beneficialOwners does not exist
 								setTotalOwnership(totalOwnershipPercentage);
 							}}

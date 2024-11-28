@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { FileApi } from "@/api/modules/form";
+import { FileApi } from "@/api/modules/kyc";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 interface FormValues {
 	usEntityName: string;
@@ -33,7 +34,12 @@ const UsEntityInfo = () => {
 		operatingAgreementFile: true
 	});
 
+	const getKYCData = async () => {
+		await getKYCApi();
+	};
+
 	useEffect(() => {
+		getKYCData();
 		const storedData = localStorage.getItem("data");
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -68,7 +74,7 @@ const UsEntityInfo = () => {
 		}
 	};
 
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = async (values: FormValues) => {
 		// Check if all uploads were successful before proceeding
 		if (!uploadSuccess.companyFormationFile || !uploadSuccess.einDocumentFile || !uploadSuccess.operatingAgreementFile) {
 			message.error("请确保所有文件上传成功 / Please ensure all files are uploaded successfully");
@@ -105,7 +111,9 @@ const UsEntityInfo = () => {
 			};
 		}
 
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
+			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		});
 
 		message.success("US Entity Information saved successfully!");
 		navigate("/form/beneficical");
@@ -282,7 +290,7 @@ const UsEntityInfo = () => {
 											if (onSuccess) {
 												onSuccess(response); // 成功回调，通知上传成功
 											}
-										} catch (error:any) {
+										} catch (error: any) {
 											message.error("文件传输失败");
 											console.error("File upload failed:", error);
 
@@ -316,7 +324,7 @@ const UsEntityInfo = () => {
 											if (onSuccess) {
 												onSuccess(response);
 											}
-										} catch (error:any) {
+										} catch (error: any) {
 											message.error("文件传输失败");
 											console.error("File upload failed:", error);
 
