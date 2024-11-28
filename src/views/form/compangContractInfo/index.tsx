@@ -37,7 +37,6 @@ const CompanyContractInfo = () => {
 
 	const getKYCData = async () => {
 		const res = await getKYCApi();
-		console.log(res);
 		setKycStatus(res.status || "unfilled");
 	};
 

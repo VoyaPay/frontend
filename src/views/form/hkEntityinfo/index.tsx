@@ -214,7 +214,6 @@ const HKEntityInfo = () => {
 								label="香港主体注册地址 / HK Entity Registered Address:"
 								rules={[
 									{ required: true, message: "请输入注册地址 / Please enter registered address" },
-									{ validator: validateAlphanumeric }
 								]}
 							>
 								<Input placeholder="请输入香港主体注册地址 / Please enter the registered address" />

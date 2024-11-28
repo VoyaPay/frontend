@@ -169,7 +169,7 @@ const ProductsUseCaseInfo = () => {
 								label="消费场景 / Spending Use Case:"
 								rules={[{ required: true, message: "请选择消费场景 / Please select a spending use case" }]}
 							>
-								<Select placeholder="请选择消费场景 / Please select spending use case">
+								<Select placeholder="请选择消费场景 / Please select spending use case" mode="multiple">
 									<Option value="Onlineads">Online Ads（线上广告）</Option>
 									<Option value="storeRental">Store Rental (店铺缴费)</Option>
 									<Option value="airlineTicketandHotel">Airline Tickets and Hotels (机票和酒店)</Option>
