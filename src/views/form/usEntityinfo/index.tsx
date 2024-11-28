@@ -28,6 +28,7 @@ const UsEntityInfo = () => {
 	const { Option } = Select;
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [kycStatus, setKycStatus] = useState<string>("");
 	const [uploadSuccess, setUploadSuccess] = useState({
 		companyFormationFile: true,
 		einDocumentFile: true,
@@ -35,7 +36,8 @@ const UsEntityInfo = () => {
 	});
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	useEffect(() => {
@@ -182,7 +184,13 @@ const UsEntityInfo = () => {
 						<div className="title">入驻企业美国主体主要信息</div>
 						<div className="title">US Entity Information</div>
 
-						<Form form={form} name="usEntityForm" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="usEntityForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.Item
 								name="usEntityName"
 								label="美国主体全称 / US Entity Legal Name:"

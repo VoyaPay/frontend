@@ -28,6 +28,7 @@ interface FormValues {
 const HKEntityInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [kycStatus, setKycStatus] = useState<string>("");
 	const [uploadSuccess, setUploadSuccess] = useState({
 		businessRegistration: true,
 		companyIncorporation: true,
@@ -65,7 +66,8 @@ const HKEntityInfo = () => {
 	}, [form]);
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	const saveFormData = async (values: FormValues) => {
@@ -153,7 +155,14 @@ const HKEntityInfo = () => {
 						<div className="title">入驻企业香港主体主要信息</div>
 						<div className="title">HK Entity Information</div>
 
-						<Form form={form} name="hkEntityForm" layout="vertical" onFinish={onSubmit} onFinishFailed={onFinishFailed}>
+						<Form
+							form={form}
+							name="hkEntityForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							onFinishFailed={onFinishFailed}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.Item
 								name="hkEntityName"
 								label="香港主体全称 / HK Entity Legal Name:"

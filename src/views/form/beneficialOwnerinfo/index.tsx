@@ -12,6 +12,7 @@ const BeneficialOwnerInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
 	const [totalOwnership, setTotalOwnership] = useState<number>(0);
+	const [kycStatus, setKycStatus] = useState<string>("");
 
 	const navigate = useNavigate();
 
@@ -20,7 +21,8 @@ const BeneficialOwnerInfo = () => {
 	};
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	useEffect(() => {
@@ -157,6 +159,7 @@ const BeneficialOwnerInfo = () => {
 							name="beneficialOwnerForm"
 							layout="vertical"
 							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
 							onValuesChange={(_, allValues) => {
 								const totalOwnershipPercentage = allValues.beneficialOwners
 									? allValues.beneficialOwners.reduce((sum: number, owner: any) => {

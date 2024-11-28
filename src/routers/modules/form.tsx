@@ -94,7 +94,7 @@ const formRouter: Array<RouteObject> = [
 					key: "KycProcess"
 				}
 			},
-			
+
 		]
 	}
 ];

@@ -22,7 +22,7 @@ interface FormValues {
 const ControllingShareholderInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
-
+	const [kycStatus, setKycStatus] = useState<string>("");
 	const navigate = useNavigate();
 
 	const handleCancel = () => {
@@ -34,7 +34,8 @@ const ControllingShareholderInfo = () => {
 	};
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	// Auto-populate form with existing data from localStorage
@@ -123,7 +124,13 @@ const ControllingShareholderInfo = () => {
 					<div className="accountInfo">
 						<div className="title"><span style={{ color: "red", marginRight: "10px" }}>*</span>控股股东或实控人信息</div>
 						<div className="title"><span style={{ color: "red", marginRight: "10px" }}>*</span>Controlling Shareholder or Actual Controller Information</div>
-						<Form form={form} name="controllingShareholderForm" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="controllingShareholderForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.List name="shareholders">
 								{(fields, { add, remove }) => (
 									<>

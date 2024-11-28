@@ -1,5 +1,5 @@
 import { Button, Form, Input, Select, Radio } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
@@ -18,7 +18,7 @@ const CompanyBusinessInfo = () => {
 	const [form] = Form.useForm();
 	const { Option } = Select;
 	const navigate = useNavigate();
-
+	const [kycStatus, setKycStatus] = useState<string>("");
 	// Automatically populate the form if data exists in localStorage
 	useEffect(() => {
 		getKYCData();
@@ -36,7 +36,8 @@ const CompanyBusinessInfo = () => {
 	}, [form]);
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	// Form submission handler
@@ -112,7 +113,13 @@ const CompanyBusinessInfo = () => {
 						<div className="title">企业展业情况</div>
 						<div className="title">Company Business Activities</div>
 
-						<Form form={form} name="companyBusinessInfo" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="companyBusinessInfo"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.Item
 								name="industry"
 								label="企业所在行业 / Industry:"

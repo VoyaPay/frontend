@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 
 interface FormValues {
@@ -17,6 +17,7 @@ interface FormValues {
 const CompanyContractInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [kycStatus, setKycStatus] = useState<string>("");
 
 	useEffect(() => {
 		getKYCData();
@@ -35,7 +36,9 @@ const CompanyContractInfo = () => {
 	}, [form]);
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		console.log(res);
+		setKycStatus(res.status || "unfilled");
 	};
 
 	const onSubmit = async (values: FormValues) => {
@@ -111,6 +114,7 @@ const CompanyContractInfo = () => {
 							name="companyContractForm"
 							layout="vertical"
 							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
 							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">

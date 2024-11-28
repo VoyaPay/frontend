@@ -23,7 +23,7 @@ const ProductsUseCaseInfo = () => {
 	const [businessModel, setBusinessModel] = useState<string | null>(null);
 	const { Option } = Select;
 	const navigate = useNavigate();
-
+	const [kycStatus, setKycStatus] = useState<string>("");
 	// Handle business model change
 	const handleBusinessModelChange = (value: string) => {
 		setBusinessModel(value); // Track business model selection
@@ -51,7 +51,8 @@ const ProductsUseCaseInfo = () => {
 	}, [form]);
 
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	// Form submission handler
@@ -127,7 +128,13 @@ const ProductsUseCaseInfo = () => {
 					<div className="accountInfo">
 						<div className="title">开通场景信息</div>
 						<div className="title">Products Use Case Information</div>
-						<Form form={form} name="productUseForm" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="productUseForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							{/* Requested Products */}
 							<Form.Item
 								name="requestedProducts"

@@ -24,9 +24,10 @@ const ChineseParentCompanyInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
 	const navigate = useNavigate();
-
+	const [kycStatus, setKycStatus] = useState<string>("");
 	const getKYCData = async () => {
-		await getKYCApi();
+		const res = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
 	};
 
 	// Populate form with existing data from localStorage when the component mounts
@@ -168,7 +169,13 @@ const ChineseParentCompanyInfo = () => {
 						<div className="title">入驻企业中国母公司主要信息</div>
 						<div className="title">Chinese Parent Company Information</div>
 
-						<Form form={form} name="companyInfoForm" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="companyInfoForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.Item
 								name="companyName"
 								label="企业名称 / Company Name:"
