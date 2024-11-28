@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getBrowserLang } from "@/utils/util";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, message } from "antd";
 import { connect } from "react-redux";
 import { setLanguage } from "@/redux/modules/global/action";
 import { HashRouter } from "react-router-dom";
@@ -20,14 +20,19 @@ const App = (props: any) => {
 	// 全局使用主题
 	useTheme(themeConfig);
 
-	// 设置 antd 语言国际化
 	const setAntdLanguage = () => {
-		// 如果 redux 中有默认语言就设置成 redux 的默认语言，没有默认语言就设置成浏览器默认语言
 		if (language && language == "zh") return setI18nLocale(zhCN);
 		if (language && language == "en") return setI18nLocale(enUS);
 		if (getBrowserLang() == "zh") return setI18nLocale(zhCN);
 		if (getBrowserLang() == "en") return setI18nLocale(enUS);
 	};
+	// phone
+	if (window.innerWidth < 768) {
+		message.config({
+			top: 240,
+			duration: 3
+		});
+	}
 
 	useEffect(() => {
 		// 全局使用国际化
