@@ -8,7 +8,11 @@ import SetPasswordComponent from "./SetPassword";
 import logo from "@/assets/images/voya.png";
 import "./index.less";
 
-const LoginForm = (props: any) => {
+interface LoginFormProps {
+	loginRouterType: "login" | "forgotPassword" | "register" | "activation" | "setPassword";
+}
+
+const LoginForm = (props: LoginFormProps) => {
 	const { loginRouterType } = props;
 	const [form] = Form.useForm();
 	let loginType: number | string = "1";
