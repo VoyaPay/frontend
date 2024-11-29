@@ -1,11 +1,11 @@
 import { Button, Form, Input, Select, Radio } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-
-// Define the types for form values
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 interface FormValues {
 	industry: string;
 	businessDescription: string;
@@ -17,62 +17,50 @@ const CompanyBusinessInfo = () => {
 	const [form] = Form.useForm();
 	const { Option } = Select;
 	const navigate = useNavigate();
-
-	// Automatically populate the form if data exists in localStorage
+	const [kycStatus, setKycStatus] = useState<string>("");
 	useEffect(() => {
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if business data exists
-			form.setFieldsValue({
-				industry: parsedData.companyBusinessInfo?.industry || "",
-				businessDescription: parsedData.companyBusinessInfo?.businessDescription || "",
-				monthlySpend: parsedData.companyBusinessInfo?.monthlySpend || "",
-				isUSEntity: parsedData.companyBusinessInfo?.isUSEntity || "" // Ensure isUSEntity is populated
-			});
-		}
+		getKYCData().then(storedData => {
+			if (storedData) {
+				form.setFieldsValue({
+					industry: storedData.companyBusinessInfo?.industry || "",
+					businessDescription: storedData.companyBusinessInfo?.businessDescription || "",
+					monthlySpend: storedData.companyBusinessInfo?.monthlySpend || "",
+					isUSEntity: storedData.companyBusinessInfo?.isUSEntity || ""
+				});
+			}
+		});
 	}, [form]);
 
-	// Form submission handler
-	const saveFormData = (values: FormValues) => {
+	const getKYCData = async () => {
+		const res: KYCData = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
+		return res.fields;
+	};
+
+	const saveFormData = async (values: FormValues) => {
 		const businessInfoPayload = {
 			industry: values.industry,
 			businessDescription: values.businessDescription,
 			monthlySpend: values.monthlySpend,
-			isUSEntity: values.isUSEntity,
+			isUSEntity: values.isUSEntity
 		};
-
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				companyBusinessInfo: businessInfoPayload,
-			};
-		} else {
-			combinedPayload = {
-				companyBusinessInfo: businessInfoPayload,
-			};
-		}
-
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		const combinedPayload = {
+			companyBusinessInfo: businessInfoPayload
+		};
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["companyBusinessInfo"]
+		});
 	};
 
-	// Form submission handler
-	const onSubmit = (values: FormValues) => {
-		saveFormData(values);
-
-		// Navigate to the next step based on the isUSEntity field
+	const onSubmit = async (values: FormValues) => {
+		await saveFormData(values);
 		navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
 	};
 
-	// Handle the previous step, saving form data before navigating
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue(); // Get current form values
-		saveFormData(values); // Save form data
-		navigate("/form/product"); // Navigate to the previous page
+		navigate("/form/product");
 	};
 
 	return (
@@ -105,7 +93,13 @@ const CompanyBusinessInfo = () => {
 						<div className="title">企业展业情况</div>
 						<div className="title">Company Business Activities</div>
 
-						<Form form={form} name="companyBusinessInfo" layout="vertical" onFinish={onSubmit}>
+						<Form
+							form={form}
+							name="companyBusinessInfo"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.Item
 								name="industry"
 								label="企业所在行业 / Industry:"

@@ -250,7 +250,6 @@ const formatDate = (dateString: string) => {
 const userInformation = async () => {
 	try {
 		const response = await AccountApi();
-		console.log(response.userConfig.maximumCardsAllowed);
 		const formattedData = {
 			id: response.id || 0,
 			fullName: response.fullName || "N/A",

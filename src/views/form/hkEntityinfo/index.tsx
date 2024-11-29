@@ -6,9 +6,10 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { FileApi } from "@/api/modules/form";
+import { FileApi } from "@/api/modules/kyc";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 
-// Define the types for form values
 interface FormValues {
 	hkEntityName: string;
 	companyWebsite: string;
@@ -27,6 +28,7 @@ interface FormValues {
 const HKEntityInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [kycStatus, setKycStatus] = useState<string>("");
 	const [uploadSuccess, setUploadSuccess] = useState({
 		businessRegistration: true,
 		companyIncorporation: true,
@@ -35,68 +37,62 @@ const HKEntityInfo = () => {
 		companyArticles: true
 	});
 
-	// Load saved data from localStorage when the component is mounted
 	useEffect(() => {
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if data exists
-			form.setFieldsValue({
-				hkEntityName: parsedData.hkEntityInfo?.hkEntityName || "",
-				companyWebsite: parsedData.hkEntityInfo?.companyWebsite || "",
-				certificateNo: parsedData.hkEntityInfo?.certificateNo || "",
-				commencementDate: parsedData.hkEntityInfo?.commencementDate
-					? moment(parsedData.hkEntityInfo?.commencementDate) // Convert date to moment
-					: null,
-				expiryDate: parsedData.hkEntityInfo?.expiryDate
-					? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
-					: null,
-				registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
-				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || "",
-				businessRegistration: parsedData.hkEntityInfo?.businessRegistration,
-				companyIncorporation: parsedData.hkEntityInfo?.companyIncorporation,
-				incorporationForm: parsedData.hkEntityInfo?.incorporationForm,
-				annualReturn: parsedData.hkEntityInfo?.annualReturn,
-				companyArticles: parsedData.hkEntityInfo?.companyArticles
-			});
-		}
+		getKYCData().then(storedData => {
+			if (storedData) {
+				form.setFieldsValue({
+					hkEntityName: storedData.hkEntityInfo?.hkEntityName || "",
+					companyWebsite: storedData.hkEntityInfo?.companyWebsite || "",
+					certificateNo: storedData.hkEntityInfo?.certificateNo || "",
+					commencementDate: storedData.hkEntityInfo?.commencementDate
+						? moment(storedData.hkEntityInfo?.commencementDate) // Convert date to moment
+						: null,
+					expiryDate: storedData.hkEntityInfo?.expiryDate
+						? moment(storedData.hkEntityInfo?.expiryDate) // Convert date to moment
+						: null,
+					registeredAddress: storedData.hkEntityInfo?.registeredAddress || "",
+					totalEmployees: storedData.hkEntityInfo?.totalEmployees || "",
+					businessRegistration: storedData.hkEntityInfo?.businessRegistration,
+					companyIncorporation: storedData.hkEntityInfo?.companyIncorporation,
+					incorporationForm: storedData.hkEntityInfo?.incorporationForm,
+					annualReturn: storedData.hkEntityInfo?.annualReturn,
+					companyArticles: storedData.hkEntityInfo?.companyArticles
+				});
+			}
+		});
 	}, [form]);
 
-	const saveFormData = (values: FormValues) => {
-		const existingData = localStorage.getItem("data") || "";
-		const parsedData = existingData ? JSON.parse(existingData) : {};
+	const getKYCData = async () => {
+		const res: KYCData = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
+		return res.fields;
+	};
 
+	const saveFormData = async (values: FormValues) => {
 		const updatedData = {
-			...parsedData,
 			hkEntityInfo: values
 		};
 
-		localStorage.setItem("data", JSON.stringify(updatedData));
+		await setKYCApi({ fields: updatedData, status: "unfilled", updateKeys: ["hkEntityInfo"] });
 	};
 
-	// Handle form submission
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = async (values: FormValues) => {
 		if (!Object.values(uploadSuccess).every(success => success)) {
 			message.error("请确保所有文件上传成功 / Please ensure all files are successfully uploaded.");
 			return;
 		}
-		saveFormData(values); // Save the form data to localStorage
+		await saveFormData(values);
 		navigate("/form/shareholder");
 	};
 
-	// Handle navigating to the previous step
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		saveFormData(values); // Save the current form data
-		navigate("/form/companyBusiness"); // Navigate to the previous step
+		navigate("/form/companyBusiness");
 	};
 
-	// Handle form submission failure
 	const onFinishFailed = (errorInfo: any) => {
 		console.log("Failed:", errorInfo);
 	};
 
-	// Handle file upload
 	const onUploadFileChange = (fileType: string) => (event: { file: any }) => {
 		if (event.file.status === "done") {
 			setUploadSuccess(prev => ({ ...prev, [fileType]: true }));
@@ -106,7 +102,6 @@ const HKEntityInfo = () => {
 		}
 	};
 
-	// Alphanumeric validation
 	const validateAlphanumeric = (_: any, value: string) => {
 		const regex = /^[a-zA-Z0-9\s]*$/;
 		if (value && !regex.test(value)) {
@@ -145,7 +140,14 @@ const HKEntityInfo = () => {
 						<div className="title">入驻企业香港主体主要信息</div>
 						<div className="title">HK Entity Information</div>
 
-						<Form form={form} name="hkEntityForm" layout="vertical" onFinish={onSubmit} onFinishFailed={onFinishFailed}>
+						<Form
+							form={form}
+							name="hkEntityForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							onFinishFailed={onFinishFailed}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.Item
 								name="hkEntityName"
 								label="香港主体全称 / HK Entity Legal Name:"
@@ -195,10 +197,7 @@ const HKEntityInfo = () => {
 							<Form.Item
 								name="registeredAddress"
 								label="香港主体注册地址 / HK Entity Registered Address:"
-								rules={[
-									{ required: true, message: "请输入注册地址 / Please enter registered address" },
-									{ validator: validateAlphanumeric }
-								]}
+								rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
 							>
 								<Input placeholder="请输入香港主体注册地址 / Please enter the registered address" />
 							</Form.Item>

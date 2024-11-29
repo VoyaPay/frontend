@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/ico
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
-import { KYCStateApi } from "@/api/modules/form";
+import { KYCStateApi } from "@/api/modules/kyc";
 import { useState } from "react";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";

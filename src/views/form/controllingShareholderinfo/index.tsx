@@ -5,8 +5,8 @@ import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-
-// Define the types for form values
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 interface Shareholder {
 	entityName: string;
 	nationalityOrLocation: string;
@@ -21,7 +21,7 @@ interface FormValues {
 const ControllingShareholderInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
-
+	const [kycStatus, setKycStatus] = useState<string>("");
 	const navigate = useNavigate();
 
 	const handleCancel = () => {
@@ -32,57 +32,47 @@ const ControllingShareholderInfo = () => {
 		navigate("/form/beneficical");
 	};
 
-	// Auto-populate form with existing data from localStorage
+	const getKYCData = async () => {
+		const res: KYCData = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
+		return res.fields;
+	};
+
 	useEffect(() => {
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if controlling shareholder info exists
-			form.setFieldsValue({
-				shareholders: parsedData.controllingShareholderInfo?.shareholders || []
-			});
-		}
+		getKYCData().then(storedData => {
+			if (storedData) {
+				form.setFieldsValue({
+					shareholders: storedData.controllingShareholderInfo?.shareholders || []
+				});
+			}
+		});
 	}, [form]);
 
-	const saveFormData = (values: FormValues) => {
+	const saveFormData = async (values: FormValues) => {
 		const controllingShareholdersPayload = {
 			shareholders: values.shareholders
 		};
+		const combinedPayload = {
+			controllingShareholderInfo: controllingShareholdersPayload
+		};
 
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				controllingShareholderInfo: controllingShareholdersPayload
-			};
-		} else {
-			combinedPayload = {
-				controllingShareholderInfo: controllingShareholdersPayload
-			};
-		}
-
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["controllingShareholderInfo"]
+		});
 	};
 
-	// Form submission handler
-	const onSubmit = (values: FormValues) => {
+	const onSubmit = async (values: FormValues) => {
 		if (values.shareholders.length < 1) {
 			message.error("至少需要填写一名控权股东");
 			return;
 		}
-
-		// Save data and proceed to the next step
-		saveFormData(values);
+		await saveFormData(values);
 		setOpen(true);
 	};
 
-	// Handle navigation to the previous step, saving data before navigating
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		saveFormData(values);
 		navigate("/form/hkEntityContact");
 	};
 
@@ -113,9 +103,19 @@ const ControllingShareholderInfo = () => {
 				</div>
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title"><span style={{ color: "red", marginRight: "10px" }}>*</span>控股股东或实控人信息</div>
-						<div className="title"><span style={{ color: "red", marginRight: "10px" }}>*</span>Controlling Shareholder or Actual Controller Information</div>
-						<Form form={form} name="controllingShareholderForm" layout="vertical" onFinish={onSubmit}>
+						<div className="title">
+							<span style={{ color: "red", marginRight: "10px" }}>*</span>控股股东或实控人信息
+						</div>
+						<div className="title">
+							<span style={{ color: "red", marginRight: "10px" }}>*</span>Controlling Shareholder or Actual Controller Information
+						</div>
+						<Form
+							form={form}
+							name="controllingShareholderForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
+						>
 							<Form.List name="shareholders">
 								{(fields, { add, remove }) => (
 									<>

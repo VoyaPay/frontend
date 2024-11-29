@@ -76,6 +76,17 @@ export interface ResultData<T = any> extends Result {
 	data?: T;
 }
 
+export interface KYCData extends Result {
+	createdAt?: string;
+	fields?: KYCFields;
+	lastUpdateAt?: string;
+	status?: string;
+}
+
+export interface KYCFields extends KYCData {
+	[key: string]: any;
+}
+
 // * 分页响应参数
 export interface ResPage<T> {
 	datalist: T[];

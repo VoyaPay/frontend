@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 
 interface FormValues {
 	contactName: string;
@@ -16,26 +18,29 @@ interface FormValues {
 const CompanyContractInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [kycStatus, setKycStatus] = useState<string>("");
 
 	useEffect(() => {
-		// Automatically load stored data if the "email" key exists in localStorage
-
-		const storedData = localStorage.getItem("data");
-		console.log(JSON.parse(localStorage.getItem("data") || "{}"));
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Auto-fill the form with stored data
-			form.setFieldsValue({
-				contactName: parsedData.CompanyContractInfo?.contactName || "",
-				contactPhone: parsedData.CompanyContractInfo?.contactPhone || "",
-				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
-				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
-				contactEmail: parsedData.CompanyContractInfo?.contactEmail || ""
-			});
-		}
+		getKYCData().then(storedData => {
+			if (storedData) {
+				form.setFieldsValue({
+					contactName: storedData.CompanyContractInfo?.contactName || "",
+					contactPhone: storedData.CompanyContractInfo?.contactPhone || "",
+					contactMobile: storedData.CompanyContractInfo?.contactMobile || "",
+					contactPosition: storedData.CompanyContractInfo?.contactPosition || "",
+					contactEmail: storedData.CompanyContractInfo?.contactEmail || ""
+				});
+			}
+		});
 	}, [form]);
 
-	const onSubmit = (values: FormValues) => {
+	const getKYCData = async () => {
+		const res: KYCData = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
+		return res.fields;
+	};
+
+	const onSubmit = async (values: FormValues) => {
 		const newCompanyContractInfo = {
 			contactName: values.contactName,
 			contactPhone: values.contactPhone,
@@ -43,32 +48,17 @@ const CompanyContractInfo = () => {
 			contactPosition: values.contactPosition,
 			contactEmail: values.contactEmail
 		};
+		const combinedPayload = {
+			CompanyContractInfo: newCompanyContractInfo
+		};
 
-		// Retrieve existing data
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			// Merge new data with existing data
-			combinedPayload = {
-				...parsedData,
-				CompanyContractInfo: newCompanyContractInfo // Update CompanyContractInfo
-			};
-		} else {
-			// If no existing data, save new company contact information
-			combinedPayload = {
-				CompanyContractInfo: newCompanyContractInfo
-			};
-		}
-
-		// Save updated data to localStorage
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-		console.log("Updated Payload:", combinedPayload);
-		navigate("/form/product");
-
-		// Navigate based on US entity status
-		// navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["CompanyContractInfo"]
+		}).then(() => {
+			navigate("/form/product");
+		});
 	};
 
 	return (
@@ -107,6 +97,7 @@ const CompanyContractInfo = () => {
 							name="companyContractForm"
 							layout="vertical"
 							onFinish={onSubmit}
+							disabled={kycStatus === "approved"}
 							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">

@@ -60,29 +60,24 @@ class RequestHttp {
 			(response: AxiosResponse) => {
 				const { data, config } = response;
 				NProgress.done();
-				// * 在请求结束后，移除本次请求(关闭loading)
 				axiosCanceler.removePending(config);
 				tryHideFullScreenLoading();
-				// * 登录失效（code == 599）
-				if (data.code == ResultEnum.OVERDUE) {
-					store.dispatch(setToken(""));
-					message.error(data.msg);
-					window.location.hash = "/login";
-					return Promise.reject(data);
-				}
-				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
 				if (data.code && data.code !== ResultEnum.SUCCESS) {
 					message.error(data.msg);
 					return Promise.reject(data);
 				}
-				// * 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
 				return data;
 			},
 			async (error: AxiosError) => {
 				const { response } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
-				if (error.message.indexOf("timeout") !== -1) message.error("请求超时，请稍后再试");
+				if (response?.status === 401) {
+					store.dispatch(setToken(""));
+					message.error("您的会话已过期，请重新登录。");
+					window.location.hash = "/login";
+					return Promise.reject(error);
+				}
 				if (response && response.status >= 400 && response.status < 500) {
 					message.error((response.data as ErrorResponse).message);
 				} else if (response && response.status >= 500) {

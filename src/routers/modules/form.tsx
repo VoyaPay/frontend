@@ -93,8 +93,7 @@ const formRouter: Array<RouteObject> = [
 					title: "kyc审核中",
 					key: "KycProcess"
 				}
-			},
-			
+			}
 		]
 	}
 ];
