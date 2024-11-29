@@ -3,7 +3,7 @@ import bg from "@/assets/images/bg.png";
 import "./index.less";
 
 interface LoginProps {
-	loginRouterType: string;
+	loginRouterType: "login" | "forgotPassword" | "register" | "activation" | "setPassword";
 }
 
 const Login = (props: LoginProps) => {
