@@ -5,6 +5,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 
 interface FormValues {
 	contactName: string;
@@ -20,24 +21,23 @@ const CompanyContractInfo = () => {
 	const [kycStatus, setKycStatus] = useState<string>("");
 
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Auto-fill the form with stored data
-			form.setFieldsValue({
-				contactName: parsedData.CompanyContractInfo?.contactName || "",
-				contactPhone: parsedData.CompanyContractInfo?.contactPhone || "",
-				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
-				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
-				contactEmail: parsedData.CompanyContractInfo?.contactEmail || ""
-			});
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				form.setFieldsValue({
+					contactName: storedData.CompanyContractInfo?.contactName || "",
+					contactPhone: storedData.CompanyContractInfo?.contactPhone || "",
+					contactMobile: storedData.CompanyContractInfo?.contactMobile || "",
+					contactPosition: storedData.CompanyContractInfo?.contactPosition || "",
+					contactEmail: storedData.CompanyContractInfo?.contactEmail || ""
+				});
+			}
+		});
 	}, [form]);
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
 	const onSubmit = async (values: FormValues) => {
@@ -48,33 +48,17 @@ const CompanyContractInfo = () => {
 			contactPosition: values.contactPosition,
 			contactEmail: values.contactEmail
 		};
+		const combinedPayload = {
+			CompanyContractInfo: newCompanyContractInfo
+		};
 
-		// Retrieve existing data
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			// Merge new data with existing data
-			combinedPayload = {
-				...parsedData,
-				CompanyContractInfo: newCompanyContractInfo // Update CompanyContractInfo
-			};
-		} else {
-			// If no existing data, save new company contact information
-			combinedPayload = {
-				CompanyContractInfo: newCompanyContractInfo
-			};
-		}
-
-		// Save updated data to localStorage
-		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
-			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["CompanyContractInfo"]
+		}).then(() => {
 			navigate("/form/product");
 		});
-
-		// Navigate based on US entity status
-		// navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
 	};
 
 	return (

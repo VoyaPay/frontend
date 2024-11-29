@@ -4,16 +4,17 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 
 const BeneficialOwnerInfo = () => {
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState(false);
 	const [totalOwnership, setTotalOwnership] = useState<number>(0);
 	const [kycStatus, setKycStatus] = useState<string>("");
-
+	const refStoredData = useRef<any | null>(null);
 	const navigate = useNavigate();
 
 	const handleCancel = () => {
@@ -21,20 +22,20 @@ const BeneficialOwnerInfo = () => {
 	};
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if beneficial owner info exists
-			form.setFieldsValue({
-				beneficialOwners: parsedData.beneficialOwnerInfo?.beneficialOwners || []
-			});
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				refStoredData.current = storedData;
+				form.setFieldsValue({
+					beneficialOwners: storedData.beneficialOwnerInfo?.beneficialOwners || []
+				});
+			}
+		});
 	}, [form]);
 
 	const handleOk = async () => {
@@ -54,65 +55,28 @@ const BeneficialOwnerInfo = () => {
 	};
 
 	const onSubmit = async (values: any) => {
-		const email = localStorage.getItem("data") || "";
-		if (!email) {
-			console.error("Email not found in localStorage");
-			return;
-		}
-
-		// Save the beneficial owner data to localStorage
-		const beneficialOwnersPayload = {
-			beneficialOwners: values.beneficialOwners
+		const combinedPayload = {
+			beneficialOwnerInfo: {
+				beneficialOwners: values.beneficialOwners
+			}
 		};
-
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				beneficialOwnerInfo: beneficialOwnersPayload
-			};
-		} else {
-			combinedPayload = {
-				beneficialOwnerInfo: beneficialOwnersPayload
-			};
-		}
-		if (beneficialOwnersPayload.beneficialOwners.length < 1) {
+		if (values.beneficialOwners.length < 1) {
 			message.error(
 				"需要填写所有直接或者间接拥有25%及以上公司股权的受益人信息 / Please provide information for all beneficial owners who directly or indirectly own 25% or more of the company's shares or voting rights."
 			);
 			return;
 		}
 
-		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
-			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["beneficialOwnerInfo"]
+		}).then(() => {
+			setOpen(true);
 		});
-		setOpen(true);
 	};
 	const handlePrevStep = () => {
-		const formData = form.getFieldsValue(); // Get the current form values
-		const existingData = localStorage.getItem("data") || "";
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				beneficialOwnerInfo: { beneficialOwners: formData.beneficialOwners }
-			};
-		} else {
-			combinedPayload = {
-				beneficialOwnerInfo: { beneficialOwners: formData.beneficialOwners }
-			};
-		}
-
-		localStorage.setItem("data", JSON.stringify(combinedPayload)); // Save updated data
-		const data = JSON.parse(existingData);
-
-		const isUSEntity = data?.companyBusinessInfo?.isUSEntity === "us";
-
+		const isUSEntity = refStoredData.current?.companyBusinessInfo?.isUSEntity === "us";
 		if (isUSEntity) {
 			navigate("/form/usEntityinfo");
 		} else {
@@ -163,9 +127,9 @@ const BeneficialOwnerInfo = () => {
 							onValuesChange={(_, allValues) => {
 								const totalOwnershipPercentage = allValues.beneficialOwners
 									? allValues.beneficialOwners.reduce((sum: number, owner: any) => {
-										return sum + (owner?.ownershipPercentage || 0); // Safely access ownershipPercentage
+										return sum + (owner?.ownershipPercentage || 0);
 									}, 0)
-									: 0; // Default to 0 if beneficialOwners does not exist
+									: 0;
 								setTotalOwnership(totalOwnershipPercentage);
 							}}
 						>

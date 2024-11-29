@@ -5,8 +5,7 @@ import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
-
-// Define the types for form values
+import { KYCData } from "@/api/interface";
 interface FormValues {
 	industry: string;
 	businessDescription: string;
@@ -19,28 +18,25 @@ const CompanyBusinessInfo = () => {
 	const { Option } = Select;
 	const navigate = useNavigate();
 	const [kycStatus, setKycStatus] = useState<string>("");
-	// Automatically populate the form if data exists in localStorage
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if business data exists
-			form.setFieldsValue({
-				industry: parsedData.companyBusinessInfo?.industry || "",
-				businessDescription: parsedData.companyBusinessInfo?.businessDescription || "",
-				monthlySpend: parsedData.companyBusinessInfo?.monthlySpend || "",
-				isUSEntity: parsedData.companyBusinessInfo?.isUSEntity || "" // Ensure isUSEntity is populated
-			});
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				form.setFieldsValue({
+					industry: storedData.companyBusinessInfo?.industry || "",
+					businessDescription: storedData.companyBusinessInfo?.businessDescription || "",
+					monthlySpend: storedData.companyBusinessInfo?.monthlySpend || "",
+					isUSEntity: storedData.companyBusinessInfo?.isUSEntity || ""
+				});
+			}
+		});
 	}, [form]);
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
-	// Form submission handler
 	const saveFormData = async (values: FormValues) => {
 		const businessInfoPayload = {
 			industry: values.industry,
@@ -48,39 +44,23 @@ const CompanyBusinessInfo = () => {
 			monthlySpend: values.monthlySpend,
 			isUSEntity: values.isUSEntity,
 		};
-
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				companyBusinessInfo: businessInfoPayload,
-			};
-		} else {
-			combinedPayload = {
-				companyBusinessInfo: businessInfoPayload,
-			};
-		}
-		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
-			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		const combinedPayload = {
+			companyBusinessInfo: businessInfoPayload
+		};
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["companyBusinessInfo"]
 		});
 	};
 
-	// Form submission handler
 	const onSubmit = async (values: FormValues) => {
 		await saveFormData(values);
-
-		// Navigate to the next step based on the isUSEntity field
 		navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
 	};
 
-	// Handle the previous step, saving form data before navigating
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue(); // Get current form values
-		saveFormData(values); // Save form data
-		navigate("/form/product"); // Navigate to the previous page
+		navigate("/form/product");
 	};
 
 	return (

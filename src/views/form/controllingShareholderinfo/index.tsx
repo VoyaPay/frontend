@@ -6,8 +6,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
-
-// Define the types for form values
+import { KYCData } from "@/api/interface";
 interface Shareholder {
 	entityName: string;
 	nationalityOrLocation: string;
@@ -34,64 +33,46 @@ const ControllingShareholderInfo = () => {
 	};
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
-	// Auto-populate form with existing data from localStorage
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if controlling shareholder info exists
-			form.setFieldsValue({
-				shareholders: parsedData.controllingShareholderInfo?.shareholders || []
-			});
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				form.setFieldsValue({
+					shareholders: storedData.controllingShareholderInfo?.shareholders || []
+				});
+			}
+		});
 	}, [form]);
 
 	const saveFormData = async (values: FormValues) => {
 		const controllingShareholdersPayload = {
 			shareholders: values.shareholders
 		};
+		const combinedPayload = {
+			controllingShareholderInfo: controllingShareholdersPayload
+		};
 
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				controllingShareholderInfo: controllingShareholdersPayload
-			};
-		} else {
-			combinedPayload = {
-				controllingShareholderInfo: controllingShareholdersPayload
-			};
-		}
-
-		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
-			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["controllingShareholderInfo"]
 		});
 	};
 
-	// Form submission handler
 	const onSubmit = async (values: FormValues) => {
 		if (values.shareholders.length < 1) {
 			message.error("至少需要填写一名控权股东");
 			return;
 		}
-
-		// Save data and proceed to the next step
 		await saveFormData(values);
 		setOpen(true);
 	};
 
-	// Handle navigation to the previous step, saving data before navigating
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		saveFormData(values);
 		navigate("/form/hkEntityContact");
 	};
 

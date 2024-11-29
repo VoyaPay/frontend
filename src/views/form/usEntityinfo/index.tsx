@@ -8,6 +8,7 @@ import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 
 interface FormValues {
 	usEntityName: string;
@@ -36,35 +37,34 @@ const UsEntityInfo = () => {
 	});
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			form.setFieldsValue({
-				usEntityName: parsedData.usEntityInfo?.usEntityName || "",
-				companyWebsite: parsedData.usEntityInfo?.companyWebsite || "",
-				usEntityType: parsedData.usEntityInfo?.usEntityType || "",
-				usEntityEIN: parsedData.usEntityInfo?.usEntityEIN || "",
-				usEntityFormationDate: parsedData.usEntityInfo?.usEntityFormationDate
-					? moment(parsedData.usEntityInfo?.usEntityFormationDate)
-					: null,
-				usEntityRegisteredState: parsedData.usEntityInfo?.usEntityRegisteredState || "",
-				usEntityRegisteredAddress: parsedData.usEntityInfo?.usEntityRegisteredAddress || "",
-				usEntityOperatingAddress: parsedData.usEntityInfo?.usEntityOperatingAddress || "",
-				totalEmployees: parsedData.usEntityInfo?.totalEmployees || "",
-				companyFormationFile: parsedData.usEntityInfo?.companyFormationFile || [],
-				einDocumentFile: parsedData.usEntityInfo?.einDocumentFile || [],
-				operatingAgreementFile: parsedData.usEntityInfo?.operatingAgreementFile || []
-			});
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				form.setFieldsValue({
+					usEntityName: storedData.usEntityInfo?.usEntityName || "",
+					companyWebsite: storedData.usEntityInfo?.companyWebsite || "",
+					usEntityType: storedData.usEntityInfo?.usEntityType || "",
+					usEntityEIN: storedData.usEntityInfo?.usEntityEIN || "",
+					usEntityFormationDate: storedData.usEntityInfo?.usEntityFormationDate
+						? moment(storedData.usEntityInfo?.usEntityFormationDate)
+						: null,
+					usEntityRegisteredState: storedData.usEntityInfo?.usEntityRegisteredState || "",
+					usEntityRegisteredAddress: storedData.usEntityInfo?.usEntityRegisteredAddress || "",
+					usEntityOperatingAddress: storedData.usEntityInfo?.usEntityOperatingAddress || "",
+					totalEmployees: storedData.usEntityInfo?.totalEmployees || "",
+					companyFormationFile: storedData.usEntityInfo?.companyFormationFile || [],
+					einDocumentFile: storedData.usEntityInfo?.einDocumentFile || [],
+					operatingAgreementFile: storedData.usEntityInfo?.operatingAgreementFile || []
+				});
+			}
+		});
 	}, [form]);
 
-	// Track upload success
 	const onUploadFileChange = (fileType: string) => (event: { file: any }) => {
 		if (event.file.status === "done") {
 			console.log("upload success, fileId=", event.file.response.fileId);
@@ -77,7 +77,6 @@ const UsEntityInfo = () => {
 	};
 
 	const onSubmit = async (values: FormValues) => {
-		// Check if all uploads were successful before proceeding
 		if (!uploadSuccess.companyFormationFile || !uploadSuccess.einDocumentFile || !uploadSuccess.operatingAgreementFile) {
 			message.error("请确保所有文件上传成功 / Please ensure all files are uploaded successfully");
 			return;
@@ -97,53 +96,16 @@ const UsEntityInfo = () => {
 			einDocumentFile: values.einDocumentFile,
 			operatingAgreementFile: values.operatingAgreementFile
 		};
-
-		const prevInfo = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (prevInfo) {
-			const lastInformation = JSON.parse(prevInfo);
-			combinedPayload = {
-				...lastInformation,
-				usEntityInfo: usEntityPayload
-			};
-		} else {
-			combinedPayload = {
-				usEntityInfo: usEntityPayload
-			};
-		}
-
-		await setKYCApi({ fields: combinedPayload, status: "unfilled" }).then(() => {
-			localStorage.setItem("data", JSON.stringify(combinedPayload));
+		const combinedPayload = {
+			usEntityInfo: usEntityPayload
+		};
+		await setKYCApi({ fields: combinedPayload, status: "unfilled", updateKeys: ["usEntityInfo"] }).then(() => {
+			message.success("US Entity Information saved successfully!");
+			navigate("/form/beneficical");
 		});
-
-		message.success("US Entity Information saved successfully!");
-		navigate("/form/beneficical");
 	};
 
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		const usEntityPayload = {
-			...values,
-			usEntityFormationDate: values.usEntityFormationDate ? values.usEntityFormationDate.format("YYYY-MM-DD") : ""
-		};
-
-		const prevInfo = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (prevInfo) {
-			const lastInformation = JSON.parse(prevInfo);
-			combinedPayload = {
-				...lastInformation,
-				usEntityInfo: usEntityPayload
-			};
-		} else {
-			combinedPayload = {
-				usEntityInfo: usEntityPayload
-			};
-		}
-
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
 		navigate("/form/companyBusiness");
 	};
 

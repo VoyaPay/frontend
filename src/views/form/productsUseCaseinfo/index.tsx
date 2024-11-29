@@ -5,12 +5,11 @@ import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
-
-// Define the types for form values
+import { KYCData } from "@/api/interface";
 interface FormValues {
 	requestedProducts: string;
 	estimatedMonthlySpend: string;
-	spendingUseCase: string;
+	spendingUseCase: Array<string>;
 	otherUseCase?: string;
 	businessModel: string;
 	b2bClientNumber?: string;
@@ -24,38 +23,34 @@ const ProductsUseCaseInfo = () => {
 	const { Option } = Select;
 	const navigate = useNavigate();
 	const [kycStatus, setKycStatus] = useState<string>("");
-	// Handle business model change
 	const handleBusinessModelChange = (value: string) => {
-		setBusinessModel(value); // Track business model selection
+		setBusinessModel(value);
 	};
 
-	// Auto-populate form with existing data from localStorage
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if product use case info exists
-			form.setFieldsValue({
-				requestedProducts: parsedData.productsUseCaseInfo?.requestedProducts || "",
-				estimatedMonthlySpend: parsedData.productsUseCaseInfo?.estimatedMonthlySpend || "",
-				spendingUseCase: parsedData.productsUseCaseInfo?.spendingUseCase || "",
-				otherUseCase: parsedData.productsUseCaseInfo?.otherUseCase || "",
-				businessModel: parsedData.productsUseCaseInfo?.businessModel || "",
-				b2bClientNumber: parsedData.productsUseCaseInfo?.b2bClientNumber || "",
-				b2bClientSpend: parsedData.productsUseCaseInfo?.b2bClientSpend || "",
-				b2cClientNumber: parsedData.productsUseCaseInfo?.b2cClientNumber || ""
-			});
-			setBusinessModel(parsedData.productsUseCaseInfo?.businessModel || null);
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				form.setFieldsValue({
+					requestedProducts: storedData.productsUseCaseInfo?.requestedProducts || "",
+					estimatedMonthlySpend: storedData.productsUseCaseInfo?.estimatedMonthlySpend || "",
+					spendingUseCase: storedData.productsUseCaseInfo?.spendingUseCase || [],
+					otherUseCase: storedData.productsUseCaseInfo?.otherUseCase || "",
+					businessModel: storedData.productsUseCaseInfo?.businessModel || "",
+					b2bClientNumber: storedData.productsUseCaseInfo?.b2bClientNumber || "",
+					b2bClientSpend: storedData.productsUseCaseInfo?.b2bClientSpend || "",
+					b2cClientNumber: storedData.productsUseCaseInfo?.b2cClientNumber || ""
+				});
+				setBusinessModel(storedData.productsUseCaseInfo?.businessModel || null);
+			}
+		});
 	}, [form]);
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
-	// Form submission handler
 	const saveFormData = async (values: FormValues) => {
 		const productsUseCasePayload = {
 			requestedProducts: values.requestedProducts,
@@ -68,35 +63,19 @@ const ProductsUseCaseInfo = () => {
 			b2cClientNumber: values.b2cClientNumber
 		};
 
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData, // Spread existing data
-				productsUseCaseInfo: productsUseCasePayload // Add new product use case info
-			};
-		} else {
-			combinedPayload = {
-				productsUseCaseInfo: productsUseCasePayload
-			};
-		}
-		await setKYCApi({ fields: combinedPayload, status: "unfilled" });
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
+		const combinedPayload = {
+			productsUseCaseInfo: productsUseCasePayload
+		};
+		await setKYCApi({ fields: combinedPayload, status: "unfilled", updateKeys: ["productsUseCaseInfo"] });
 	};
 
-	// Form submission handler
 	const onSubmit = async (values: FormValues) => {
 		await saveFormData(values);
 		navigate("/form/companyBusiness");
 	};
 
-	// Handle navigating to the previous step
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		saveFormData(values); // Save the current form data
-		navigate("/company"); // Navigate to the previous step
+		navigate("/company");
 	};
 
 	return (
@@ -135,7 +114,6 @@ const ProductsUseCaseInfo = () => {
 							onFinish={onSubmit}
 							disabled={kycStatus === "approved"}
 						>
-							{/* Requested Products */}
 							<Form.Item
 								name="requestedProducts"
 								label="拟开通产品服务 / Requested Products:"
@@ -147,7 +125,6 @@ const ProductsUseCaseInfo = () => {
 								</Select>
 							</Form.Item>
 
-							{/* Estimated Monthly Spend */}
 							<Form.Item
 								name="estimatedMonthlySpend"
 								label="预计月消耗量范围（USD） / Estimated Monthly Spend (USD):"
@@ -162,8 +139,6 @@ const ProductsUseCaseInfo = () => {
 									<Option value="above10">Above $10M </Option>
 								</Select>
 							</Form.Item>
-
-							{/* Spending Use Case */}
 							<Form.Item
 								name="spendingUseCase"
 								label="消费场景 / Spending Use Case:"
@@ -178,16 +153,14 @@ const ProductsUseCaseInfo = () => {
 								</Select>
 							</Form.Item>
 
-							{/* If "Others", list other use cases */}
 							<Form.Item
 								name="otherUseCase"
 								label='如果选择“其他”，请罗列其他的消费场景 / If "Others", please list the other use cases:'
-								rules={[{ required: false }]} // This field is optional
+								rules={[{ required: false }]}
 							>
 								<Input.TextArea placeholder="请列出其他消费场景 / Please list other use cases" />
 							</Form.Item>
 
-							{/* Business Model */}
 							<Form.Item
 								name="businessModel"
 								label="业务模式 / Business Model:"
@@ -199,7 +172,6 @@ const ProductsUseCaseInfo = () => {
 								</Select>
 							</Form.Item>
 
-							{/* Conditional Fields for B2B */}
 							{businessModel === "b2b" && (
 								<>
 									<Form.Item name="b2bClientNumber" label="预估企业客户数 / Estimated Client Number (B2B):">
@@ -208,7 +180,6 @@ const ProductsUseCaseInfo = () => {
 								</>
 							)}
 
-							{/* Conditional Fields for B2C */}
 							{businessModel === "b2c" && (
 								<>
 									<Form.Item name="b2cClientNumber" label="预估个人客户数 / Estimated Client Number (B2C):">

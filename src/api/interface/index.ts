@@ -77,10 +77,15 @@ export interface ResultData<T = any> extends Result {
 }
 
 export interface KYCData extends Result {
-	createdAt: string;
-	fields: {};
-	lastUpdateAt: string;
-	status: string;
+	createdAt?: string;
+	fields?: KYCFields;
+	lastUpdateAt?: string;
+	status?: string;
+
+}
+
+export interface KYCFields extends KYCData {
+	[key: string]: any;
 
 }
 

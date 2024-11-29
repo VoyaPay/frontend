@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import back from "@/assets/images/return.png";
 import { NavLink } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
-
-// Define the types for form values
+import { KYCData } from "@/api/interface";
 interface FormValues {
 	companyName: string;
 	creditCode: string;
@@ -17,7 +16,11 @@ interface FormValues {
 	establishmentDate: any;
 	licenseExpiryDate: any;
 	legalRepresentative: string;
-	businessLicense: any; // 上传的文件信息
+	businessLicense: any;
+}
+
+interface CombinedPayload {
+	chineseParentCompanyInfo: FormValues;
 }
 
 const ChineseParentCompanyInfo = () => {
@@ -25,37 +28,30 @@ const ChineseParentCompanyInfo = () => {
 	const [open, setOpen] = useState(false);
 	const navigate = useNavigate();
 	const [kycStatus, setKycStatus] = useState<string>("");
+	const refCombinedPayload = useRef<CombinedPayload | null>(null);
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
-	// Populate form with existing data from localStorage when the component mounts
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			if (parsedData.chineseParentCompanyInfo) {
+		getKYCData().then((storedData) => {
+			if (storedData?.chineseParentCompanyInfo) {
 				form.setFieldsValue({
-					...parsedData.chineseParentCompanyInfo,
-					// Ensure date fields are parsed correctly using moment
-					establishmentDate: parsedData.chineseParentCompanyInfo.establishmentDate
-						? moment(parsedData.chineseParentCompanyInfo.establishmentDate)
+					...storedData.chineseParentCompanyInfo,
+					establishmentDate: storedData.chineseParentCompanyInfo.establishmentDate
+						? moment(storedData.chineseParentCompanyInfo.establishmentDate)
 						: null,
-					licenseExpiryDate: parsedData.chineseParentCompanyInfo.licenseExpiryDate
-						? moment(parsedData.chineseParentCompanyInfo.licenseExpiryDate)
+					licenseExpiryDate: storedData.chineseParentCompanyInfo.licenseExpiryDate
+						? moment(storedData.chineseParentCompanyInfo.licenseExpiryDate)
 						: null
 				});
 			}
-		}
+		});
 	}, [form]);
 
-	// Handle form submission
 	const onSubmit = async (values: FormValues) => {
-		// Retrieve the user's email from localStorag
-
-		// Create the payload for the Chinese parent company info
 		const chineseParentCompanyPayload = {
 			companyName: values.companyName,
 			creditCode: values.creditCode,
@@ -63,59 +59,15 @@ const ChineseParentCompanyInfo = () => {
 			establishmentDate: values.establishmentDate,
 			licenseExpiryDate: values.licenseExpiryDate,
 			legalRepresentative: values.legalRepresentative,
-			businessLicense: values.businessLicense // 文件上传后的 URL
+			businessLicense: values.businessLicense
 		};
 
-		// Retrieve any existing data stored under the user's email
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		// If existing data is found, merge it with the new Chinese parent company info
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				chineseParentCompanyInfo: chineseParentCompanyPayload
-			};
-		} else {
-			// Otherwise, just store the new Chinese parent company info
-			combinedPayload = {
-				chineseParentCompanyInfo: chineseParentCompanyPayload
-			};
-		}
-
-		// Save the updated payload to localStorage under the user's email
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-
-		// Open confirmation modal
+		refCombinedPayload.current = {
+			chineseParentCompanyInfo: chineseParentCompanyPayload
+		};
 		setOpen(true);
 	};
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		const chineseParentCompanyPayload = {
-			...values,
-			establishmentDate: values.establishmentDate ? values.establishmentDate.format("YYYY-MM-DD") : null,
-			licenseExpiryDate: values.licenseExpiryDate ? values.licenseExpiryDate.format("YYYY-MM-DD") : null
-		};
-
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
-
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			combinedPayload = {
-				...parsedData,
-				chineseParentCompanyInfo: chineseParentCompanyPayload
-			};
-		} else {
-			combinedPayload = {
-				chineseParentCompanyInfo: chineseParentCompanyPayload
-			};
-		}
-
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-
-		// Navigate to the previous step
 		navigate("/form/beneficical");
 	};
 	const onUploadFileChange = (event: { file: any }) => {
@@ -130,8 +82,8 @@ const ChineseParentCompanyInfo = () => {
 
 	const handleOk = async () => {
 		setOpen(false);
-		const storedData = JSON.parse(localStorage.getItem("data") || "{}");
-		await setKYCApi({ fields: storedData, status: "underReview" }).then(() => {
+		const storedData = refCombinedPayload.current;
+		await setKYCApi({ fields: storedData, status: "underReview", updateKeys: ["chineseParentCompanyInfo"] }).then(() => {
 			navigate("/form/kycprocess");
 			message.success("KYC 信息提交成功， 我们将尽快联系您！");
 		}).catch((error) => {

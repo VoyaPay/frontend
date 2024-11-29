@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
 
-// Define the types for form values
 interface FormValues {
 	hkEntityName: string;
 	companyWebsite: string;
@@ -37,76 +37,62 @@ const HKEntityInfo = () => {
 		companyArticles: true
 	});
 
-	// Load saved data from localStorage when the component is mounted
 	useEffect(() => {
-		getKYCData();
-		const storedData = localStorage.getItem("data");
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Set form values if data exists
-			form.setFieldsValue({
-				hkEntityName: parsedData.hkEntityInfo?.hkEntityName || "",
-				companyWebsite: parsedData.hkEntityInfo?.companyWebsite || "",
-				certificateNo: parsedData.hkEntityInfo?.certificateNo || "",
-				commencementDate: parsedData.hkEntityInfo?.commencementDate
-					? moment(parsedData.hkEntityInfo?.commencementDate) // Convert date to moment
-					: null,
-				expiryDate: parsedData.hkEntityInfo?.expiryDate
-					? moment(parsedData.hkEntityInfo?.expiryDate) // Convert date to moment
-					: null,
-				registeredAddress: parsedData.hkEntityInfo?.registeredAddress || "",
-				totalEmployees: parsedData.hkEntityInfo?.totalEmployees || "",
-				businessRegistration: parsedData.hkEntityInfo?.businessRegistration,
-				companyIncorporation: parsedData.hkEntityInfo?.companyIncorporation,
-				incorporationForm: parsedData.hkEntityInfo?.incorporationForm,
-				annualReturn: parsedData.hkEntityInfo?.annualReturn,
-				companyArticles: parsedData.hkEntityInfo?.companyArticles
-			});
-		}
+		getKYCData().then((storedData) => {
+			if (storedData) {
+				form.setFieldsValue({
+					hkEntityName: storedData.hkEntityInfo?.hkEntityName || "",
+					companyWebsite: storedData.hkEntityInfo?.companyWebsite || "",
+					certificateNo: storedData.hkEntityInfo?.certificateNo || "",
+					commencementDate: storedData.hkEntityInfo?.commencementDate
+						? moment(storedData.hkEntityInfo?.commencementDate) // Convert date to moment
+						: null,
+					expiryDate: storedData.hkEntityInfo?.expiryDate
+						? moment(storedData.hkEntityInfo?.expiryDate) // Convert date to moment
+						: null,
+					registeredAddress: storedData.hkEntityInfo?.registeredAddress || "",
+					totalEmployees: storedData.hkEntityInfo?.totalEmployees || "",
+					businessRegistration: storedData.hkEntityInfo?.businessRegistration,
+					companyIncorporation: storedData.hkEntityInfo?.companyIncorporation,
+					incorporationForm: storedData.hkEntityInfo?.incorporationForm,
+					annualReturn: storedData.hkEntityInfo?.annualReturn,
+					companyArticles: storedData.hkEntityInfo?.companyArticles
+				});
+			}
+		});
 	}, [form]);
 
 	const getKYCData = async () => {
-		const res = await getKYCApi();
+		const res: KYCData = await getKYCApi();
 		setKycStatus(res.status || "unfilled");
+		return res.fields;
 	};
 
 	const saveFormData = async (values: FormValues) => {
-		const existingData = localStorage.getItem("data") || "";
-		const parsedData = existingData ? JSON.parse(existingData) : {};
-
 		const updatedData = {
-			...parsedData,
 			hkEntityInfo: values
 		};
 
-		await setKYCApi({ fields: updatedData, status: "unfilled" }).then(() => {
-			localStorage.setItem("data", JSON.stringify(updatedData));
-		});
+		await setKYCApi({ fields: updatedData, status: "unfilled", updateKeys: ["hkEntityInfo"] });
 	};
 
-	// Handle form submission
 	const onSubmit = async (values: FormValues) => {
 		if (!Object.values(uploadSuccess).every(success => success)) {
 			message.error("请确保所有文件上传成功 / Please ensure all files are successfully uploaded.");
 			return;
 		}
-		await saveFormData(values); // Save the form data to localStorage
+		await saveFormData(values);
 		navigate("/form/shareholder");
 	};
 
-	// Handle navigating to the previous step
 	const handlePrevStep = () => {
-		const values = form.getFieldsValue();
-		saveFormData(values); // Save the current form data
-		navigate("/form/companyBusiness"); // Navigate to the previous step
+		navigate("/form/companyBusiness");
 	};
 
-	// Handle form submission failure
 	const onFinishFailed = (errorInfo: any) => {
 		console.log("Failed:", errorInfo);
 	};
 
-	// Handle file upload
 	const onUploadFileChange = (fileType: string) => (event: { file: any }) => {
 		if (event.file.status === "done") {
 			setUploadSuccess(prev => ({ ...prev, [fileType]: true }));
@@ -116,7 +102,6 @@ const HKEntityInfo = () => {
 		}
 	};
 
-	// Alphanumeric validation
 	const validateAlphanumeric = (_: any, value: string) => {
 		const regex = /^[a-zA-Z0-9\s]*$/;
 		if (value && !regex.test(value)) {
