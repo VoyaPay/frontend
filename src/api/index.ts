@@ -70,16 +70,18 @@ class RequestHttp {
 			},
 			async (error: AxiosError) => {
 				const { response } = error;
-				console.log("response", response);
 				NProgress.done();
 				tryHideFullScreenLoading();
-				if (response?.status === 401 && !response?.request?.responseURL.includes("/auth/login")) {
-					store.dispatch(setToken(""));
-					message.error("您的会话已过期，请重新登录。");
-					window.location.hash = "/login";
+				if (response?.status === 401) {
+					if (!response?.request?.responseURL.includes("/auth/login")) {
+						store.dispatch(setToken(""));
+						message.error("您的会话已过期，请重新登录。");
+						window.location.hash = "/login";
+					} else {
+						checkStatus(response.status);
+					}
 					return Promise.reject(error);
-				}
-				if (response && response.status >= 400 && response.status < 500) {
+				} else if (response && response.status >= 400 && response.status < 500) {
 					message.error((response.data as ErrorResponse).message);
 				} else if (response && response.status >= 500) {
 					checkStatus(response.status);
