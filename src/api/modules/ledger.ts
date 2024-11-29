@@ -20,7 +20,6 @@ export const UserTransfersApi = () => {
 
 export const GetBalanceApi = () => {
 	const token = localStorage.getItem("access_token");
-	console.log("get balance Using token:", token);
 	if (!token) {
 		throw new Error("No token found. Please login first.");
 	}

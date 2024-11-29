@@ -8,15 +8,21 @@ import SetPasswordComponent from "./SetPassword";
 import logo from "@/assets/images/voya.png";
 import "./index.less";
 
-const LoginForm = (props: any) => {
+interface LoginFormProps {
+	loginRouterType: "login" | "forgotPassword" | "register" | "activation" | "setPassword";
+}
+
+const LoginForm = (props: LoginFormProps) => {
 	const { loginRouterType } = props;
 	const [form] = Form.useForm();
 	let loginType: number | string = "1";
 	loginType = Number(loginType);
 
 	useEffect(() => {
-		form.resetFields();
-	}, [loginRouterType]);
+		if (form) {
+			form.resetFields();
+		}
+	}, [loginRouterType, form]);
 
 	return (
 		<div className="loginform-container">
@@ -32,7 +38,7 @@ const LoginForm = (props: any) => {
 			) : loginRouterType === "activation" ? (
 				<ActivationComponent />
 			) : loginRouterType === "setPassword" ? (
-				<SetPasswordComponent />
+				<SetPasswordComponent form={form} />
 			) : null}
 		</div>
 	);

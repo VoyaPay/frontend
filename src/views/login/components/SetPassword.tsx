@@ -5,13 +5,13 @@ import { Form, Input, Button, message } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import { resetPasswordApi } from "@/api/modules/login";
 
-const SetNewPasswordComponent = () => {
+const SetNewPasswordComponent = (props: any) => {
+	const { form } = props;
 	const [email, setEmail] = useState<string>("");
 	const [token, setToken] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 	const emailParam = useUrlParams("email");
 	const tokenParam = useUrlParams("tk");
-	const [form] = Form.useForm();
 
 	const navigate = useNavigate();
 

@@ -1,4 +1,4 @@
-import { Form, Input, Button, FormInstance, message } from "antd";
+import { Form, Input, Button, message, FormInstance } from "antd";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
@@ -9,7 +9,15 @@ import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 
-const LoginComponent = ({ form, loginType }: { form: FormInstance; loginType: number }) => {
+interface LoginComponentProps {
+	setToken: (token: string) => void;
+	setTabsList: (tabs: any[]) => void;
+	form: FormInstance<any>;
+	loginType: number;
+}
+
+const LoginComponent = (props: LoginComponentProps) => {
+	const { setToken, setTabsList, form, loginType } = props;
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -31,7 +39,6 @@ const LoginComponent = ({ form, loginType }: { form: FormInstance; loginType: nu
 			if (loginForm.email) {
 				const kycResponse = await KYCStateApi(); // unreviewed underReview rejected
 				if (kycResponse.status === "approved") {
-					console.log(kycResponse.status);
 					message.success("登录成功！");
 					navigate("/proTable/account");
 					return;
