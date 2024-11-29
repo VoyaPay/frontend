@@ -33,7 +33,11 @@ const ActivationComponent = () => {
 			{activationStatus && (
 				<div className="activation-container">
 					<h1 className={activationStatus === "激活成功!" ? "activation-title" : "activation-fail"}>{activationStatus}</h1>
-					<SvgIcon name={activationStatus === "激活成功!" ? "success" : "fail"} />
+					<SvgIcon
+						className="activation-icon"
+						name={activationStatus === "激活成功!" ? "success" : "fail"}
+						iconStyle={{ width: "60px", height: "60px" }}
+					/>
 					<Button className="activation-button" size="large" onClick={() => navigate("/login")}>
 						返回登录
 					</Button>

@@ -2,22 +2,16 @@ import { useEffect, useState } from "react";
 import { Form, Input, Button, FormInstance, message } from "antd";
 import { getCaptchaApi, sendResetPasswordEmailApi } from "@/api/modules/login";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import useUrlParams from "@/hooks/useUrlParams";
 import { useNavigate } from "react-router-dom";
 import "./Captcha.less";
 
 const ForgotPasswordComponent = ({ form }: { form: FormInstance }) => {
-	const uuid = useUrlParams("uuid");
 	const [captcha, setCaptcha] = useState<string>();
 	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		handleCaptchaRefresh();
 	}, []);
-
-	useEffect(() => {
-		console.log(uuid, "uuid");
-	}, [uuid]);
 
 	const handleSendEmail = async () => {
 		const values = await form.validateFields();

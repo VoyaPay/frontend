@@ -15,8 +15,10 @@ const LoginForm = (props: any) => {
 	loginType = Number(loginType);
 
 	useEffect(() => {
-		form.resetFields();
-	}, [loginRouterType]);
+		if (form) {
+			form.resetFields();
+		}
+	}, [loginRouterType, form]);
 
 	return (
 		<div className="loginform-container">
@@ -32,7 +34,7 @@ const LoginForm = (props: any) => {
 			) : loginRouterType === "activation" ? (
 				<ActivationComponent />
 			) : loginRouterType === "setPassword" ? (
-				<SetPasswordComponent />
+				<SetPasswordComponent form={form} />
 			) : null}
 		</div>
 	);
