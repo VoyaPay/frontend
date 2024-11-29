@@ -65,9 +65,10 @@ class RequestHttp {
 			},
 			async (error: AxiosError) => {
 				const { response } = error;
+				console.log("response", response);
 				NProgress.done();
 				tryHideFullScreenLoading();
-				if (response?.status === 401) {
+				if (response?.status === 401 && !response?.request?.responseURL.includes("/auth/login")) {
 					store.dispatch(setToken(""));
 					message.error('您的会话已过期，请重新登录。');
 					window.location.hash = "/login";
