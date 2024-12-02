@@ -9,25 +9,25 @@ import { setToken } from "@/redux/modules/global/action";
 import { message } from "antd";
 import { store } from "@/redux";
 
-const axiosCanceler = new AxiosCanceler();
-
-const config = {
-	// 默认地址请求地址，可在 .env 开头文件中修改
-	baseURL: import.meta.env.VITE_API_URL as string,
-	// 设置超时时间（10s）
-	timeout: 10000
-	// 跨域时候允许携带凭证
-	// withCredentials: true
-};
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+	isGlobalLoading?: boolean;
+}
 
 interface ErrorResponse {
 	message: string;
 }
 
+const axiosCanceler = new AxiosCanceler();
+
+const config = {
+	baseURL: import.meta.env.VITE_API_URL as string,
+	timeout: 60000,
+	isGlobalLoading: true
+};
+
 class RequestHttp {
 	service: AxiosInstance;
 	public constructor(config: AxiosRequestConfig) {
-		// 实例化axios
 		this.service = axios.create(config);
 
 		/**
@@ -36,12 +36,10 @@ class RequestHttp {
 		 * token校验(JWT) : 接受服务器返回的token,存储到redux/本地储存当中
 		 */
 		this.service.interceptors.request.use(
-			(config: AxiosRequestConfig) => {
+			(config: CustomAxiosRequestConfig) => {
 				NProgress.start();
-				// * 将当前请求添加到 pending 中
 				axiosCanceler.addPending(config);
-				// * 如果当前请求不需要显示 loading,在api服务中通过指定的第三个参数: { headers: { noLoading: true } }来控制不显示loading，参见loginApi
-				config.headers!.noLoading || showFullScreenLoading();
+				config?.isGlobalLoading && showFullScreenLoading();
 				const token: string = store.getState().global.token;
 				return { ...config, headers: { ...config.headers, "x-access-token": token } };
 			},
@@ -55,7 +53,6 @@ class RequestHttp {
 		 *  服务器换返回信息 -> [拦截统一处理] -> 客户端JS获取到信息
 		 */
 		this.service.interceptors.response.use(
-
 			(response: AxiosResponse) => {
 				const { data, config } = response;
 				NProgress.done();
