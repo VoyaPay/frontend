@@ -1,5 +1,7 @@
 import { Navigate, useRoutes } from "react-router-dom";
 import Login from "@/views/login/index";
+import TermsAndConditions from "@/components/RegisterFiles/TermsAndConditions";
+import PrivacyPolicies from "@/components/RegisterFiles/PrivacyPolicies";
 
 // * 导入所有router
 const metaRouters = import.meta.globEager("./modules/*.tsx");
@@ -42,7 +44,14 @@ export const rootRouter: any = [
 		path: "/set-password",
 		element: <Login loginRouterType="setPassword" />
 	},
-
+	{
+		path: "/terms-and-conditions",
+		element: <TermsAndConditions />
+	},
+	{
+		path: "/privacy-policies",
+		element: <PrivacyPolicies />
+	},
 	...routerArray,
 	{
 		path: "*",
