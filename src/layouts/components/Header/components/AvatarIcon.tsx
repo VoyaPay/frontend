@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import PasswordModal from "./PasswordModal";
 import InfoModal from "./InfoModal";
-import avatar from "@/assets/images/avatar.png";
+import avatar from "@/assets/icons/avatar.svg";
 
 const AvatarIcon = (props: any) => {
 	const { setToken } = props;
@@ -69,7 +69,6 @@ const AvatarIcon = (props: any) => {
 		<>
 			<Dropdown overlay={menu} placement="bottom" arrow trigger={["click"]}>
 				<Avatar src={avatar} className="avatar" />
-				{/* <Avatar icon={<UserOutlined />} /> */}
 			</Dropdown>
 			<InfoModal innerRef={infoRef}></InfoModal>
 			<PasswordModal innerRef={passRef}></PasswordModal>
