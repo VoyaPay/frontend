@@ -6,7 +6,6 @@ import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
 import { AccountApi } from "@/api/modules/user";
-// import { triggerAsyncId } from "async_hooks";
 
 interface FormattedTransaction {
 	key: string;

@@ -2,12 +2,15 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"useDefineForClassFields": true,
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ESNext"
+		],
 		"allowJs": false,
 		"skipLibCheck": true,
 		"esModuleInterop": false,
 		"allowSyntheticDefaultImports": true,
-
 		/* Strict Type-Checking Options */
 		"strict": true /* Enable all strict type-checking options. */,
 		// "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
@@ -17,7 +20,6 @@
 		// "strictPropertyInitialization": true,  /* Enable strict checking of property initialization in classes. */
 		// "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
 		// "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
-
 		"forceConsistentCasingInFileNames": true,
 		"module": "ESNext",
 		"moduleResolution": "Node",
@@ -29,10 +31,25 @@
 		"baseUrl": "./",
 		// 模块名到基于 baseUrl的路径映射的列表。
 		"paths": {
-			"@": ["src"],
-			"@/*": ["src/*"]
+			"@": [
+				"src"
+			],
+			"@/*": [
+				"src/*"
+			]
 		}
 	},
-	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "vite.config.ts", "src/views/proTable/kycprocess", "src/views/form/kycprocess"],
-	"exclude": ["node_modules", "dist", "**/*.js"]
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.d.ts",
+		"src/**/*.tsx",
+		"vite.config.ts",
+		"src/views/proTable/kycprocess",
+		"src/views/form/kycprocess"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"**/*.js"
+	]
 }

@@ -6,7 +6,6 @@ import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import PasswordModal from "./PasswordModal";
-import InfoModal from "./InfoModal";
 import avatar from "@/assets/icons/avatar.svg";
 
 const AvatarIcon = (props: any) => {
@@ -17,7 +16,6 @@ const AvatarIcon = (props: any) => {
 		showModal: (params: { name: number }) => void;
 	}
 	const passRef = useRef<ModalProps>(null);
-	const infoRef = useRef<ModalProps>(null);
 
 	// 退出登录
 	const logout = () => {
@@ -70,7 +68,6 @@ const AvatarIcon = (props: any) => {
 			<Dropdown overlay={menu} placement="bottom" arrow trigger={["click"]}>
 				<Avatar src={avatar} className="avatar" />
 			</Dropdown>
-			<InfoModal innerRef={infoRef}></InfoModal>
 			<PasswordModal innerRef={passRef}></PasswordModal>
 		</>
 	);

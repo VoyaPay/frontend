@@ -14,7 +14,7 @@ import "moment/dist/locale/zh-cn";
 import "@/assets/stylesheets/vars.less";
 
 const App = (props: any) => {
-	const { language, assemblySize, themeConfig, setLanguage } = props;
+	const { language, themeConfig, setLanguage } = props;
 	const [i18nLocale, setI18nLocale] = useState(zhCN);
 
 	// 全局使用主题
@@ -43,7 +43,7 @@ const App = (props: any) => {
 
 	return (
 		<HashRouter>
-			<ConfigProvider locale={i18nLocale} componentSize={assemblySize}>
+			<ConfigProvider locale={i18nLocale}>
 				<AuthRouter>
 					<Router />
 				</AuthRouter>
