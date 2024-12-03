@@ -183,11 +183,9 @@ const PrepaidCard = () => {
 	};
 
 	const getBalance = async () => {
-		const [response, response2] = await Promise.all([GetBalanceApi(), GetTotalBalanceApi()]);
-		const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
-		const totalBalance = response2.totalBalance ? parseFloat(parseFloat(response2.totalBalance).toFixed(2)) : 0;
-		console.log(response, "balance");
-		console.log(response2, "totalBalance");
+		const [balanceResponse, totalBalanceResponse] = await Promise.all([GetBalanceApi(), GetTotalBalanceApi()]);
+		const balance = balanceResponse.currentBalance ? parseFloat(parseFloat(balanceResponse.currentBalance).toFixed(2)) : 0;
+		const totalBalance = totalBalanceResponse.totalBalance ? parseFloat(parseFloat(totalBalanceResponse.totalBalance).toFixed(2)) : 0;
 		setAccountBalance(balance);
 		setTotalBalance(totalBalance);
 	};
