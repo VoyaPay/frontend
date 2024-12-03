@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Input, Button, FormInstance, message } from "antd";
+import { Form, Input, Button, FormInstance, message, Checkbox } from "antd";
 import { getCaptchaApi, registerApi } from "@/api/modules/login";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import "./Captcha.less";
 const RegisterComponent = ({ form }: { form: FormInstance }) => {
 	const [captcha, setCaptcha] = useState<string>();
 	const [loading, setLoading] = useState<boolean>(false);
+	const [agree, setAgree] = useState<boolean>(false);
 
 	useEffect(() => {
 		handleCaptchaRefresh();
@@ -107,8 +108,33 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 						}
 					/>
 				</Form.Item>
+				<Form.Item name="agree" valuePropName="checked" style={{ minHeight: "50px" }}>
+					<Checkbox id="agree-checkbox" onChange={e => setAgree(e.target.checked)} />
+					<label> 我已阅读并同意 </label>
+					<span>
+						<a
+							onClick={e => {
+								e.stopPropagation();
+								window.open(`${window.location.origin}/#/terms-and-conditions`, "_blank");
+							}}
+						>
+							{" "}
+							Qbit General Terms and Conditions
+						</a>{" "}
+						和
+						<a
+							onClick={e => {
+								e.stopPropagation();
+								window.open(`${window.location.origin}/#/privacy-policies`, "_blank");
+							}}
+						>
+							{" "}
+							Privacy Policies
+						</a>
+					</span>
+				</Form.Item>
 				<Form.Item className="login-btn">
-					<Button type="primary" htmlType="submit" loading={loading} style={{ width: "100%" }}>
+					<Button type="primary" htmlType="submit" disabled={!agree} loading={loading} style={{ width: "100%" }}>
 						注册
 					</Button>
 				</Form.Item>
