@@ -31,6 +31,19 @@ export const GetBalanceApi = () => {
 	return http.get<ResultData>(PORT3 + "/Ledger/balance", undefined, { headers });
 };
 
+export const GetTotalBalanceApi = () => {
+	const token = localStorage.getItem("access_token");
+	if (!token) {
+		throw new Error("No token found. Please login first.");
+	}
+
+	const headers = {
+		Authorization: `Bearer ${token}` // 在请求头中添加 token
+	};
+
+	return http.get<ResultData>(PORT3 + "/cards/totalBalance", undefined, { headers });
+};
+
 export const LedgerCSVApi = async (req: SearchTransferRequest): Promise<void> => {
 	const token = localStorage.getItem("access_token");
 

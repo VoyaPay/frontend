@@ -3,13 +3,11 @@ import { AccountApi } from "@/api/modules/user";
 import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
-import accountbalance from "@/assets/images/accountbanlace.png";
-// import accountextra from "@/assets/images/accountextra.png";
-import canuse from "@/assets/images/canuse.png";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
-import { GetBalanceApi } from "@/api/modules/ledger";
+import { GetBalanceApi, GetTotalBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
+import SvgIcon from "@/components/svgIcon";
 
 interface BinData {
 	bin: string;
@@ -61,13 +59,14 @@ const PrepaidCard = () => {
 	const [bins, setbins] = useState<BinData[]>([]);
 
 	const [accountBalance, setAccountBalance] = useState(0);
-
+	const [totalBalance, setTotalBalance] = useState(0);
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 	const [cardNameSearch, setCardNameSearch] = useState("");
 	const [cardOwnerSearch, setCardOwnerSearch] = useState("");
 	const [cardNoSearch, setCardNoSearch] = useState("");
+	const iconStyle = { width: "32px", height: "32px", marginTop: "8px", color: "#0D99FF" };
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
@@ -137,14 +136,9 @@ const PrepaidCard = () => {
 					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode,
 					cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
 					partnerIdempotencyKey: card.partnerIdempotencyKey,
-					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
-						card.cardHolderLastName ? card.cardHolderLastName : "LM"
-					}`
+					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${card.cardHolderLastName ? card.cardHolderLastName : "LM"
+						}`
 				}));
-
-				console.log(formattedData);
-
-				console.log("final data" + formattedData);
 				setDataSource(formattedData);
 				setFilteredData(formattedData);
 			}
@@ -188,15 +182,11 @@ const PrepaidCard = () => {
 	};
 
 	const getBalance = async () => {
-		try {
-			const response = await GetBalanceApi();
-			console.log(response);
-			console.log("Full response:", response.currentBalance);
-			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
-			setAccountBalance(balance);
-		} catch (error) {
-			console.log("Cannot get balance of the account:", error);
-		}
+		const [balanceResponse, totalBalanceResponse] = await Promise.all([GetBalanceApi(), GetTotalBalanceApi()]);
+		const balance = balanceResponse.currentBalance ? parseFloat(parseFloat(balanceResponse.currentBalance).toFixed(2)) : 0;
+		const totalBalance = totalBalanceResponse.totalBalance ? parseFloat(parseFloat(totalBalanceResponse.totalBalance).toFixed(2)) : 0;
+		setAccountBalance(balance);
+		setTotalBalance(totalBalance);
 	};
 
 	const columns: any[] = [
@@ -249,12 +239,12 @@ const PrepaidCard = () => {
 				status === "Active"
 					? "活跃"
 					: status === "Inactive"
-					? "已冻结"
-					: status === "Closed"
-					? "已注销"
-					: status === "PreClose"
-					? "待注销"
-					: "N/A"
+						? "已冻结"
+						: status === "Closed"
+							? "已注销"
+							: status === "PreClose"
+								? "待注销"
+								: "N/A"
 		},
 		{
 			title: "余额",
@@ -410,15 +400,24 @@ const PrepaidCard = () => {
 					<div className="balanceWrap">
 						<span className="pre">沃易卡账户余额</span>
 						<div className="amountWrap">
-							<img src={accountbalance} className="accountIcons" alt="沃易卡账户余额" />
+							<SvgIcon name="account_balance" iconStyle={iconStyle} />
 							<span className="amount">${accountBalance}</span>
 						</div>
 					</div>
-
+					<div className="balanceWrap">
+						<span className="pre">卡内总余额</span>
+						<div className="amountWrap">
+							<SvgIcon
+								name="total_balance"
+								iconStyle={iconStyle}
+							/>
+							<span className="amount">${totalBalance}</span>
+						</div>
+					</div>
 					<div className="balanceWrap">
 						<span className="pre">剩余可用开卡数</span>
 						<div className="amountWrap">
-							<img src={canuse} className="accountIcons" alt="剩余可用开卡数" />
+							<SvgIcon name="cards_to_apply" iconStyle={iconStyle} />
 							<span className="amount">{totalCardNumber}</span>
 						</div>
 					</div>

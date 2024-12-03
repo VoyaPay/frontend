@@ -51,6 +51,7 @@ export interface Result {
 	card?: { number: string; alias: string };
 	transaction?: NewTransaction;
 	currentBalance?: string;
+	totalBalance?: string;
 	cvc?: string;
 	expiration?: string;
 	pan?: string;
