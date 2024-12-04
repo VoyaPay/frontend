@@ -1,8 +1,10 @@
 import React from "react";
+import "./index.less";
 
 const PrivacyPolicies = () => {
 	return (
-		<div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px" }}>
+		<div className="markdown-body">
+			<h1>VoyaPay Privacy Policies</h1>
 			<p>
 				This policy explains what the Client may expect from VoyaPay and what VoyaPay need from the Client in relation to personal
 				data provided by the Client. Please read this carefully as this policy is legally binding when the Client uses VoyaPay

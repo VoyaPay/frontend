@@ -46,8 +46,9 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 				labelCol={{ span: 5 }}
 				initialValues={{ remember: true }}
 				onFinish={handleRegister}
-				size="large"
+				size="middle"
 				autoComplete="off"
+				className="register-form"
 			>
 				<Form.Item name="fullName" validateTrigger="onBlur" rules={[{ required: true, message: `请输入姓名`, max: 40 }]}>
 					<Input placeholder="姓名" prefix={<UserOutlined />} />
@@ -108,7 +109,7 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 						}
 					/>
 				</Form.Item>
-				<Form.Item name="agree" valuePropName="checked" style={{ minHeight: "50px" }}>
+				<Form.Item valuePropName="checked" style={{ minHeight: "50px" }}>
 					<Checkbox id="agree-checkbox" onChange={e => setAgree(e.target.checked)} />
 					<label> 我已阅读并同意 </label>
 					<span>
@@ -119,7 +120,7 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 							}}
 						>
 							{" "}
-							Qbit General Terms and Conditions
+							General Terms and Conditions
 						</a>{" "}
 						和
 						<a
@@ -139,7 +140,7 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 					</Button>
 				</Form.Item>
 			</Form>
-			<div className="otherText-wrap">
+			<div className="otherText-wrap" style={{ marginTop: "0" }}>
 				<a
 					onClick={() => {
 						navigate("/login");
