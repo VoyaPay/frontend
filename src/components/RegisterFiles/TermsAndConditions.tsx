@@ -1,8 +1,9 @@
 import React from "react";
+import "./index.less";
 
 const TermsAndConditions = () => {
 	return (
-		<div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px" }}>
+		<div className="markdown-body">
 			<h1>VoyaPay General Terms and Conditions</h1>
 			<h2>General Terms</h2>
 			<h2>General</h2>

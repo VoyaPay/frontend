@@ -1,6 +1,20 @@
 .forgot-password-container,
 .register-container {
 	width: 100%;
+	.register-form {
+		.ant-form-item {
+			min-height: 50px !important;
+		}
+		.captcha-input {
+			.captcha-svg {
+				position: absolute;
+				top: -8px;
+				right: -2px;
+				height: 40px;
+				cursor: pointer;
+			}
+		}
+	}
 	.captcha-input {
 		.captcha-svg {
 			position: absolute;
