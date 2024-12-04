@@ -33,7 +33,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 			if (!access_token) {
 				throw new Error("No access token received");
 			}
-			setToken("access token is " + access_token);
+			setToken(access_token);
 			setTabsList([]);
 			localStorage.setItem("access_token", access_token);
 			if (loginForm.email) {

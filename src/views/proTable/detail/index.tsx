@@ -110,7 +110,6 @@ const Detail = () => {
 	// const [lastName, setLastName] = useState("last");
 
 	useEffect(() => {
-		console.log(cardData);
 		if (cardData.key) {
 			fetchCardInformation(cardData.key, setCardData);
 		}

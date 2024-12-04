@@ -203,36 +203,16 @@ const AddPrepaidCard = () => {
 			alias: cardName,
 			cardHolderFirstName: firstName,
 			cardHolderLastName: lastName,
-			// cardHolderAddressStreet: streetAddress,
-			// cardHolderAddressCity: city,
-			// cardHolderAddressState: state,
-			// cardHolderAddressPostalCode: zipcode,
-			// cardHolderAddressCountry: "USA",
 			cardBin: selectedCard
 		};
-		console.log("payload is " + payload);
-
-		try {
-			const response = await AddCardApi(payload);
-			console.log(response);
-			const formattedData = {
-				card: response.card,
-				transaction: response.transaction
-			};
-
-			console.log("transaction is " + formattedData.transaction?.status);
-
-			if (response) {
+		await AddCardApi(payload)
+			.then(() => {
+				message.success("申请已提交");
 				navigate("/applySuccess/index");
-			} else {
-				// Show error message
-				console.log("failed");
-				message.error("卡片申请失败");
-			}
-		} catch (error) {
-			// Handle any errors
-			message.error("沃易卡账户余额不足");
-		}
+			})
+			.catch(error => {
+				message.error(error);
+			});
 	};
 	const userInformation = async () => {
 		try {
@@ -292,13 +272,9 @@ const AddPrepaidCard = () => {
 
 	const handleOk = () => {
 		setConfirmLoading(true);
-		setTimeout(() => {
-			message.success("申请已提交");
-			setOpen(false);
-			setConfirmLoading(false);
-			// 调用你的提交函数，比如 handleSubmit()
-			handleSubmit();
-		}, 1000);
+		setOpen(false);
+		setConfirmLoading(false);
+		handleSubmit();
 	};
 
 	const handleCancel = () => {
