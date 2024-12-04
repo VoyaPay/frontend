@@ -19,6 +19,7 @@ interface ErrorResponse {
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 	isGlobalLoading?: boolean;
+	isToken?: boolean;
 }
 
 interface ErrorResponse {
@@ -30,7 +31,8 @@ const axiosCanceler = new AxiosCanceler();
 const config = {
 	baseURL: import.meta.env.VITE_API_URL as string,
 	timeout: 60000,
-	isGlobalLoading: true
+	isGlobalLoading: true,
+	isToken: true
 };
 
 class RequestHttp {
@@ -38,28 +40,23 @@ class RequestHttp {
 	public constructor(config: AxiosRequestConfig) {
 		this.service = axios.create(config);
 
-		/**
-		 * @description 请求拦截器
-		 * 客户端发送请求 -> [请求拦截器] -> 服务器
-		 * token校验(JWT) : 接受服务器返回的token,存储到redux/本地储存当中
-		 */
 		this.service.interceptors.request.use(
 			(config: CustomAxiosRequestConfig) => {
 				NProgress.start();
 				axiosCanceler.addPending(config);
 				config?.isGlobalLoading && showFullScreenLoading();
 				const token: string = store.getState().global.token;
-				return { ...config, headers: { ...config.headers, "x-access-token": token } };
+				if (config?.isToken) {
+					const Authorization = `Bearer ${token}`;
+					return { ...config, headers: { ...config.headers, Authorization } };
+				}
+				return { ...config };
 			},
 			(error: AxiosError) => {
 				return Promise.reject(error);
 			}
 		);
 
-		/**
-		 * @description 响应拦截器
-		 *  服务器换返回信息 -> [拦截统一处理] -> 客户端JS获取到信息
-		 */
 		this.service.interceptors.response.use(
 			(response: AxiosResponse) => {
 				const { data, config } = response;
@@ -82,20 +79,20 @@ class RequestHttp {
 						message.error("您的会话已过期，请重新登录。");
 						window.location.hash = "/login";
 					} else {
-						checkStatus(response.status);
+						return Promise.reject(checkStatus(response.status));
 					}
-					return Promise.reject(error);
 				} else if (response && response.status >= 400 && response.status < 500) {
 					message.error((response.data as ErrorResponse).message);
+					return Promise.reject((response.data as ErrorResponse).message);
 				} else if (response && response.status >= 500) {
-					checkStatus(response.status);
+					message.error((response.data as ErrorResponse).message);
+					return Promise.reject(checkStatus(response.status));
 				} else if (!window.navigator.onLine) window.location.hash = "/500";
 				return Promise.reject(error);
 			}
 		);
 	}
 
-	// * 常用请求方法封装
 	get<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
 		return this.service.get(url, { params, ..._object });
 	}

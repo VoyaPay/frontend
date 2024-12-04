@@ -19,41 +19,13 @@ interface CardData {
 }
 
 export const CardInformationApi = (id: string) => {
-	const token = localStorage.getItem("access_token");
-	if (!token) {
-		throw new Error("No token found. Please login first.");
-	}
-
-	const headers = {
-		Authorization: `Bearer ${token}`
-	};
-
-	return http.get<ResultData>(PORT3 + "/Cards/" + id + "/details", undefined, { headers });
+	return http.get<ResultData>(PORT3 + "/Cards/" + id + "/details", undefined);
 };
 
 export const CardbinApi = () => {
-	const token = localStorage.getItem("access_token");
-	if (!token) {
-		throw new Error("No token found. Please login first.");
-	}
-
-	const headers = {
-		Authorization: `Bearer ${token}`
-	};
-
-	return http.get<ResultData>(PORT3 + "/Cards/bins", undefined, { headers });
+	return http.get<ResultData>(PORT3 + "/Cards/bins", undefined);
 };
 
 export const ChangeCardInformationApi = (id: string, params: CardData) => {
-	console.log(params);
-	const token = localStorage.getItem("access_token");
-	if (!token) {
-		throw new Error("No token found. Please login first.");
-	}
-
-	const headers = {
-		Authorization: `Bearer ${token}`
-	};
-
-	return http.patch<ResultData>(PORT3 + "/Cards/" + id, params, { headers });
+	return http.patch<ResultData>(PORT3 + "/Cards/" + id, params);
 };

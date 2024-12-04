@@ -7,7 +7,6 @@ import { updateCollapse } from "@/redux/modules/menu/action";
 import { connect } from "react-redux";
 import LayoutMenu from "./components/Menu/index";
 import LayoutHeader from "./components/Header";
-import LayoutTabs from "./components/Tabs";
 import LayoutFooter from "./components/Footer";
 import "./index.less";
 
@@ -45,7 +44,6 @@ const LayoutIndex = (props: any) => {
 			</Sider>
 			<Layout>
 				<LayoutHeader></LayoutHeader>
-				<LayoutTabs></LayoutTabs>
 				<Content>
 					<Outlet></Outlet>
 				</Content>

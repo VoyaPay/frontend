@@ -1,9 +1,8 @@
 import { Button, Result } from "antd";
 import { useNavigate } from "react-router-dom";
-import { HOME_URL} from "@/config/config";
+import { HOME_URL } from "@/config/config";
 import "./index.less";
-import checkImage from "@/assets/images/check.png"
-// import questionImage from "@/assets/images/avatar.png"
+import SvgIcon from "@/components/svgIcon";
 
 const NotAuth = () => {
 	const navigate = useNavigate();
@@ -12,9 +11,8 @@ const NotAuth = () => {
 	};
 	return (
 		<Result
-			icon={<img src={checkImage} alt="welcome" style={{ width: '100px', height: '100px' }} />} 
+			icon={<SvgIcon name="success" iconStyle={{ width: "100px", height: "100px" }} />}
 			title="Welcome to VoyaPay"
-			
 			extra={
 				<Button type="primary" onClick={goHome}>
 					Back Home
