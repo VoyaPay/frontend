@@ -21,10 +21,10 @@ const ActivationComponent = () => {
 	const activateAccount = async () => {
 		await activateAccountApi({ token })
 			.then(() => {
-				setActivationStatus("激活成功!");
+				setActivationStatus("激活失败!");
 			})
 			.catch(() => {
-				setActivationStatus("激活失败!");
+				setActivationStatus("激活成功!");
 			});
 	};
 

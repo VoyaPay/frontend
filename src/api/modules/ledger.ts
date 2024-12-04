@@ -1,6 +1,5 @@
 import { PORT3 } from "@/api/config/servicePort";
 import { ResultData, SearchTransferRequest } from "@/api/interface/index";
-import axios, { AxiosResponse } from "axios";
 import http from "@/api";
 
 // * 获取按钮权限
@@ -17,19 +16,23 @@ export const GetTotalBalanceApi = () => {
 };
 
 export const LedgerCSVApi = async (req: SearchTransferRequest): Promise<void> => {
-	try {
-		const response: AxiosResponse<Blob> = await axios.post<Blob>(import.meta.env.VITE_API_URL + "/ledger/csv", req, {
+	console.log(req, "req");
+	return http
+		.post<Blob>(PORT3 + "/ledger/csv", req, {
 			responseType: "blob"
+		})
+		.then(response => {
+			// @ts-ignore
+			const url = window.URL.createObjectURL(response);
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "transfers.csv");
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		})
+		.catch(error => {
+			console.error("Error downloading the CSV file:", error);
+			throw new Error("Failed to download CSV file.");
 		});
-		const url = window.URL.createObjectURL(response.data);
-		const link = document.createElement("a");
-		link.href = url;
-		link.setAttribute("download", "transfers.csv");
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	} catch (error) {
-		console.error("Error downloading the CSV file:", error);
-		throw new Error("Failed to download CSV file.");
-	}
 };
