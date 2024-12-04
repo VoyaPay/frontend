@@ -16,7 +16,6 @@ export const GetTotalBalanceApi = () => {
 };
 
 export const LedgerCSVApi = async (req: SearchTransferRequest): Promise<void> => {
-	console.log(req, "req");
 	return http
 		.post<Blob>(PORT3 + "/ledger/csv", req, {
 			responseType: "blob"
