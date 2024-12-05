@@ -10,8 +10,6 @@ import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 
 interface LoginComponentProps {
-	setToken: (token: string) => void;
-	setTabsList: (tabs: any[]) => void;
 	form: FormInstance<any>;
 	loginType: number;
 }
