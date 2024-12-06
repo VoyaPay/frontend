@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import back from "@/assets/images/return.png";
-import { NavLink } from "react-router-dom";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
+import KycTitleNotification from "../kycTitleNotification";
+import KycNav from "../kycNav";
+import { states } from "@/routers/utils/dict";
 
 interface FormValues {
 	usEntityName: string;
@@ -120,32 +121,11 @@ const UsEntityInfo = () => {
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
-				<div className="nav">
-					<NavLink to="/login" className="myAccount">
-						<img src={back} alt="" className="returnIcon" />
-						VoyaPay{" "}
-					</NavLink>
-					-&gt; KYC 填写
-				</div>
-				<div className="chargeTips">
-					<div className="title">VoyaPay入驻企业合规尽职调查表</div>
-					<div className="title">VoyaPay Compliance & KYC Form</div>
-					<div className="content">
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
-						</span>
-					</div>
-				</div>
+				<KycNav />
+				<KycTitleNotification />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">入驻企业美国主体主要信息</div>
-						<div className="title">US Entity Information</div>
-
+						<div className="title">入驻企业美国主体主要信息 / US Entity Information</div>
 						<Form
 							form={form}
 							name="usEntityForm"
@@ -208,9 +188,15 @@ const UsEntityInfo = () => {
 							<Form.Item
 								name="usEntityRegisteredState"
 								label="美国主体注册州 / US Entity Registered State:"
-								rules={[{ required: true, message: "请输入美国主体注册州 / Please enter US Entity Registered State" }]}
+								rules={[{ required: true, message: "请选择美国主体注册州 / Please select the US Entity Registered State" }]}
 							>
-								<Input placeholder="请输入美国主体注册州 / Please enter US Entity Registered State" />
+								<Select placeholder="请选择美国主体注册州 / Select US Entity Registered State" showSearch>
+									{states.map(state => (
+										<Option key={state} value={state}>
+											{state}
+										</Option>
+									))}
+								</Select>
 							</Form.Item>
 
 							<Form.Item
@@ -313,7 +299,6 @@ const UsEntityInfo = () => {
 								label="公司章程 / Operating Agreement:"
 								valuePropName="fileList"
 								getValueFromEvent={e => e?.fileList ?? []}
-								rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 							>
 								<Upload
 									customRequest={async ({ file, onSuccess, onError }) => {

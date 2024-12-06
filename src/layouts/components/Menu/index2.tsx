@@ -98,7 +98,6 @@ const LayoutMenu = (props: any) => {
 			setMenuListAction(menu2);
 		} finally {
 			setLoading(false);
-			console.log(pathname, "pathname");
 		}
 	};
 	useEffect(() => {

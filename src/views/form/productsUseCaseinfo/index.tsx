@@ -105,8 +105,7 @@ const ProductsUseCaseInfo = () => {
 				</div>
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">开通场景信息</div>
-						<div className="title">Products Use Case Information</div>
+						<div className="title">开通场景信息 / Products Use Case Information</div>
 						<Form
 							form={form}
 							name="productUseForm"

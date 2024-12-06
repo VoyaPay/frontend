@@ -81,8 +81,8 @@ const formRouter: Array<RouteObject> = [
 				element: lazyLoad(React.lazy(() => import("@/views/form/chineseParentCompanyinfo"))),
 				meta: {
 					requiresAuth: false,
-					title: "入驻企业中国母公司主要信息",
-					key: "Chinese Parent Company Information"
+					title: "入住企业母公司主要信息",
+					key: "Parent Company Information"
 				}
 			},
 			{

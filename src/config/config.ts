@@ -103,7 +103,7 @@ export const menu2: any = [
 	},
 	{
 		icon: "AppstoreOutlined",
-		title: "境外入住企业主体信息",
+		title: "境外入驻企业主体信息",
 		path: "/form/hkEntityContact",
 		hide: false
 	},
@@ -122,7 +122,7 @@ export const menu2: any = [
 	},
 	{
 		icon: "AppstoreOutlined",
-		title: "入驻企业中国母公司主要信息",
+		title: "入驻企业母公司主要信息",
 		path: "/form/chinesecompany",
 		hide: false
 	}

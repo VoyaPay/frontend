@@ -2,13 +2,13 @@ import { Button, Form, Input, InputNumber, DatePicker, Upload, message } from "a
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
-import back from "@/assets/images/return.png";
-import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
+import KycTitleNotification from "../kycTitleNotification";
+import KycNav from "../kycNav";
 
 interface FormValues {
 	hkEntityName: string;
@@ -113,33 +113,11 @@ const HKEntityInfo = () => {
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
-				<div className="nav">
-					<NavLink to="/login" className="myAccount">
-						<img src={back} alt="" className="returnIcon" />
-						VoyaPay{" "}
-					</NavLink>
-					-&gt; KYC 填写
-				</div>
-				<div className="chargeTips">
-					<div className="title">VoyaPay入驻企业合规尽职调查表</div>
-					<div className="title">VoyaPay Compliance & KYC Form</div>
-
-					<div className="content">
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
-						</span>
-					</div>
-				</div>
+				<KycNav />
+				<KycTitleNotification />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">入驻企业香港主体主要信息</div>
-						<div className="title">HK Entity Information</div>
-
+						<div className="title">入驻企业香港主体主要信息 / HK Entity Information</div>
 						<Form
 							form={form}
 							name="hkEntityForm"
@@ -161,7 +139,7 @@ const HKEntityInfo = () => {
 
 							<Form.Item
 								name="companyWebsite"
-								label="入网企业企业网站链接 / Company Website:"
+								label="企业网站链接 / Company Website:"
 								rules={[{ required: true, message: "请输入公司网站链接 / Please enter the website link" }]}
 							>
 								<Input placeholder="请输入公司网站链接 / Please enter company website" />

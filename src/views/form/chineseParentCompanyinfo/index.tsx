@@ -2,17 +2,19 @@ import { Button, Form, Input, DatePicker, Upload, Modal, message, Select, Checkb
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
-import back from "@/assets/images/return.png";
-import { NavLink } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
+import KycTitleNotification from "../kycTitleNotification";
+import KycNav from "../kycNav";
 interface FormValues {
 	companyName: string;
 	creditCode: string;
 	companyType: string;
+	registeredAddress: string;
+	operatingAddress: string;
 	establishmentDate: any;
 	licenseExpiryDate: any;
 	legalRepresentative: string;
@@ -59,7 +61,9 @@ const ChineseParentCompanyInfo = () => {
 			establishmentDate: values.establishmentDate,
 			licenseExpiryDate: values.licenseExpiryDate,
 			legalRepresentative: values.legalRepresentative,
-			businessLicense: values.businessLicense
+			businessLicense: values.businessLicense,
+			registeredAddress: values.registeredAddress,
+			operatingAddress: values.operatingAddress
 		};
 
 		refCombinedPayload.current = {
@@ -96,32 +100,11 @@ const ChineseParentCompanyInfo = () => {
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
-				<div className="nav">
-					<NavLink to="/login" className="myAccount">
-						<img src={back} alt="" className="returnIcon" />
-						VoyaPay{" "}
-					</NavLink>
-					-&gt; KYC 填写
-				</div>
-				<div className="chargeTips">
-					<div className="title">VoyaPay入驻企业合规尽职调查表</div>
-					<div className="title">VoyaPay Compliance & KYC Form</div>
-
-					<div className="content">
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
-						</span>
-					</div>
-				</div>
+				<KycNav />
+				<KycTitleNotification />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">入驻企业中国母公司主要信息</div>
-						<div className="title">Chinese Parent Company Information</div>
+						<div className="title">入住企业母公司主要信息 / Parent Company Information</div>
 
 						<Form
 							form={form}
@@ -136,17 +119,6 @@ const ChineseParentCompanyInfo = () => {
 								rules={[{ message: "请输入企业名称 / Please enter the company name" }]}
 							>
 								<Input placeholder="请输入企业名称 / Please enter the company name" />
-							</Form.Item>
-
-							<Form.Item
-								name="creditCode"
-								label="统一社会信用代码（18位数字及字母）/ Unified Social Credit Code (18 digits/letters):"
-								rules={[
-									{ message: "请输入统一社会信用代码 / Please enter the unified social credit code" },
-									{ pattern: /^[A-Za-z0-9]{18}$/, message: "代码应为18位字母和数字 / The code should be 18 characters" }
-								]}
-							>
-								<Input placeholder="请输入统一社会信用代码 / Please enter the unified social credit code" />
 							</Form.Item>
 
 							<Form.Item
@@ -170,10 +142,6 @@ const ChineseParentCompanyInfo = () => {
 								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
 							</Form.Item>
 
-							<Form.Item name="licenseExpiryDate" label="执照有效期至 / License Expiry Date:">
-								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
-							</Form.Item>
-
 							<Form.Item
 								name="legalRepresentative"
 								label="法定代表人 / Legal Representative:"
@@ -181,10 +149,40 @@ const ChineseParentCompanyInfo = () => {
 							>
 								<Input placeholder="请输入法定代表人姓名 / Please enter the legal representative name" />
 							</Form.Item>
+							<Form.Item
+								name="registeredAddress"
+								label="企业注册地址 / Company Registered Location:"
+								rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
+							>
+								<Input placeholder="请输入企业注册地址 / Please enter the registered address" />
+							</Form.Item>
+
+							<Form.Item
+								name="operatingAddress"
+								label="企业运营地址 / Company Operating Location:"
+								rules={[{ required: true, message: "请输入运营地址 / Please enter operating address" }]}
+							>
+								<Input placeholder="请输入企业运营地址 / Please enter the operating address" />
+							</Form.Item>
+
+							<Form.Item
+								name="creditCode"
+								label="统一社会信用代码（18位数字及字母）/ Unified Social Credit Code (18 digits/letters):"
+								rules={[
+									{ message: "请输入统一社会信用代码 / Please enter the unified social credit code" },
+									{ pattern: /^[A-Za-z0-9]{18}$/, message: "代码应为18位字母和数字 / The code should be 18 characters" }
+								]}
+							>
+								<Input placeholder="请输入统一社会信用代码 / Please enter the unified social credit code" />
+							</Form.Item>
+
+							<Form.Item name="licenseExpiryDate" label="执照有效期至 / License Expiry Date:">
+								<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
+							</Form.Item>
 
 							<Form.Item
 								name="businessLicense"
-								label="中国关联公司营业执照 / Chinese Affiliate Company Business License:"
+								label="母公司营业执照/Parent Company Business License:"
 								valuePropName="fileList"
 								getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 							>
