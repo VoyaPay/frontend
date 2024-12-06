@@ -107,7 +107,13 @@ const ProductsUseCaseInfo = () => {
 					<div className="accountInfo">
 						<div className="title">开通场景信息</div>
 						<div className="title">Products Use Case Information</div>
-						<Form form={form} name="productUseForm" layout="vertical" onFinish={onSubmit} disabled={kycStatus === "approved"}>
+						<Form
+							form={form}
+							name="productUseForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
+						>
 							<Form.Item
 								name="requestedProducts"
 								label="拟开通产品服务 / Requested Products:"

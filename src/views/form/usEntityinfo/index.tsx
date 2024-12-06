@@ -146,7 +146,13 @@ const UsEntityInfo = () => {
 						<div className="title">入驻企业美国主体主要信息</div>
 						<div className="title">US Entity Information</div>
 
-						<Form form={form} name="usEntityForm" layout="vertical" onFinish={onSubmit} disabled={kycStatus === "approved"}>
+						<Form
+							form={form}
+							name="usEntityForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
+						>
 							<Form.Item
 								name="usEntityName"
 								label="美国主体全称 / US Entity Legal Name:"

@@ -97,7 +97,7 @@ const CompanyContractInfo = () => {
 							name="companyContractForm"
 							layout="vertical"
 							onFinish={onSubmit}
-							disabled={kycStatus === "approved"}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">

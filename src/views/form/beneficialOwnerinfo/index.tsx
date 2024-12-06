@@ -123,7 +123,7 @@ const BeneficialOwnerInfo = () => {
 							name="beneficialOwnerForm"
 							layout="vertical"
 							onFinish={onSubmit}
-							disabled={kycStatus === "approved"}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 							onValuesChange={(_, allValues) => {
 								const totalOwnershipPercentage = allValues.beneficialOwners
 									? allValues.beneficialOwners.reduce((sum: number, owner: any) => {

@@ -123,7 +123,13 @@ const ChineseParentCompanyInfo = () => {
 						<div className="title">入驻企业中国母公司主要信息</div>
 						<div className="title">Chinese Parent Company Information</div>
 
-						<Form form={form} name="companyInfoForm" layout="vertical" onFinish={onSubmit} disabled={kycStatus === "approved"}>
+						<Form
+							form={form}
+							name="companyInfoForm"
+							layout="vertical"
+							onFinish={onSubmit}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
+						>
 							<Form.Item
 								name="companyName"
 								label="企业名称 / Company Name:"

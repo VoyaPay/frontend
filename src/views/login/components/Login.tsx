@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/ico
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
-import { KYCStateApi } from "@/api/modules/kyc";
+import { getKYCApi } from "@/api/modules/kyc";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
@@ -36,7 +36,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 			dispatch(setTabsList([]));
 			localStorage.setItem("access_token", access_token);
 			if (loginForm.email) {
-				const kycResponse = await KYCStateApi(); // unreviewed underReview rejected
+				const kycResponse = await getKYCApi(); // approved unfilled underReview rejected
 				if (kycResponse.status === "approved") {
 					message.success("登录成功！");
 					navigate("/proTable/account");

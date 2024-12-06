@@ -98,7 +98,7 @@ const CompanyBusinessInfo = () => {
 							name="companyBusinessInfo"
 							layout="vertical"
 							onFinish={onSubmit}
-							disabled={kycStatus === "approved"}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
 							<Form.Item
 								name="industry"

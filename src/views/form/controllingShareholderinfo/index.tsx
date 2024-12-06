@@ -114,7 +114,7 @@ const ControllingShareholderInfo = () => {
 							name="controllingShareholderForm"
 							layout="vertical"
 							onFinish={onSubmit}
-							disabled={kycStatus === "approved"}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
 							<Form.List name="shareholders">
 								{(fields, { add, remove }) => (

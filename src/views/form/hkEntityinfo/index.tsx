@@ -146,7 +146,7 @@ const HKEntityInfo = () => {
 							layout="vertical"
 							onFinish={onSubmit}
 							onFinishFailed={onFinishFailed}
-							disabled={kycStatus === "approved"}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
 							<Form.Item
 								name="hkEntityName"
