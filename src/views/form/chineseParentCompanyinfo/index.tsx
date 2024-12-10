@@ -72,7 +72,7 @@ const ChineseParentCompanyInfo = () => {
 		setOpen(true);
 	};
 	const handlePrevStep = () => {
-		navigate("/form/beneficical");
+		navigate("/company");
 	};
 	const onUploadFileChange = (event: { file: any }) => {
 		if (event.file.status === "done") {
@@ -104,13 +104,14 @@ const ChineseParentCompanyInfo = () => {
 				<KycTitleNotification />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">入住企业母公司主要信息 / Parent Company Information</div>
+						<div className="title">入住企业母公司信息 / Parent Company Information</div>
 
 						<Form
 							form={form}
 							name="companyInfoForm"
 							layout="vertical"
 							onFinish={onSubmit}
+							className="chinese-parent-company-info-form"
 							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
 							<Form.Item

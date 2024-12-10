@@ -118,7 +118,7 @@ const CompanyBusinessInfo = () => {
 							</Form.Item>
 							<Form.Item
 								name="isUSEntity"
-								label="请选择入驻境外主体的所属的国家和地区 / Please select the country or region where the overseas entity is located:"
+								label="请选择入驻境外的所属的国家和地区 / Please select the country or region where the overseas entity is located:"
 								rules={[{ required: true, message: "请选择一个选项 / Please select an option" }]}
 							>
 								<Radio.Group>

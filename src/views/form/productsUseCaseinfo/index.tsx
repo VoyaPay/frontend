@@ -74,10 +74,6 @@ const ProductsUseCaseInfo = () => {
 		navigate("/form/companyBusiness");
 	};
 
-	const handlePrevStep = () => {
-		navigate("/company");
-	};
-
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
@@ -188,11 +184,7 @@ const ProductsUseCaseInfo = () => {
 							)}
 
 							<div className="btns">
-								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
-									上一步 / Prev Step
-								</Button>
-
-								<Button type="primary" htmlType="submit">
+								<Button type="primary" htmlType="submit" style={{ marginLeft: "0px" }}>
 									下一步 / Next Step
 								</Button>
 							</div>

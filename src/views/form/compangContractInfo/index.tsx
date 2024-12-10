@@ -57,8 +57,12 @@ const CompanyContractInfo = () => {
 			status: "unfilled",
 			updateKeys: ["CompanyContractInfo"]
 		}).then(() => {
-			navigate("/form/product");
+			navigate("/form/chinesecompany");
 		});
+	};
+
+	const handlePrevStep = () => {
+		navigate("/form/beneficical");
 	};
 
 	return (
@@ -80,7 +84,7 @@ const CompanyContractInfo = () => {
 							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">
-								<div className="left">
+								<div className="left" style={{ alignItems: "initial" }}>
 									<Form.Item
 										name="contactName"
 										label="负责人姓名 / Representative Name:"
@@ -115,6 +119,9 @@ const CompanyContractInfo = () => {
 								</div>
 							</div>
 							<div className="btns">
+								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>

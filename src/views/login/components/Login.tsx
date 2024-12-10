@@ -42,7 +42,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 					navigate("/proTable/account");
 					return;
 				} else if (kycResponse.status === "unfilled") {
-					navigate("/company");
+					navigate("/form/product");
 					return;
 				} else {
 					navigate("/form/kycprocess");

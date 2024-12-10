@@ -23,6 +23,7 @@ interface FormValues {
 	incorporationForm: any;
 	annualReturn: any;
 	companyArticles: any;
+	hkEntityOperatingAddress: string;
 }
 
 const HKEntityInfo = () => {
@@ -51,6 +52,7 @@ const HKEntityInfo = () => {
 						? moment(storedData.hkEntityInfo?.expiryDate) // Convert date to moment
 						: null,
 					registeredAddress: storedData.hkEntityInfo?.registeredAddress || "",
+					hkEntityOperatingAddress: storedData.hkEntityInfo?.hkEntityOperatingAddress || "",
 					totalEmployees: storedData.hkEntityInfo?.totalEmployees || "",
 					businessRegistration: storedData.hkEntityInfo?.businessRegistration,
 					companyIncorporation: storedData.hkEntityInfo?.companyIncorporation,
@@ -117,7 +119,7 @@ const HKEntityInfo = () => {
 				<KycTitleNotification />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">入驻企业香港主体主要信息 / HK Entity Information</div>
+						<div className="title">入驻企业香港主体信息 / HK Entity Information</div>
 						<Form
 							form={form}
 							name="hkEntityForm"
@@ -178,6 +180,14 @@ const HKEntityInfo = () => {
 								rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
 							>
 								<Input placeholder="请输入香港主体注册地址 / Please enter the registered address" />
+							</Form.Item>
+
+							<Form.Item
+								name="hkEntityOperatingAddress"
+								label="香港主体运营地址 / HK Entity Operating Address:"
+								rules={[{ required: true, message: "请输入香港主体运营地址 / Please enter HK Entity Operating Address" }]}
+							>
+								<Input placeholder="请输入香港主体运营地址 / Please enter HK Entity Operating Address" />
 							</Form.Item>
 
 							<Form.Item
