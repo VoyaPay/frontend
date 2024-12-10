@@ -12,13 +12,12 @@ import {
 	message,
 	Tooltip,
 	Select,
-	DatePicker,
 	Divider
 } from "antd";
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
@@ -46,6 +45,7 @@ const BeneficialOwnerInfo = () => {
 
 	useEffect(() => {
 		getKYCData().then(storedData => {
+			refStoredData.current = storedData;
 			if (storedData?.beneficialOwnerInfo?.beneficialOwners) {
 				const beneficialOwners = storedData.beneficialOwnerInfo.beneficialOwners.map(
 					(owner: { expirationDate: moment.MomentInput }) => ({
@@ -62,7 +62,7 @@ const BeneficialOwnerInfo = () => {
 
 	const handleOk = async () => {
 		setOpen(false);
-		navigate("/form/chinesecompany");
+		navigate("/company");
 	};
 
 	const handleOwnershipChange = (value: number) => {
@@ -82,7 +82,7 @@ const BeneficialOwnerInfo = () => {
 				beneficialOwners: values.beneficialOwners
 			}
 		};
-		if (values.beneficialOwners.length < 1) {
+		if (values.beneficialOwners?.length < 1) {
 			message.error(
 				"需要填写所有直接或者间接拥有25%及以上公司股权的受益人信息 / Please provide information for all beneficial owners who directly or indirectly own 25% or more of the company's shares or voting rights."
 			);
@@ -133,10 +133,10 @@ const BeneficialOwnerInfo = () => {
 						>
 							<Form.List name="beneficialOwners">
 								{(fields, { add, remove }) => (
-									<>
+									<Fragment>
 										{fields.map(({ key, name, ...restField }, index) => (
-											<>
-												<Space key={key} style={{ display: "flex", marginBottom: 16 }} align="baseline">
+											<Fragment key={key}>
+												<Space style={{ display: "flex", marginBottom: 16 }} align="baseline">
 													<Row gutter={[16, 16]} style={{ width: "100%" }}>
 														<Col span={12}>
 															<Form.Item
@@ -213,36 +213,11 @@ const BeneficialOwnerInfo = () => {
 														<Col span={12}>
 															<Form.Item
 																{...restField}
-																name={[name, "expirationDate"]}
-																label="证件有效期 / Expiration Date:"
-																rules={[{ required: true, message: "请输入证件有效期 / Please enter expiration date" }]}
-															>
-																<DatePicker
-																	placeholder="请输入证件有效期 / Please enter expiration date"
-																	style={{ width: "100%" }}
-																/>
-															</Form.Item>
-														</Col>
-
-														<Col span={12}>
-															<Form.Item
-																{...restField}
-																name={[name, "issuingCountry"]}
-																label="证件发放国家 / ID Issuing Country:"
-																rules={[{ required: true, message: "请输入证件发放国家 / Please enter issuing country" }]}
-															>
-																<Input placeholder="请输入证件发放国家 / Please enter issuing country" />
-															</Form.Item>
-														</Col>
-
-														<Col span={12}>
-															<Form.Item
-																{...restField}
 																name={[name, "ssnTin"]}
-																label="SSN / TIN:"
+																label="SSN / ITIN:"
 																rules={[{ required: false, message: "请输入SSN / TIN / Please enter SSN / TIN" }]}
 															>
-																<Input placeholder="请输入SSN / TIN / Please enter SSN / TIN" />
+																<Input placeholder="请输入SSN / ITIN / Please enter SSN / ITIN" />
 															</Form.Item>
 														</Col>
 
@@ -276,7 +251,7 @@ const BeneficialOwnerInfo = () => {
 																name={[name, "uploadFile"]}
 																label="持股25%以上股东护照:"
 																valuePropName="fileList"
-																getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)} // 确保文件列表正确处理
+																getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 																rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
 															>
 																<Upload
@@ -321,8 +296,8 @@ const BeneficialOwnerInfo = () => {
 														</Tooltip>
 													</Col>
 												</Space>
-												{index < fields.length - 1 && <Divider />}
-											</>
+												{index < fields.length - 1 && <Divider key={`divider-${index}`} />}
+											</Fragment>
 										))}
 
 										{fields.length < 4 && (
@@ -340,7 +315,7 @@ const BeneficialOwnerInfo = () => {
 												</span>
 											</Form.Item>
 										)}
-									</>
+									</Fragment>
 								)}
 							</Form.List>
 
@@ -356,7 +331,7 @@ const BeneficialOwnerInfo = () => {
 									}
 								]}
 							>
-								<Checkbox>
+								<Checkbox aria-hidden="true">
 									<p>
 										<span style={{ color: "red", marginRight: "10px" }}>*</span>
 										我确认我已完整如实填写所有直接或者间接拥有25%及以上公司股权或表决权的受益人信息

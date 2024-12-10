@@ -125,7 +125,7 @@ const UsEntityInfo = () => {
 				<KycTitleNotification />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">入驻企业美国主体主要信息 / US Entity Information</div>
+						<div className="title">入驻企业美国主体信息 / US Entity Information</div>
 						<Form
 							form={form}
 							name="usEntityForm"
