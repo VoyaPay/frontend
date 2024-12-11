@@ -129,21 +129,21 @@ const PrepaidCard = () => {
 
 			if (Array.isArray(response)) {
 				const formattedData = response.map(card => ({
-					key: card.id,
-					cardName: card.alias,
+					key: card.id || "",
+					cardName: card.alias || "",
 					cardOwner: Auth ? Auth : "NA",
-					cardGroup: card.network,
-					cardNo: card.number,
-					cardStatus: card.status,
-					balance: card.balance,
-					createCardTime: formatDate(card.createdAt),
-					updateCardTime: formatDate(card.updatedAt),
-					cardHolderAddressStreet: card.cardHolderAddressStreet,
-					cardHolderAddressCity: card.cardHolderAddressCity,
-					cardHolderAddressState: card.cardHolderAddressState,
-					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode,
-					cardHolderAddressCountry: card.cardHolderAddressPostalCountry,
-					partnerIdempotencyKey: card.partnerIdempotencyKey,
+					cardGroup: card.network || "",
+					cardNo: card.number || "",
+					cardStatus: card.status || "",
+					balance: card.balance || "",
+					createCardTime: formatDate(card.createdAt) || "",
+					updateCardTime: formatDate(card.updatedAt) || "",
+					cardHolderAddressStreet: card.cardHolderAddressStreet || "",
+					cardHolderAddressCity: card.cardHolderAddressCity || "",
+					cardHolderAddressState: card.cardHolderAddressState || "",
+					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode || "",
+					cardHolderAddressCountry: card.cardHolderAddressPostalCountry || "",
+					partnerIdempotencyKey: card.partnerIdempotencyKey || "",
 					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
 						card.cardHolderLastName ? card.cardHolderLastName : "LM"
 					}`

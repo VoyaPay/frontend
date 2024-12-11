@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } f
 import { showFullScreenLoading, tryHideFullScreenLoading } from "@/config/serviceLoading";
 import { ResPage, ResultData } from "@/api/interface";
 import { ResultEnum } from "@/enums/httpEnum";
-import { checkStatus } from "./helper/checkStatus";
+import { checkErrorCode, checkStatus } from "./helper/checkStatus";
 import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
 import { message } from "antd";
@@ -15,6 +15,7 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 
 interface ErrorResponse {
 	message: string;
+	errorCode: number;
 }
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
@@ -70,7 +71,7 @@ class RequestHttp {
 				return data;
 			},
 			async (error: AxiosError) => {
-				const { response } = error;
+				const response = error.response;
 				NProgress.done();
 				tryHideFullScreenLoading();
 				if (response?.status === 401) {
@@ -82,8 +83,13 @@ class RequestHttp {
 						return Promise.reject(checkStatus(response.status));
 					}
 				} else if (response && response.status >= 400 && response.status < 500) {
-					message.error((response.data as ErrorResponse).message);
-					return Promise.reject((response.data as ErrorResponse).message);
+					const errorData = response.data as ErrorResponse;
+					console.log(errorData, "errorData");
+					if (errorData.errorCode === 1001) {
+						return Promise.reject(checkErrorCode(errorData.errorCode));
+					}
+					message.error(errorData.message);
+					return Promise.reject(errorData.message);
 				} else if (response && response.status >= 500) {
 					message.error((response.data as ErrorResponse).message);
 					return Promise.reject(checkStatus(response.status));

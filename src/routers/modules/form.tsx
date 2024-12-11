@@ -27,7 +27,7 @@ const formRouter: Array<RouteObject> = [
 				element: lazyLoad(React.lazy(() => import("@/views/form/usEntityinfo"))),
 				meta: {
 					requiresAuth: false,
-					title: "入驻企业美国主体主要信息",
+					title: "入驻企业美国主体信息",
 					key: "usEntityinfo"
 				}
 			},
@@ -36,7 +36,7 @@ const formRouter: Array<RouteObject> = [
 				element: lazyLoad(React.lazy(() => import("@/views/form/hkEntityinfo"))),
 				meta: {
 					requiresAuth: false,
-					title: "入驻企业香港主体主要信息",
+					title: "入驻企业香港主体信息",
 					key: "hongkongEntityContact"
 				}
 			},
@@ -63,7 +63,7 @@ const formRouter: Array<RouteObject> = [
 				element: lazyLoad(React.lazy(() => import("@/views/form/controllingShareholderinfo"))),
 				meta: {
 					requiresAuth: false,
-					title: "控股股东或实控人信息",
+					title: "董事信息",
 					key: "Controlling Shareholder or Actual Controller Information"
 				}
 			},
@@ -81,8 +81,8 @@ const formRouter: Array<RouteObject> = [
 				element: lazyLoad(React.lazy(() => import("@/views/form/chineseParentCompanyinfo"))),
 				meta: {
 					requiresAuth: false,
-					title: "入驻企业中国母公司主要信息",
-					key: "Chinese Parent Company Information"
+					title: "入住企业母公司信息",
+					key: "Parent Company Information"
 				}
 			},
 			{

@@ -3,22 +3,21 @@ import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/ico
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
 import { loginApi } from "@/api/modules/login";
-import { KYCStateApi } from "@/api/modules/kyc";
+import { getKYCApi } from "@/api/modules/kyc";
 import { useState } from "react";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 
 interface LoginComponentProps {
-	setToken: (token: string) => void;
-	setTabsList: (tabs: any[]) => void;
 	form: FormInstance<any>;
 	loginType: number;
 }
 
 const LoginComponent = (props: LoginComponentProps) => {
-	const { setToken, setTabsList, form, loginType } = props;
+	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const { form, loginType } = props;
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const onFinish = async (loginForm: Login.ReqLoginForm) => {
@@ -33,17 +32,17 @@ const LoginComponent = (props: LoginComponentProps) => {
 			if (!access_token) {
 				throw new Error("No access token received");
 			}
-			setToken(access_token);
-			setTabsList([]);
+			dispatch(setToken(access_token));
+			dispatch(setTabsList([]));
 			localStorage.setItem("access_token", access_token);
 			if (loginForm.email) {
-				const kycResponse = await KYCStateApi(); // unreviewed underReview rejected
+				const kycResponse = await getKYCApi(); // approved unfilled underReview rejected
 				if (kycResponse.status === "approved") {
 					message.success("登录成功！");
 					navigate("/proTable/account");
 					return;
 				} else if (kycResponse.status === "unfilled") {
-					navigate("/company");
+					navigate("/form/product");
 					return;
 				} else {
 					navigate("/form/kycprocess");
@@ -126,5 +125,4 @@ const LoginComponent = (props: LoginComponentProps) => {
 	);
 };
 
-const mapDispatchToProps = { setToken, setTabsList };
-export default connect(null, mapDispatchToProps)(LoginComponent);
+export default LoginComponent;

@@ -339,19 +339,18 @@ const TradeQuery = () => {
 	const fetchUserCards = async () => {
 		try {
 			const response = await UserCardApi();
-			console.log(response);
 			if (Array.isArray(response)) {
 				const formattedData = response.map(card => ({
-					key: card.id,
-					cardName: card.alias,
+					key: card.id || "",
+					cardName: card.alias || "",
 					cardOwner: "NA",
-					cardGroup: card.network,
-					cardNo: card.number,
-					cardStatus: card.status,
-					balance: card.initialLimit,
-					createCardTime: formatDate(card.transactionTime),
-					createTime: formatDate(card.createdAt),
-					cardType: card.type
+					cardGroup: card.network || "",
+					cardNo: card.number || "",
+					cardStatus: card.status || "",
+					balance: card.initialLimit || "",
+					createCardTime: formatDate(card.transactionTime) || "",
+					createTime: formatDate(card.createdAt) || "",
+					cardType: card.type || ""
 				}));
 
 				setDataSource(formattedData);

@@ -11,10 +11,6 @@ export const setKYCApi = (data: any) => {
 	return http.patch<ResultData>(PORT3 + "/kyc", data);
 };
 
-export const KYCStateApi = () => {
-	return http.get<ResultData>(PORT3 + "/kyc", undefined);
-};
-
 export const FileApi = (formData: FormData) => {
 	return http.post<ResultData>(PORT3 + "/file/upload", formData);
 };

@@ -1,11 +1,10 @@
 import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
-import back from "@/assets/images/return.png";
-import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
+import KycNav from "../kycNav";
 
 interface FormValues {
 	contactName: string;
@@ -57,51 +56,32 @@ const CompanyContractInfo = () => {
 			status: "unfilled",
 			updateKeys: ["CompanyContractInfo"]
 		}).then(() => {
-			navigate("/form/product");
+			navigate("/form/chinesecompany");
 		});
+	};
+
+	const handlePrevStep = () => {
+		navigate("/form/beneficical");
 	};
 
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
-				<div className="nav">
-					<NavLink to="/login" className="myAccount">
-						<img src={back} alt="" className="returnIcon" />
-						VoyaPay{" "}
-					</NavLink>
-					-&gt; KYC 填写
-				</div>
-				<div className="chargeTips">
-					<div className="title">VoyaPay入驻企业合规尽职调查表</div>
-					<div className="title">VoyaPay Compliance & KYC Form</div>
-
-					<div className="content">
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
-						</span>
-					</div>
-				</div>
-
+				<KycNav />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">企业负责人信息</div>
-						<div className="title">Company Representative Information</div>
+						<div className="title">企业负责人信息 / Company Representative Information</div>
 
 						<Form
 							form={form}
 							name="companyContractForm"
 							layout="vertical"
 							onFinish={onSubmit}
-							disabled={kycStatus === "approved"}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">
-								<div className="left">
+								<div className="left" style={{ alignItems: "initial" }}>
 									<Form.Item
 										name="contactName"
 										label="负责人姓名 / Representative Name:"
@@ -136,6 +116,14 @@ const CompanyContractInfo = () => {
 								</div>
 							</div>
 							<div className="btns">
+								<Button
+									type="primary"
+									htmlType="submit"
+									style={{ marginRight: "10px", marginLeft: "0px" }}
+									onClick={handlePrevStep}
+								>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>

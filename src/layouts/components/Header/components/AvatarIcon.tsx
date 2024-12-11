@@ -3,13 +3,12 @@ import { Avatar, Modal, Menu, Dropdown, message } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { HOME_URL } from "@/config/config";
-import { connect } from "react-redux";
-import { setToken } from "@/redux/modules/global/action";
 import PasswordModal from "./PasswordModal";
 import avatar from "@/assets/icons/avatar.svg";
+import useLogout from "@/hooks/useLogout";
 
-const AvatarIcon = (props: any) => {
-	const { setToken } = props;
+const AvatarIcon = () => {
+	const logoutHandle = useLogout();
 	const navigate = useNavigate();
 
 	interface ModalProps {
@@ -26,9 +25,8 @@ const AvatarIcon = (props: any) => {
 			okText: "确认",
 			cancelText: "取消",
 			onOk: () => {
-				setToken("");
+				logoutHandle();
 				message.success("退出登录成功！");
-				navigate("/login");
 			}
 		});
 	};
@@ -73,5 +71,4 @@ const AvatarIcon = (props: any) => {
 	);
 };
 
-const mapDispatchToProps = { setToken };
-export default connect(null, mapDispatchToProps)(AvatarIcon);
+export default AvatarIcon;
