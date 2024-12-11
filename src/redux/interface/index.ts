@@ -14,8 +14,8 @@ export interface ThemeConfigProp {
 export interface GlobalState {
 	token: string;
 	userInfo: any;
-	assemblySize: SizeType;
 	language: string;
+	assemblySize: SizeType;
 	themeConfig: ThemeConfigProp;
 }
 

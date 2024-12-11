@@ -6,7 +6,6 @@ import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
 import { AccountApi } from "@/api/modules/user";
-// import { triggerAsyncId } from "async_hooks";
 
 interface FormattedTransaction {
 	key: string;
@@ -250,7 +249,6 @@ const formatDate = (dateString: string) => {
 const userInformation = async () => {
 	try {
 		const response = await AccountApi();
-		console.log(response.userConfig.maximumCardsAllowed);
 		const formattedData = {
 			id: response.id || 0,
 			fullName: response.fullName || "N/A",

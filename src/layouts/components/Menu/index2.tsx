@@ -19,10 +19,16 @@ const LayoutMenu = (props: any) => {
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
 
+	const pathUsHkMap = {
+		"/form/hkEntityContact": "/form/hkEntityContact",
+		"/form/usEntityinfo": "/form/hkEntityContact"
+	};
+
 	// 刷新页面菜单保持高亮
 	useEffect(() => {
-		setSelectedKeys([pathname]);
-		isCollapse ? null : setOpenKeys(getOpenKeys(pathname));
+		const activeKey = pathUsHkMap[pathname as keyof typeof pathUsHkMap] || pathname;
+		setSelectedKeys([activeKey]);
+		isCollapse ? null : setOpenKeys(getOpenKeys(activeKey));
 	}, [pathname, isCollapse]);
 
 	// 设置当前展开的 subMenu
@@ -111,7 +117,7 @@ const LayoutMenu = (props: any) => {
 		<div className="menu">
 			<Spin spinning={loading} tip="Loading...">
 				<Logo></Logo>
-				<div style={{ pointerEvents: 'none' }}>
+				<div style={{ pointerEvents: "none" }}>
 					<Menu
 						theme="dark"
 						mode="inline"

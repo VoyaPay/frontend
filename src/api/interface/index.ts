@@ -51,6 +51,7 @@ export interface Result {
 	card?: { number: string; alias: string };
 	transaction?: NewTransaction;
 	currentBalance?: string;
+	totalBalance?: string;
 	cvc?: string;
 	expiration?: string;
 	pan?: string;
@@ -76,6 +77,17 @@ export interface ResultData<T = any> extends Result {
 	data?: T;
 }
 
+export interface KYCData extends Result {
+	createdAt?: string;
+	fields?: KYCFields;
+	lastUpdateAt?: string;
+	status?: string;
+}
+
+export interface KYCFields extends KYCData {
+	[key: string]: any;
+}
+
 // * 分页响应参数
 export interface ResPage<T> {
 	datalist: T[];
@@ -97,9 +109,37 @@ export namespace Login {
 		password: string;
 		email?: string;
 	}
+	export interface ReqRegister {
+		fullName: string;
+		email: string;
+		password: string;
+		repeatPassword: string;
+		companyName: string;
+		captcha: string;
+	}
+
+	export interface ReqActivateAccount {
+		token: string;
+	}
+
+	export interface ReqResetPassword {
+		token: string;
+		password: string;
+	}
+
 	export interface ResLogin {
 		access_token: string;
 	}
+
+	export interface ReqCaptcha {
+		usage: string;
+	}
+
+	export interface ReqForgotPassword {
+		email: string;
+		captcha: string;
+	}
+
 	export interface ResAuthButtons {
 		[propName: string]: any;
 	}

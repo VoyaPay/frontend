@@ -83,18 +83,10 @@ export const formStatus = JSON.parse(localStorage.getItem("data") || "{}");
 export const menu2: any = [
 	{
 		icon: "AppstoreOutlined",
-		title: "企业负责人信息",
-		path: "/company",
-		hide: false
-	},
-
-	{
-		icon: "AppstoreOutlined",
 		title: "开通场景信息",
 		path: "/form/product",
 		hide: false
 	},
-
 	{
 		icon: "AppstoreOutlined",
 		title: "企业展业情况",
@@ -103,14 +95,13 @@ export const menu2: any = [
 	},
 	{
 		icon: "AppstoreOutlined",
-		title: "境外入住企业主体信息",
-		path: "/form/hkEntityContact" || "/form/usEntityContact",
+		title: "境外入驻企业信息",
+		path: "/form/hkEntityContact",
 		hide: false
 	},
-
 	{
 		icon: "AppstoreOutlined",
-		title: "控股股东或实控人信息",
+		title: "董事信息",
 		path: "/form/shareholder",
 		hide: false
 	},
@@ -122,7 +113,13 @@ export const menu2: any = [
 	},
 	{
 		icon: "AppstoreOutlined",
-		title: "入驻企业中国母公司主要信息",
+		title: "企业负责人信息",
+		path: "/company",
+		hide: false
+	},
+	{
+		icon: "AppstoreOutlined",
+		title: "入驻企业母公司信息",
 		path: "/form/chinesecompany",
 		hide: false
 	}

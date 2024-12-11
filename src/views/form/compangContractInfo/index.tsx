@@ -1,9 +1,10 @@
 import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
-import back from "@/assets/images/return.png";
-import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
+import { KYCData } from "@/api/interface";
+import KycNav from "../kycNav";
 
 interface FormValues {
 	contactName: string;
@@ -16,26 +17,29 @@ interface FormValues {
 const CompanyContractInfo = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
+	const [kycStatus, setKycStatus] = useState<string>("");
 
 	useEffect(() => {
-		// Automatically load stored data if the "email" key exists in localStorage
-
-		const storedData = localStorage.getItem("data");
-		console.log(JSON.parse(localStorage.getItem("data") || "{}"));
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			// Auto-fill the form with stored data
-			form.setFieldsValue({
-				contactName: parsedData.CompanyContractInfo?.contactName || "",
-				contactPhone: parsedData.CompanyContractInfo?.contactPhone || "",
-				contactMobile: parsedData.CompanyContractInfo?.contactMobile || "",
-				contactPosition: parsedData.CompanyContractInfo?.contactPosition || "",
-				contactEmail: parsedData.CompanyContractInfo?.contactEmail || ""
-			});
-		}
+		getKYCData().then(storedData => {
+			if (storedData) {
+				form.setFieldsValue({
+					contactName: storedData.CompanyContractInfo?.contactName || "",
+					contactPhone: storedData.CompanyContractInfo?.contactPhone || "",
+					contactMobile: storedData.CompanyContractInfo?.contactMobile || "",
+					contactPosition: storedData.CompanyContractInfo?.contactPosition || "",
+					contactEmail: storedData.CompanyContractInfo?.contactEmail || ""
+				});
+			}
+		});
 	}, [form]);
 
-	const onSubmit = (values: FormValues) => {
+	const getKYCData = async () => {
+		const res: KYCData = await getKYCApi();
+		setKycStatus(res.status || "unfilled");
+		return res.fields;
+	};
+
+	const onSubmit = async (values: FormValues) => {
 		const newCompanyContractInfo = {
 			contactName: values.contactName,
 			contactPhone: values.contactPhone,
@@ -43,74 +47,41 @@ const CompanyContractInfo = () => {
 			contactPosition: values.contactPosition,
 			contactEmail: values.contactEmail
 		};
+		const combinedPayload = {
+			CompanyContractInfo: newCompanyContractInfo
+		};
 
-		// Retrieve existing data
-		const existingData = localStorage.getItem("data");
-		let combinedPayload = {};
+		await setKYCApi({
+			fields: combinedPayload,
+			status: "unfilled",
+			updateKeys: ["CompanyContractInfo"]
+		}).then(() => {
+			navigate("/form/chinesecompany");
+		});
+	};
 
-		if (existingData) {
-			const parsedData = JSON.parse(existingData);
-			// Merge new data with existing data
-			combinedPayload = {
-				...parsedData,
-				CompanyContractInfo: newCompanyContractInfo // Update CompanyContractInfo
-			};
-		} else {
-			// If no existing data, save new company contact information
-			combinedPayload = {
-				CompanyContractInfo: newCompanyContractInfo
-			};
-		}
-
-		// Save updated data to localStorage
-		localStorage.setItem("data", JSON.stringify(combinedPayload));
-		console.log("Updated Payload:", combinedPayload);
-		navigate("/form/product");
-
-		// Navigate based on US entity status
-		// navigate(values.isUSEntity === "us" ? "/form/usEntityinfo" : "/form/hkEntityContact");
+	const handlePrevStep = () => {
+		navigate("/form/beneficical");
 	};
 
 	return (
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
-				<div className="nav">
-					<NavLink to="/login" className="myAccount">
-						<img src={back} alt="" className="returnIcon" />
-						VoyaPay{" "}
-					</NavLink>
-					-&gt; KYC 填写
-				</div>
-				<div className="chargeTips">
-					<div className="title">VoyaPay入驻企业合规尽职调查表</div>
-					<div className="title">VoyaPay Compliance & KYC Form</div>
-
-					<div className="content">
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*Voyapay合规及风控团队，将结合问卷填写内容，随机开展对客户的风控合规面试、会谈、现场走访等工作。
-						</span>
-						<span className="pre">
-							&nbsp;&nbsp;&nbsp;&nbsp;*The Voyapay Compliance and Risk Control Team will randomly conduct risk control and
-							compliance interviews, meetings, and on-site visits with customers based on the content provided in the
-							questionnaire.
-						</span>
-					</div>
-				</div>
-
+				<KycNav />
 				<div className="firstCol">
 					<div className="accountInfo">
-						<div className="title">企业负责人信息</div>
-						<div className="title">Company Representative Information</div>
+						<div className="title">企业负责人信息 / Company Representative Information</div>
 
 						<Form
 							form={form}
 							name="companyContractForm"
 							layout="vertical"
 							onFinish={onSubmit}
+							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 							initialValues={{ isUSEntity: "us" }} // 默认是美国实体
 						>
 							<div className="content">
-								<div className="left">
+								<div className="left" style={{ alignItems: "initial" }}>
 									<Form.Item
 										name="contactName"
 										label="负责人姓名 / Representative Name:"
@@ -145,6 +116,14 @@ const CompanyContractInfo = () => {
 								</div>
 							</div>
 							<div className="btns">
+								<Button
+									type="primary"
+									htmlType="submit"
+									style={{ marginRight: "10px", marginLeft: "0px" }}
+									onClick={handlePrevStep}
+								>
+									上一步 / Prev Step
+								</Button>
 								<Button type="primary" htmlType="submit">
 									下一步 / Next Step
 								</Button>
