@@ -115,9 +115,18 @@ const PrepaidCard = () => {
 		try {
 			const maxCards = await userInformation();
 			const response = await UserCardApi();
+			let remainCardsCountToDisplay;
+			if (maxCards === 0) {
+				// unlimited user
+				remainCardsCountToDisplay = 99;
+			} else {
+				remainCardsCountToDisplay = maxCards - parseFloat(response.length as string);
+				if (remainCardsCountToDisplay < 0) {
+					remainCardsCountToDisplay = 0;
+				}
+			}
+			setTotalCardNumber(remainCardsCountToDisplay);
 
-			const totalcard = maxCards - parseFloat(response.length as string);
-			setTotalCardNumber(totalcard);
 			if (Array.isArray(response)) {
 				const formattedData = response.map(card => ({
 					key: card.id || "",
