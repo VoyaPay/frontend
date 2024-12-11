@@ -41,3 +41,12 @@ export const checkStatus = (status: number): void => {
 			message.error("请求失败！");
 	}
 };
+export const checkErrorCode = (errorCode: number): void => {
+	switch (errorCode) {
+		case 1001:
+			message.error("您的账号暂未激活，请先前往邮箱激活!");
+			break;
+		default:
+			message.error("请求失败！");
+	}
+};
