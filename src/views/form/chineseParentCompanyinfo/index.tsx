@@ -129,7 +129,10 @@ const ChineseParentCompanyInfo = () => {
 										label="企业类型 / Company Type:"
 										rules={[{ message: "请选择企业类型 / Please select the company type" }]}
 									>
-										<Select placeholder="请选择企业类型 / Please select the company type">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择企业类型 / Please select the company type"
+										>
 											<Select.Option value="有限责任公司（自然人独资）">有限责任公司（自然人独资）</Select.Option>
 											<Select.Option value="有限责任公司（法人独资）">有限责任公司（法人独资）</Select.Option>
 											<Select.Option value="有限责任公司（自然人投资或控股）">有限责任公司（自然人投资或控股）</Select.Option>
@@ -142,7 +145,12 @@ const ChineseParentCompanyInfo = () => {
 									</Form.Item>
 
 									<Form.Item name="establishmentDate" label="企业成立日期 / Company Establishment Date:">
-										<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
+										<DatePicker
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											format="YYYY-MM-DD"
+											placeholder="请选择日期 / Select date"
+											style={{ width: "100%" }}
+										/>
 									</Form.Item>
 
 									<Form.Item
@@ -162,7 +170,10 @@ const ChineseParentCompanyInfo = () => {
 											}
 										]}
 									>
-										<Select placeholder="请选择企业母公司注册国家 / Please select the parent company registered country">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择企业母公司注册国家 / Please select the parent company registered country"
+										>
 											<Select.Option value="中国">中国 / China</Select.Option>
 											<Select.Option value="美国">美国 / US</Select.Option>
 											<Select.Option value="香港">香港 / HK</Select.Option>
@@ -198,7 +209,12 @@ const ChineseParentCompanyInfo = () => {
 									</Form.Item>
 
 									<Form.Item name="licenseExpiryDate" label="执照有效期至 / License Expiry Date:">
-										<DatePicker format="YYYY-MM-DD" placeholder="请选择日期 / Select date" style={{ width: "100%" }} />
+										<DatePicker
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											format="YYYY-MM-DD"
+											placeholder="请选择日期 / Select date"
+											style={{ width: "100%" }}
+										/>
 									</Form.Item>
 
 									<Form.Item

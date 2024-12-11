@@ -81,10 +81,8 @@ const BeneficialOwnerInfo = () => {
 				beneficialOwners: values.beneficialOwners
 			}
 		};
-		if (values.beneficialOwners?.length < 1) {
-			message.error(
-				"需要填写所有直接或者间接拥有25%及以上公司股权的受益人信息 / Please provide information for all beneficial owners who directly or indirectly own 25% or more of the company's shares or voting rights."
-			);
+		if (!values.beneficialOwners || values.beneficialOwners.length < 1) {
+			message.error("至少需要填写一名受益人");
 			return;
 		}
 
