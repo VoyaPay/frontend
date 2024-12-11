@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber, DatePicker, Upload, message } from "antd";
+import { Button, Form, Input, InputNumber, DatePicker, Upload, message, Row, Col } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
@@ -7,7 +7,6 @@ import moment from "moment";
 import { FileApi } from "@/api/modules/kyc";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
-import KycTitleNotification from "../kycTitleNotification";
 import KycNav from "../kycNav";
 
 interface FormValues {
@@ -116,7 +115,7 @@ const HKEntityInfo = () => {
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
 				<KycNav />
-				<KycTitleNotification />
+
 				<div className="firstCol">
 					<div className="accountInfo">
 						<div className="title">入驻企业香港主体信息 / HK Entity Information</div>
@@ -128,125 +127,143 @@ const HKEntityInfo = () => {
 							onFinishFailed={onFinishFailed}
 							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
-							<Form.Item
-								name="hkEntityName"
-								label="香港主体全称 / HK Entity Legal Name:"
-								rules={[
-									{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" },
-									{ validator: validateAlphanumeric }
-								]}
-							>
-								<Input placeholder="请输入香港主体全称 / Please enter the legal name" />
-							</Form.Item>
-
-							<Form.Item
-								name="companyWebsite"
-								label="企业网站链接 / Company Website:"
-								rules={[{ required: true, message: "请输入公司网站链接 / Please enter the website link" }]}
-							>
-								<Input placeholder="请输入公司网站链接 / Please enter company website" />
-							</Form.Item>
-
-							<Form.Item
-								name="certificateNo"
-								label="商业登记证号码 / Certificate No.:"
-								rules={[
-									{ required: true, message: "请输入商业登记证号码 / Please enter certificate number" },
-									{ validator: validateAlphanumeric }
-								]}
-							>
-								<Input placeholder="请输入商业登记证号码 / Please enter certificate number" />
-							</Form.Item>
-
-							<Form.Item
-								name="commencementDate"
-								label="生效日期 / Date of Commencement:"
-								rules={[{ required: true, message: "请输入生效日期 / Please enter the date of commencement" }]}
-							>
-								<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
-							</Form.Item>
-
-							<Form.Item
-								name="expiryDate"
-								label="届满日期 / Date of Expiry:"
-								rules={[{ required: true, message: "请输入届满日期 / Please enter the expiry date" }]}
-							>
-								<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
-							</Form.Item>
-
-							<Form.Item
-								name="registeredAddress"
-								label="香港主体注册地址 / HK Entity Registered Address:"
-								rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
-							>
-								<Input placeholder="请输入香港主体注册地址 / Please enter the registered address" />
-							</Form.Item>
-
-							<Form.Item
-								name="hkEntityOperatingAddress"
-								label="香港主体运营地址 / HK Entity Operating Address:"
-								rules={[{ required: true, message: "请输入香港主体运营地址 / Please enter HK Entity Operating Address" }]}
-							>
-								<Input placeholder="请输入香港主体运营地址 / Please enter HK Entity Operating Address" />
-							</Form.Item>
-
-							<Form.Item
-								name="totalEmployees"
-								label="企业总员工人数 / Total Number of Employees:"
-								rules={[{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }]}
-							>
-								<InputNumber placeholder="请输入员工总人数 / Please enter total number of employees" style={{ width: "100%" }} />
-							</Form.Item>
-
-							{/* File Uploads */}
-							{["businessRegistration", "companyIncorporation", "incorporationForm", "annualReturn", "companyArticles"].map(
-								fileType => (
+							<div style={{ marginTop: "10px" }}>
+								<div className="left" style={{ alignItems: "initial" }}>
 									<Form.Item
-										key={fileType}
-										name={fileType}
-										label={`${
-											fileType === "businessRegistration"
-												? "商业登记证（BR）"
-												: fileType === "companyIncorporation"
-												? "公司注册书（CI）"
-												: fileType === "incorporationForm"
-												? "法团成立表（NNC1）"
-												: fileType === "annualReturn"
-												? "周年申报表（NAR1）"
-												: "公司章程（M&A）"
-										}`}
-										valuePropName="fileList"
-										getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
-										rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
+										name="hkEntityName"
+										label="香港主体全称 / HK Entity Legal Name:"
+										rules={[
+											{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" },
+											{ validator: validateAlphanumeric }
+										]}
 									>
-										<Upload
-											customRequest={async ({ file, onSuccess, onError }) => {
-												const formData = new FormData();
-												formData.append("file", file);
-												formData.append("usage", "kyc");
-
-												try {
-													const response = await FileApi(formData);
-													console.log("File uploaded successfully, file ID:", response.fileID);
-
-													if (onSuccess) {
-														onSuccess(response);
-													}
-												} catch (error: any) {
-													message.error("文件传输失败 / File upload failed");
-													onError?.(error);
-												}
-											}}
-											onChange={onUploadFileChange(fileType)}
-										>
-											<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
-										</Upload>
+										<Input placeholder="请输入香港主体全称 / Please enter the legal name" />
 									</Form.Item>
-								)
-							)}
 
+									<Form.Item
+										name="companyWebsite"
+										label="企业网站链接 / Company Website:"
+										rules={[{ required: true, message: "请输入公司网站链接 / Please enter the website link" }]}
+									>
+										<Input placeholder="请输入公司网站链接 / Please enter company website" />
+									</Form.Item>
+
+									<Form.Item
+										name="certificateNo"
+										label="商业登记证号码 / Certificate No.:"
+										rules={[
+											{ required: true, message: "请输入商业登记证号码 / Please enter certificate number" },
+											{ validator: validateAlphanumeric }
+										]}
+									>
+										<Input placeholder="请输入商业登记证号码 / Please enter certificate number" />
+									</Form.Item>
+
+									<Form.Item
+										name="commencementDate"
+										label="生效日期 / Date of Commencement:"
+										rules={[{ required: true, message: "请输入生效日期 / Please enter the date of commencement" }]}
+									>
+										<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
+									</Form.Item>
+
+									<Form.Item
+										name="expiryDate"
+										label="届满日期 / Date of Expiry:"
+										rules={[{ required: true, message: "请输入届满日期 / Please enter the expiry date" }]}
+									>
+										<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
+									</Form.Item>
+
+									<Form.Item
+										name="registeredAddress"
+										label="香港主体注册地址 / HK Entity Registered Address:"
+										rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
+									>
+										<Input placeholder="请输入香港主体注册地址 / Please enter the registered address" />
+									</Form.Item>
+
+									<Form.Item
+										name="hkEntityOperatingAddress"
+										label="香港主体运营地址 / HK Entity Operating Address:"
+										rules={[{ required: true, message: "请输入香港主体运营地址 / Please enter HK Entity Operating Address" }]}
+									>
+										<Input placeholder="请输入香港主体运营地址 / Please enter HK Entity Operating Address" />
+									</Form.Item>
+
+									<Form.Item
+										name="totalEmployees"
+										label="企业总员工人数 / Total Number of Employees:"
+										rules={[{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }]}
+									>
+										<InputNumber
+											placeholder="请输入员工总人数 / Please enter total number of employees"
+											style={{ width: "100%" }}
+										/>
+									</Form.Item>
+									<Row gutter={16}>
+										{["businessRegistration", "companyIncorporation", "incorporationForm", "annualReturn", "companyArticles"].map(
+											(fileType, index) => (
+												<Col span={12} key={fileType}>
+													<Form.Item
+														name={fileType}
+														label={`${
+															fileType === "businessRegistration"
+																? "商业登记证（BR）"
+																: fileType === "companyIncorporation"
+																? "公司注册书（CI）"
+																: fileType === "incorporationForm"
+																? "法团成立表（NNC1）"
+																: fileType === "annualReturn"
+																? "周年申报表（NAR1）"
+																: "公司章程（M&A）"
+														}`}
+														valuePropName="fileList"
+														getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+														rules={[
+															{
+																required: ["businessRegistration", "companyIncorporation"].includes(fileType),
+																message: "请上传文件 / Please upload the document"
+															}
+														]}
+													>
+														<Upload
+															customRequest={async ({ file, onSuccess, onError }) => {
+																const formData = new FormData();
+																formData.append("file", file);
+																formData.append("usage", "kyc");
+
+																try {
+																	const response = await FileApi(formData);
+																	console.log("File uploaded successfully, file ID:", response.fileID);
+
+																	if (onSuccess) {
+																		onSuccess(response);
+																	}
+																} catch (error: any) {
+																	message.error("文件传输失败 / File upload failed");
+																	onError?.(error);
+																}
+															}}
+															onChange={onUploadFileChange(fileType)}
+														>
+															<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
+														</Upload>
+													</Form.Item>
+													{index % 2 === 1 && <Col span={12}></Col>}
+												</Col>
+											)
+										)}
+									</Row>
+								</div>
+							</div>
 							<div className="btns">
-								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+								<Button
+									type="primary"
+									htmlType="submit"
+									style={{ marginRight: "10px", marginLeft: "0px" }}
+									onClick={handlePrevStep}
+								>
 									上一步 / Prev Step
 								</Button>
 								<Button type="primary" htmlType="submit" disabled={!Object.values(uploadSuccess).every(success => success)}>

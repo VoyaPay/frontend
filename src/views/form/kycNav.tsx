@@ -7,7 +7,7 @@ const KycNav = () => (
 			<img src={back} alt="" className="returnIcon" />
 			VoyaPay{" "}
 		</NavLink>
-		-&gt; KYC 填写
+		-&gt; 入驻企业合规尽职调查表 / Compliance & KYC Form
 	</div>
 );
 

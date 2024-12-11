@@ -5,7 +5,6 @@ import "./index.less";
 import { useState, useEffect, Fragment } from "react";
 import { FileApi, getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
-import KycTitleNotification from "../kycTitleNotification";
 import KycNav from "../kycNav";
 interface Shareholder {
 	entityName: string;
@@ -99,7 +98,7 @@ const ControllingShareholderInfo = () => {
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
 				<KycNav />
-				<KycTitleNotification />
+
 				<div className="firstCol">
 					<div className="accountInfo">
 						<div className="title">董事信息 / Director Information</div>
@@ -111,124 +110,132 @@ const ControllingShareholderInfo = () => {
 							className="controlling-shareholder-info-form"
 							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
-							<Form.List name="shareholders">
-								{(fields, { add, remove }) => (
-									<>
-										{fields.map(({ key, name, ...restField }, index) => (
-											<Fragment key={key}>
-												<Space style={{ marginBottom: "50px" }} align="start">
-													<Row gutter={[16, 16]} style={{ width: "100%" }}>
-														<Col span={12}>
-															<Form.Item
-																{...restField}
-																name={[name, "entityName"]}
-																label="董事名称 / Director Name:"
-																rules={[{ required: true, message: "请输入董事名称 / Please enter director name" }]}
-															>
-																<Input placeholder="请输入董事名称 / Please enter director name" />
-															</Form.Item>
-														</Col>
-														<Col span={12}>
-															<Form.Item
-																{...restField}
-																name={[name, "nationalityOrLocation"]}
-																label="国籍所在地 / Nationality:"
-																rules={[
-																	{
-																		required: true,
-																		message: "请输入国籍所在地 / Please enter nationality"
-																	}
-																]}
-															>
-																<Input placeholder="请输入国籍所在地 / Please enter nationality" />
-															</Form.Item>
-														</Col>
-														<Col span={12}>
-															<Form.Item
-																{...restField}
-																name={[name, "documentType"]}
-																label="证件类型 / Document Type:"
-																rules={[{ required: true, message: "请选择证件类型 / Please select document type" }]}
-															>
-																<Select placeholder="请选择证件类型 / Please select document type">
-																	<Select.Option value="护照">护照 / Passport</Select.Option>
-																	<Select.Option value="身份证">身份证 / National ID</Select.Option>
-																</Select>
-															</Form.Item>
-														</Col>
-														<Col span={12}>
-															<Form.Item
-																{...restField}
-																name={[name, "idNumber"]}
-																label="证件号码 / ID Number:"
-																rules={[{ required: true, message: "请输入证件号码 / Please enter ID number" }]}
-															>
-																<Input placeholder="请输入证件号码 / Please enter ID number" />
-															</Form.Item>
-														</Col>
-														<Col span={12}>
-															<Form.Item
-																name={[name, "directorPassportFile"]}
-																label="董事护照上传 / Director Passport Upload:"
-																valuePropName="fileList"
-																getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
-																rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
-															>
-																<Upload
-																	customRequest={async ({ file, onSuccess, onError }) => {
-																		const formData = new FormData();
-																		formData.append("file", file);
-																		formData.append("usage", "kyc");
-
-																		try {
-																			const response = await FileApi(formData);
-																			console.log("File uploaded successfully, file ID:", response.fileID);
-
-																			if (onSuccess) {
-																				onSuccess(response);
+							<div className="content">
+								<div className="left" style={{ alignItems: "initial" }}>
+									<Form.List name="shareholders">
+										{(fields, { add, remove }) => (
+											<>
+												{fields.map(({ key, name, ...restField }, index) => (
+													<Fragment key={key}>
+														<Space style={{ marginBottom: "50px" }} align="start">
+															<Row gutter={[16, 0]} style={{ width: "100%" }}>
+																<Col span={12}>
+																	<Form.Item
+																		{...restField}
+																		name={[name, "entityName"]}
+																		label="董事名称 / Director Name:"
+																		rules={[{ required: true, message: "请输入董事名称 / Please enter director name" }]}
+																	>
+																		<Input placeholder="请输入董事名称 / Please enter director name" />
+																	</Form.Item>
+																</Col>
+																<Col span={12}>
+																	<Form.Item
+																		{...restField}
+																		name={[name, "nationalityOrLocation"]}
+																		label="国籍所在地 / Nationality:"
+																		rules={[
+																			{
+																				required: true,
+																				message: "请输入国籍所在地 / Please enter nationality"
 																			}
-																		} catch (error: any) {
-																			message.error("文件传输失败");
-																			console.error("File upload failed:", error);
+																		]}
+																	>
+																		<Input placeholder="请输入国籍所在地 / Please enter nationality" />
+																	</Form.Item>
+																</Col>
+																<Col span={12}>
+																	<Form.Item
+																		{...restField}
+																		name={[name, "documentType"]}
+																		label="证件类型 / Document Type:"
+																		rules={[{ required: true, message: "请选择证件类型 / Please select document type" }]}
+																	>
+																		<Select placeholder="请选择证件类型 / Please select document type">
+																			<Select.Option value="护照">护照 / Passport</Select.Option>
+																			<Select.Option value="身份证">身份证 / National ID</Select.Option>
+																		</Select>
+																	</Form.Item>
+																</Col>
+																<Col span={12}>
+																	<Form.Item
+																		{...restField}
+																		name={[name, "idNumber"]}
+																		label="证件号码 / ID Number:"
+																		rules={[{ required: true, message: "请输入证件号码 / Please enter ID number" }]}
+																	>
+																		<Input placeholder="请输入证件号码 / Please enter ID number" />
+																	</Form.Item>
+																</Col>
+																<Col span={12}>
+																	<Form.Item
+																		name={[name, "directorPassportFile"]}
+																		label="董事护照上传 / Director Passport Upload:"
+																		valuePropName="fileList"
+																		getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+																		rules={[{ required: true, message: "请上传文件 / Please upload the document" }]}
+																	>
+																		<Upload
+																			customRequest={async ({ file, onSuccess, onError }) => {
+																				const formData = new FormData();
+																				formData.append("file", file);
+																				formData.append("usage", "kyc");
 
-																			if (onError) {
-																				onError(error);
-																			}
-																		}
-																	}}
-																	onChange={onUploadFileChange("directorPassportFile")}
-																>
-																	<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
-																</Upload>
-															</Form.Item>
-														</Col>
-													</Row>
-													<Row>
-														<Col span={12}>
-															<Tooltip title="删除此董事">
-																<DeleteOutlined
-																	onClick={() => remove(name)}
-																	style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
-																/>
-															</Tooltip>
-														</Col>
-													</Row>
-												</Space>
-												{index < fields.length - 1 && <Divider key={`divider-${index}`} />}
-											</Fragment>
-										))}
-										{/* Add more fields */}
-										<Form.Item>
-											<Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />} className="add-shareholder-btn">
-												添加董事 / Add Director
-											</Button>
-										</Form.Item>
-									</>
-								)}
-							</Form.List>
+																				try {
+																					const response = await FileApi(formData);
+																					console.log("File uploaded successfully, file ID:", response.fileID);
 
+																					if (onSuccess) {
+																						onSuccess(response);
+																					}
+																				} catch (error: any) {
+																					message.error("文件传输失败");
+																					console.error("File upload failed:", error);
+
+																					if (onError) {
+																						onError(error);
+																					}
+																				}
+																			}}
+																			onChange={onUploadFileChange("directorPassportFile")}
+																		>
+																			<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
+																		</Upload>
+																	</Form.Item>
+																</Col>
+															</Row>
+															<Row>
+																<Col span={12}>
+																	<Tooltip title="删除此董事">
+																		<DeleteOutlined
+																			onClick={() => remove(name)}
+																			style={{ color: "red", cursor: "pointer", fontSize: "20px" }}
+																		/>
+																	</Tooltip>
+																</Col>
+															</Row>
+														</Space>
+														{index < fields.length - 1 && <Divider key={`divider-${index}`} />}
+													</Fragment>
+												))}
+												{/* Add more fields */}
+												<Form.Item>
+													<Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+														添加董事 / Add Director
+													</Button>
+												</Form.Item>
+											</>
+										)}
+									</Form.List>
+								</div>
+							</div>
 							<div className="btns">
-								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+								<Button
+									type="primary"
+									htmlType="submit"
+									style={{ marginRight: "10px", marginLeft: "0px" }}
+									onClick={handlePrevStep}
+								>
 									上一步 / Prev Step
 								</Button>
 								<Button type="primary" htmlType="submit">

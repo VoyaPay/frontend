@@ -4,7 +4,6 @@ import "./index.less";
 import { useEffect, useState } from "react";
 import { getKYCApi, setKYCApi } from "@/api/modules/kyc";
 import { KYCData } from "@/api/interface";
-import KycTitleNotification from "../kycTitleNotification";
 import KycNav from "../kycNav";
 
 interface FormValues {
@@ -69,8 +68,6 @@ const CompanyContractInfo = () => {
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
 				<KycNav />
-				<KycTitleNotification />
-
 				<div className="firstCol">
 					<div className="accountInfo">
 						<div className="title">企业负责人信息 / Company Representative Information</div>
@@ -119,7 +116,12 @@ const CompanyContractInfo = () => {
 								</div>
 							</div>
 							<div className="btns">
-								<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+								<Button
+									type="primary"
+									htmlType="submit"
+									style={{ marginRight: "10px", marginLeft: "0px" }}
+									onClick={handlePrevStep}
+								>
 									上一步 / Prev Step
 								</Button>
 								<Button type="primary" htmlType="submit">
