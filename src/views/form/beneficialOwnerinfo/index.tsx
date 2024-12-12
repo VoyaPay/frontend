@@ -144,7 +144,7 @@ const BeneficialOwnerInfo = () => {
 																		label="自然人名称 / Individual Name:"
 																		rules={[{ required: true, message: "请输入自然人名称 / Please enter the individual's name" }]}
 																	>
-																		<Input placeholder="请输入自然人名称 / Please enter the individual's name" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 
@@ -155,7 +155,7 @@ const BeneficialOwnerInfo = () => {
 																		label="国籍 / Nationality:"
 																		rules={[{ required: true, message: "请输入国籍 / Please enter nationality" }]}
 																	>
-																		<Input placeholder="请输入国籍 / Please enter nationality" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 
@@ -166,7 +166,7 @@ const BeneficialOwnerInfo = () => {
 																		label="住址 / Residential Address:"
 																		rules={[{ required: true, message: "请输入住址 / Please enter residential address" }]}
 																	>
-																		<Input placeholder="请输入住址 / Please enter residential address" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 
@@ -177,11 +177,7 @@ const BeneficialOwnerInfo = () => {
 																		label="股权占比（%） / Ownership Percentage (%):"
 																		rules={[{ required: true, message: "请输入股权占比 / Please enter ownership percentage" }]}
 																	>
-																		<InputNumber
-																			placeholder="股权占比（%） / Ownership Percentage"
-																			style={{ width: "100%" }}
-																			onChange={handleOwnershipChange}
-																		/>
+																		<InputNumber style={{ width: "100%" }} onChange={handleOwnershipChange} />
 																	</Form.Item>
 																</Col>
 																<Col span={12}>
@@ -195,7 +191,6 @@ const BeneficialOwnerInfo = () => {
 																			getPopupContainer={(triggerNode?: HTMLElement | undefined) =>
 																				triggerNode?.parentElement as HTMLElement
 																			}
-																			placeholder="请输入证件类型 / Please enter document type"
 																		>
 																			<Select.Option value="Passport">护照 / Passport</Select.Option>
 																			<Select.Option value="National ID">身份证 / National ID</Select.Option>
@@ -210,7 +205,7 @@ const BeneficialOwnerInfo = () => {
 																		label="证件号码 / ID Number:"
 																		rules={[{ required: true, message: "请输入证件号码 / Please enter ID number" }]}
 																	>
-																		<Input placeholder="请输入证件号码 / Please enter ID number" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 
@@ -221,7 +216,7 @@ const BeneficialOwnerInfo = () => {
 																		label="SSN / ITIN:"
 																		rules={[{ required: false, message: "请输入SSN / TIN / Please enter SSN / TIN" }]}
 																	>
-																		<Input placeholder="请输入SSN / ITIN / Please enter SSN / ITIN" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 
@@ -232,7 +227,7 @@ const BeneficialOwnerInfo = () => {
 																		label="职位 / Position:"
 																		rules={[{ required: true, message: "请输入职位 / Please enter position" }]}
 																	>
-																		<Input placeholder="请输入职位 / Please enter position" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 
@@ -249,7 +244,6 @@ const BeneficialOwnerInfo = () => {
 																			getPopupContainer={(triggerNode?: HTMLElement | undefined) =>
 																				triggerNode?.parentElement as HTMLElement
 																			}
-																			placeholder="请选择是否有投票权 / Please select if has voting rights"
 																		>
 																			<Select.Option value="Yes">是 / Yes</Select.Option>
 																			<Select.Option value="No">否 / No</Select.Option>

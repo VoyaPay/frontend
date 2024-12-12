@@ -126,7 +126,7 @@ const ControllingShareholderInfo = () => {
 																		label="董事名称 / Director Name:"
 																		rules={[{ required: true, message: "请输入董事名称 / Please enter director name" }]}
 																	>
-																		<Input placeholder="请输入董事名称 / Please enter director name" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 																<Col span={12}>
@@ -141,7 +141,7 @@ const ControllingShareholderInfo = () => {
 																			}
 																		]}
 																	>
-																		<Input placeholder="请输入国籍所在地 / Please enter nationality" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 																<Col span={12}>
@@ -155,7 +155,6 @@ const ControllingShareholderInfo = () => {
 																			getPopupContainer={(triggerNode?: HTMLElement | undefined) =>
 																				triggerNode?.parentElement as HTMLElement
 																			}
-																			placeholder="请选择证件类型 / Please select document type"
 																		>
 																			<Select.Option value="护照">护照 / Passport</Select.Option>
 																			<Select.Option value="身份证">身份证 / National ID</Select.Option>
@@ -169,7 +168,7 @@ const ControllingShareholderInfo = () => {
 																		label="证件号码 / ID Number:"
 																		rules={[{ required: true, message: "请输入证件号码 / Please enter ID number" }]}
 																	>
-																		<Input placeholder="请输入证件号码 / Please enter ID number" />
+																		<Input />
 																	</Form.Item>
 																</Col>
 																<Col span={12}>

@@ -85,7 +85,6 @@ const CompanyBusinessInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择企业所在行业 / Please select the industry"
 										>
 											<Option value="ecommerce">Ecommerce</Option>
 											<Option value="Advertising">Advertising</Option>
@@ -101,7 +100,7 @@ const CompanyBusinessInfo = () => {
 										label="简述企业主营业务 / Business Description:"
 										rules={[{ required: true, message: "请输入企业主营业务 / Please enter business description" }]}
 									>
-										<Input.TextArea placeholder="请输入企业主营业务 / Please enter business description" />
+										<Input.TextArea />
 									</Form.Item>
 
 									<Form.Item
@@ -111,7 +110,6 @@ const CompanyBusinessInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择企业月消耗量 / Please select a spend range"
 										>
 											<Option value="lessthan500">Less than $500K</Option>
 											<Option value="500-1">$500k - $1M</Option>

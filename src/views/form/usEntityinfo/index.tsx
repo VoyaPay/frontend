@@ -121,7 +121,6 @@ const UsEntityInfo = () => {
 		<div className="detail-wrap">
 			<div className="recharge-wrap">
 				<KycNav />
-
 				<div className="firstCol">
 					<div className="accountInfo">
 						<div className="title">入驻企业美国主体信息 / US Entity Information</div>
@@ -142,7 +141,7 @@ const UsEntityInfo = () => {
 											{ validator: validateAlphanumeric }
 										]}
 									>
-										<Input placeholder="请输入美国主体全称 / Please enter US Entity Legal Name" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -150,7 +149,7 @@ const UsEntityInfo = () => {
 										label="企业网站链接 / Company Website:"
 										rules={[{ required: true, message: "请选择企业网站链接 / Please select the US Entity Type" }]}
 									>
-										<Input placeholder="请输入企业网站链接 / Please enter Company Website" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -158,7 +157,7 @@ const UsEntityInfo = () => {
 										label="美国主体类型 / US Entity Type:"
 										rules={[{ required: true, message: "请选择美国主体类型 / Please select the US Entity Type" }]}
 									>
-										<Select placeholder="请选择美国主体类型 / Select US Entity Type">
+										<Select>
 											<Option value="Limited Liability Company (LLC)">Limited Liability Company (LLC)</Option>
 											<Option value="Partnership">Partnership</Option>
 											<Option value="Cooperative">Cooperative</Option>
@@ -175,7 +174,7 @@ const UsEntityInfo = () => {
 											{ len: 9, message: "EIN必须是9位数字 / EIN must be 9 digits long" }
 										]}
 									>
-										<Input placeholder="请输入美国主体EIN / Please enter US Entity EIN" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -183,7 +182,7 @@ const UsEntityInfo = () => {
 										label="美国主体成立时间 / US Entity Formation Date:"
 										rules={[{ required: true, message: "请选择美国主体成立时间 / Please select the US Entity Formation Date" }]}
 									>
-										<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
+										<DatePicker placeholder="" style={{ width: "100%" }} />
 									</Form.Item>
 
 									<Form.Item
@@ -191,7 +190,7 @@ const UsEntityInfo = () => {
 										label="美国主体注册州 / US Entity Registered State:"
 										rules={[{ required: true, message: "请选择美国主体注册州 / Please select the US Entity Registered State" }]}
 									>
-										<Select placeholder="请选择美国主体注册州 / Select US Entity Registered State" showSearch>
+										<Select showSearch>
 											{states.map(state => (
 												<Option key={state} value={state}>
 													{state}
@@ -205,7 +204,7 @@ const UsEntityInfo = () => {
 										label="美国主体注册地址 / US Entity Registered Address:"
 										rules={[{ required: true, message: "请输入美国主体注册地址 / Please enter US Entity Registered Address" }]}
 									>
-										<Input placeholder="请输入美国主体注册地址 / Please enter US Entity Registered Address" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -213,7 +212,7 @@ const UsEntityInfo = () => {
 										label="美国主体运营地址 / US Entity Operating Address:"
 										rules={[{ required: true, message: "请输入美国主体运营地址 / Please enter US Entity Operating Address" }]}
 									>
-										<Input placeholder="请输入美国主体运营地址 / Please enter US Entity Operating Address" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -224,7 +223,7 @@ const UsEntityInfo = () => {
 											{ validator: validateAlphanumeric }
 										]}
 									>
-										<Input placeholder="请输入总员工人数 / Please enter total number of employees" />
+										<Input />
 									</Form.Item>
 									<Form.Item
 										name="companyFormationFile"

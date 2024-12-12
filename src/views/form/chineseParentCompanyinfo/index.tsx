@@ -121,7 +121,7 @@ const ChineseParentCompanyInfo = () => {
 										label="企业名称 / Company Name:"
 										rules={[{ message: "请输入企业名称 / Please enter the company name" }]}
 									>
-										<Input placeholder="请输入企业名称 / Please enter the company name" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -131,7 +131,6 @@ const ChineseParentCompanyInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择企业类型 / Please select the company type"
 										>
 											<Select.Option value="有限责任公司（自然人独资）">有限责任公司（自然人独资）</Select.Option>
 											<Select.Option value="有限责任公司（法人独资）">有限责任公司（法人独资）</Select.Option>
@@ -148,7 +147,7 @@ const ChineseParentCompanyInfo = () => {
 										<DatePicker
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
 											format="YYYY-MM-DD"
-											placeholder="请选择日期 / Select date"
+											placeholder=""
 											style={{ width: "100%" }}
 										/>
 									</Form.Item>
@@ -158,7 +157,7 @@ const ChineseParentCompanyInfo = () => {
 										label="法定代表人 / Legal Representative:"
 										rules={[{ message: "请输入法定代表人姓名 / Please enter the legal representative name" }]}
 									>
-										<Input placeholder="请输入法定代表人姓名 / Please enter the legal representative name" />
+										<Input />
 									</Form.Item>
 									<Form.Item
 										name="registeredCountry"
@@ -172,7 +171,6 @@ const ChineseParentCompanyInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择企业母公司注册国家 / Please select the parent company registered country"
 										>
 											<Select.Option value="中国">中国 / China</Select.Option>
 											<Select.Option value="美国">美国 / US</Select.Option>
@@ -186,7 +184,7 @@ const ChineseParentCompanyInfo = () => {
 										label="企业注册地址 / Company Registered Location:"
 										rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
 									>
-										<Input placeholder="请输入企业注册地址 / Please enter the registered address" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -194,7 +192,7 @@ const ChineseParentCompanyInfo = () => {
 										label="企业运营地址 / Company Operating Location:"
 										rules={[{ required: true, message: "请输入运营地址 / Please enter operating address" }]}
 									>
-										<Input placeholder="请输入企业运营地址 / Please enter the operating address" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -205,14 +203,14 @@ const ChineseParentCompanyInfo = () => {
 											{ pattern: /^[A-Za-z0-9]{18}$/, message: "代码应为18位字母和数字 / The code should be 18 characters" }
 										]}
 									>
-										<Input placeholder="请输入统一社会信用代码 / Please enter the unified social credit code" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item name="licenseExpiryDate" label="执照有效期至 / License Expiry Date:">
 										<DatePicker
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
 											format="YYYY-MM-DD"
-											placeholder="请选择日期 / Select date"
+											placeholder=""
 											style={{ width: "100%" }}
 										/>
 									</Form.Item>
