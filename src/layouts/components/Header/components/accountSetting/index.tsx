@@ -1,79 +1,78 @@
 import { useEffect, useState, useRef } from "react";
 import "./index.less";
 import { AccountApi } from "@/api/modules/user";
-import {  Button } from "antd";
+import { Button } from "antd";
 import PasswordModal from "@/layouts/components/Header/components/PasswordModal";
 
 // Define the UserData interface for a single user
 interface UserData {
-  id: number;
-  fullname: string;
-  email: string;
-  companyName: string;
+	id: number;
+	fullname: string;
+	email: string;
+	companyName: string;
 }
 
 const AccountSetting = () => {
-  // Set userData as a single UserData object, initialized to null
-  const [userData, setUserData] = useState<UserData | null>(null);
+	// Set userData as a single UserData object, initialized to null
+	const [userData, setUserData] = useState<UserData | null>(null);
 
-  // Define the type of ModalProps for passRef
-  interface ModalProps {
-    showModal: (params: { name: number }) => void;
-  }
+	// Define the type of ModalProps for passRef
+	interface ModalProps {
+		showModal: (params: { name: number }) => void;
+	}
 
-  // Create the ref for PasswordModal
-  const passRef = useRef<ModalProps>(null);
+	// Create the ref for PasswordModal
+	const passRef = useRef<ModalProps>(null);
 
-  const userInformation = async () => {
-    try {
-      const response = await AccountApi(); // Fetch user data from API
-      console.log(response);
+	const userInformation = async () => {
+		try {
+			const response = await AccountApi(); // Fetch user data from API
+			console.log(response);
 
-      // Format the response data and set it to the state
-      const formattedData: UserData = {
-        id: response.id || 0,  // Default to 0 if undefined
-        fullname: response.fullName || "N/A",  // Default to "N/A" if undefined
-        email: response.email || "N/A",  // Default to "N/A" if undefined
-        companyName: response.companyName || "N/A",  // Default to "N/A" if undefined
-      };
-      setUserData(formattedData); // Set formatted data to state
-    } catch (error) {
-      console.log("Error fetching user information: " + error);
-    }
-  };
+			// Format the response data and set it to the state
+			const formattedData: UserData = {
+				id: response.id || 0, // Default to 0 if undefined
+				fullname: response.fullName || "N/A", // Default to "N/A" if undefined
+				email: response.email || "N/A", // Default to "N/A" if undefined
+				companyName: response.companyName || "N/A" // Default to "N/A" if undefined
+			};
+			setUserData(formattedData); // Set formatted data to state
+		} catch (error) {
+			console.log("Error fetching user information: " + error);
+		}
+	};
 
-  useEffect(() => {
-    userInformation();
-  }, []);
+	useEffect(() => {
+		userInformation();
+	}, []);
 
-  return (
+	return (
 		<div className="accountSetting-wrap">
-		<div className="title">账户信息</div>
-		<div className="content">
-			<div className="row">
-				<div className="label">公司名称：</div>
-				<div className="value">{userData ? userData.companyName : "Loading..."}</div>
+			<div className="title">账户信息</div>
+			<div className="content">
+				<div className="row">
+					<div className="label">公司名称：</div>
+					<div className="value">{userData ? userData.companyName : "Loading..."}</div>
+				</div>
+				<div className="row">
+					<div className="label">个人姓名：</div>
+					<div className="value">{userData ? userData.fullname : "Loading..."}</div>
+				</div>
+				<div className="row">
+					<div className="label">绑定邮箱：</div>
+					<div className="value">{userData ? userData.email : "Loading..."}</div>
+				</div>
+				<div>
+					<Button type="primary" onClick={() => passRef.current?.showModal({ name: 11 })}>
+						修改密码
+					</Button>
+				</div>
 			</div>
-			<div className="row">
-				<div className="label">绑定手机号：</div>
-				<div className="value">136xxxxxx33333</div> {/* Placeholder for phone number */}
-			</div>
-			<div className="row">
-				<div className="label">绑定邮箱：</div>
-				<div className="value">{userData ? userData.email : "Loading..."}</div>
-			</div>
-			<div>
-				<Button type="primary" onClick={() => passRef.current?.showModal({ name: 11 })}>
-					修改密码
-				</Button>
-			</div>
+
+			{/* Add PasswordModal component and attach ref */}
+			<PasswordModal innerRef={passRef} />
 		</div>
-	
-		{/* Add PasswordModal component and attach ref */}
-		<PasswordModal innerRef={passRef} />
-	</div>
-	
-  );
+	);
 };
 
 export default AccountSetting;

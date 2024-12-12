@@ -83,7 +83,10 @@ const CompanyBusinessInfo = () => {
 										label="企业所在行业 / Industry:"
 										rules={[{ required: true, message: "请选择企业所在行业 / Please select the industry" }]}
 									>
-										<Select placeholder="请选择企业所在行业 / Please select the industry">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择企业所在行业 / Please select the industry"
+										>
 											<Option value="ecommerce">Ecommerce</Option>
 											<Option value="Advertising">Advertising</Option>
 											<Option value="Travel">Travel</Option>
@@ -106,7 +109,10 @@ const CompanyBusinessInfo = () => {
 										label="企业平均月消耗量范围（USD） / Company Average Monthly Spend (USD):"
 										rules={[{ required: true, message: "请选择企业月消耗量 / Please select a spend range" }]}
 									>
-										<Select placeholder="请选择企业月消耗量 / Please select a spend range">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择企业月消耗量 / Please select a spend range"
+										>
 											<Option value="lessthan500">Less than $500K</Option>
 											<Option value="500-1">$500k - $1M</Option>
 											<Option value="1-3">$1M - $3M</Option>

@@ -94,7 +94,10 @@ const ProductsUseCaseInfo = () => {
 										label="拟开通产品服务 / Requested Products:"
 										rules={[{ required: true, message: "请选择拟开通产品 / Please select requested products" }]}
 									>
-										<Select placeholder="请选择拟开通产品 / Please select requested products">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择拟开通产品 / Please select requested products"
+										>
 											<Option value="voyaVirtualCard">Voya Virtual Credit Card（沃易虚拟卡）</Option>
 											<Option value="voyaBankAccount">Voya Bank Account（沃易收款账户）</Option>
 										</Select>
@@ -105,7 +108,10 @@ const ProductsUseCaseInfo = () => {
 										label="预计月消耗量范围（USD） / Estimated Monthly Spend (USD):"
 										rules={[{ required: true, message: "请选择预计月消耗量 / Please select estimated monthly spend" }]}
 									>
-										<Select placeholder="请选择预计月消耗量 / Please select estimated monthly spend">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择预计月消耗量 / Please select estimated monthly spend"
+										>
 											<Option value="lessthan500">Less than $500K</Option>
 											<Option value="500-1">$500k - $1M</Option>
 											<Option value="1-3">$1M - $3M</Option>
@@ -119,7 +125,11 @@ const ProductsUseCaseInfo = () => {
 										label="消费场景 / Spending Use Case:"
 										rules={[{ required: true, message: "请选择消费场景 / Please select a spending use case" }]}
 									>
-										<Select placeholder="请选择消费场景 / Please select spending use case" mode="multiple">
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择消费场景 / Please select spending use case"
+											mode="multiple"
+										>
 											<Option value="Onlineads">Online Ads（线上广告）</Option>
 											<Option value="storeRental">Store Rental (店铺缴费)</Option>
 											<Option value="airlineTicketandHotel">Airline Tickets and Hotels (机票和酒店)</Option>
@@ -141,7 +151,11 @@ const ProductsUseCaseInfo = () => {
 										label="业务模式 / Business Model:"
 										rules={[{ required: true, message: "请选择业务模式 / Please select the business model" }]}
 									>
-										<Select placeholder="请选择业务模式 / Please select the business model" onChange={handleBusinessModelChange}>
+										<Select
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											placeholder="请选择业务模式 / Please select the business model"
+											onChange={handleBusinessModelChange}
+										>
 											<Option value="b2b">Business to Business(企业客户)</Option>
 											<Option value="b2c">Business to Consumer(个人客户)</Option>
 										</Select>

@@ -191,7 +191,12 @@ const BeneficialOwnerInfo = () => {
 																		label="证件类型 / Document Type:"
 																		rules={[{ required: true, message: "请输入证件类型 / Please enter document type" }]}
 																	>
-																		<Select placeholder="请输入证件类型 / Please enter document type">
+																		<Select
+																			getPopupContainer={(triggerNode?: HTMLElement | undefined) =>
+																				triggerNode?.parentElement as HTMLElement
+																			}
+																			placeholder="请输入证件类型 / Please enter document type"
+																		>
 																			<Select.Option value="Passport">护照 / Passport</Select.Option>
 																			<Select.Option value="National ID">身份证 / National ID</Select.Option>
 																		</Select>
@@ -240,7 +245,12 @@ const BeneficialOwnerInfo = () => {
 																			{ required: true, message: "请选择是否有投票权 / Please select if has voting rights" }
 																		]}
 																	>
-																		<Select placeholder="请选择是否有投票权 / Please select if has voting rights">
+																		<Select
+																			getPopupContainer={(triggerNode?: HTMLElement | undefined) =>
+																				triggerNode?.parentElement as HTMLElement
+																			}
+																			placeholder="请选择是否有投票权 / Please select if has voting rights"
+																		>
 																			<Select.Option value="Yes">是 / Yes</Select.Option>
 																			<Select.Option value="No">否 / No</Select.Option>
 																		</Select>

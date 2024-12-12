@@ -64,7 +64,12 @@ const AvatarIcon = () => {
 	return (
 		<>
 			<Dropdown overlay={menu} placement="bottom" arrow trigger={["click"]}>
-				<Avatar src={avatar} className="avatar" />
+				{/* <span style={{ display: "inline-flex", cursor: "pointer", marginTop: "2px", lineHeight: 1 }}> */}
+				<Avatar src={avatar} className="avatar" style={{ marginRight: "10px" }} />
+				{/* <span style={{
+						display: "inline-block", paddingTop: "5px", maxWidth: "115px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
+					}}>Mia</span>
+				</span> */}
 			</Dropdown>
 			<PasswordModal innerRef={passRef}></PasswordModal>
 		</>

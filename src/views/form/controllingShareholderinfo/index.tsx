@@ -151,7 +151,12 @@ const ControllingShareholderInfo = () => {
 																		label="证件类型 / Document Type:"
 																		rules={[{ required: true, message: "请选择证件类型 / Please select document type" }]}
 																	>
-																		<Select placeholder="请选择证件类型 / Please select document type">
+																		<Select
+																			getPopupContainer={(triggerNode?: HTMLElement | undefined) =>
+																				triggerNode?.parentElement as HTMLElement
+																			}
+																			placeholder="请选择证件类型 / Please select document type"
+																		>
 																			<Select.Option value="护照">护照 / Passport</Select.Option>
 																			<Select.Option value="身份证">身份证 / National ID</Select.Option>
 																		</Select>

@@ -34,7 +34,7 @@ const KycProcess = () => {
 					<div className="buttonWrap">
 						{(kycStatus === "unfilled" || kycStatus === "rejected") && (
 							<Button type="primary" className="return" style={{ marginRight: "10px" }}>
-								<NavLink to="/company" className="myAccount">
+								<NavLink to="/form/product" className="myAccount">
 									修改
 								</NavLink>
 							</Button>

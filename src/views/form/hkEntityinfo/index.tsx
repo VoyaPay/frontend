@@ -127,7 +127,7 @@ const HKEntityInfo = () => {
 							onFinishFailed={onFinishFailed}
 							disabled={kycStatus === "approved" || kycStatus === "underReview"}
 						>
-							<div style={{ marginTop: "10px" }}>
+							<div className="content">
 								<div className="left" style={{ alignItems: "initial" }}>
 									<Form.Item
 										name="hkEntityName"
@@ -164,7 +164,12 @@ const HKEntityInfo = () => {
 										label="生效日期 / Date of Commencement:"
 										rules={[{ required: true, message: "请输入生效日期 / Please enter the date of commencement" }]}
 									>
-										<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
+										<DatePicker
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											format="YYYY-MM-DD"
+											placeholder="请选择成立时间 / Select Formation Date"
+											style={{ width: "100%" }}
+										/>
 									</Form.Item>
 
 									<Form.Item
@@ -172,7 +177,12 @@ const HKEntityInfo = () => {
 										label="届满日期 / Date of Expiry:"
 										rules={[{ required: true, message: "请输入届满日期 / Please enter the expiry date" }]}
 									>
-										<DatePicker placeholder="请选择成立时间 / Select Formation Date" style={{ width: "100%" }} />
+										<DatePicker
+											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
+											format="YYYY-MM-DD"
+											placeholder="请选择成立时间 / Select Formation Date"
+											style={{ width: "100%" }}
+										/>
 									</Form.Item>
 
 									<Form.Item
