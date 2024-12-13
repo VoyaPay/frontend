@@ -282,7 +282,7 @@ const ChineseParentCompanyInfo = () => {
 								</Checkbox>
 							</Form.Item>
 							<div className="btns"></div>
-							<Button type="primary" htmlType="submit" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
+							<Button type="primary" style={{ marginRight: "10px" }} onClick={handlePrevStep}>
 								上一步 / Prev Step
 							</Button>
 							<Button type="primary" htmlType="submit">

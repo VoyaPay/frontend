@@ -352,13 +352,7 @@ const BeneficialOwnerInfo = () => {
 							</div>
 
 							<Form.Item>
-								<Button
-									type="primary"
-									htmlType="submit"
-									disabled={totalOwnership > 100}
-									style={{ marginRight: "10px" }}
-									onClick={handlePrevStep}
-								>
+								<Button type="primary" disabled={totalOwnership > 100} style={{ marginRight: "10px" }} onClick={handlePrevStep}>
 									上一步 / Prev Step
 								</Button>
 

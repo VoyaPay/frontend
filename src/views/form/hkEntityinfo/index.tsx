@@ -265,12 +265,7 @@ const HKEntityInfo = () => {
 								</div>
 							</div>
 							<div className="btns">
-								<Button
-									type="primary"
-									htmlType="submit"
-									style={{ marginRight: "10px", marginLeft: "0px" }}
-									onClick={handlePrevStep}
-								>
+								<Button type="primary" style={{ marginRight: "10px", marginLeft: "0px" }} onClick={handlePrevStep}>
 									上一步 / Prev Step
 								</Button>
 								<Button type="primary" htmlType="submit" disabled={!Object.values(uploadSuccess).every(success => success)}>
