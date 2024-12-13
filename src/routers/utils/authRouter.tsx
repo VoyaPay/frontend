@@ -56,6 +56,7 @@ const AuthRouter = (props: { children: JSX.Element }) => {
 			.catch(() => {
 				message.error("获取用户信息失败!");
 			});
+		return null;
 	} else {
 		return props.children;
 	}
