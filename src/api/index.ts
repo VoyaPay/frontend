@@ -84,7 +84,6 @@ class RequestHttp {
 					}
 				} else if (response && response.status >= 400 && response.status < 500) {
 					const errorData = response.data as ErrorResponse;
-					console.log(errorData, "errorData");
 					if (errorData.errorCode === 1001) {
 						return Promise.reject(checkErrorCode(errorData.errorCode));
 					}

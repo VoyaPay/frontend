@@ -254,7 +254,6 @@ const AddPrepaidCard = () => {
 		const getBalance = async () => {
 			try {
 				const response = await GetBalanceApi();
-				console.log("this balance" + response.currentBalance);
 				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
 				setAccountBalance(balance);
 			} catch (error) {

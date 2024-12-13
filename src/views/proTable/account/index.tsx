@@ -5,7 +5,6 @@ import { NavLink } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
-import { AccountApi } from "@/api/modules/user";
 
 interface FormattedTransaction {
 	key: string;
@@ -37,11 +36,8 @@ const Account = () => {
 	const [accountBalance, setAccountBalance] = useState(0);
 
 	useEffect(() => {
-		// Fetch initial data for balance and transactions
 		const fetchData = async () => {
-			await userInformation();
-			await getBalance();
-			await fetchTransactions();
+			await Promise.all([getBalance(), fetchTransactions()]);
 		};
 		fetchData();
 	}, []);
@@ -105,7 +101,7 @@ const Account = () => {
 
 	const getCSV = async (): Promise<void> => {
 		try {
-			const response = await LedgerCSVApi({
+			await LedgerCSVApi({
 				where: {
 					startDate: selectedTimeRange[0],
 					endDate: selectedTimeRange[1],
@@ -114,7 +110,6 @@ const Account = () => {
 				pageNum: 1,
 				pageSize: 100
 			});
-			console.log(response);
 		} catch (e: any) {
 			console.log(e);
 		}
@@ -165,8 +160,6 @@ const Account = () => {
 	const applyFilters = () => {
 		let filteredData = dataSource; // 初始为所有数据
 
-		// 只根据 selectedTransactionTypes 进行筛选
-		console.log("selectedTransferType", selectedTransferType);
 		if (selectedTransferType) {
 			filteredData = filteredData.filter(transaction => transaction.type === selectedTransferType);
 		}
@@ -246,24 +239,24 @@ const formatDate = (dateString: string) => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-const userInformation = async () => {
-	try {
-		const response = await AccountApi();
-		const formattedData = {
-			id: response.id || 0,
-			fullName: response.fullName || "N/A",
-			email: response.email || "N/A",
-			companyName: response.companyName || "N/A",
-			cardCreationFee: response.userConfig.cardCreationFee || "N/A",
-			maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
-		};
-		localStorage.setItem("userid", String(formattedData.id));
-		localStorage.setItem("username", formattedData.fullName);
-		localStorage.setItem("useremail", formattedData.email);
-		localStorage.setItem("companyName", formattedData.companyName);
-	} catch (error) {
-		console.log("Error fetching user information: " + error);
-	}
-};
+// const userInformation = async () => {
+// 	try {
+// 		const response = await AccountApi();
+// 		const formattedData = {
+// 			id: response.id || 0,
+// 			fullName: response.fullName || "N/A",
+// 			email: response.email || "N/A",
+// 			companyName: response.companyName || "N/A",
+// 			cardCreationFee: response.userConfig.cardCreationFee || "N/A",
+// 			maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
+// 		};
+// 		localStorage.setItem("userid", String(formattedData.id));
+// 		localStorage.setItem("username", formattedData.fullName);
+// 		localStorage.setItem("useremail", formattedData.email);
+// 		localStorage.setItem("companyName", formattedData.companyName);
+// 	} catch (error) {
+// 		console.log("Error fetching user information: " + error);
+// 	}
+// };
 
 export default Account;

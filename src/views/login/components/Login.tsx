@@ -6,8 +6,7 @@ import { loginApi } from "@/api/modules/login";
 import { getKYCApi } from "@/api/modules/kyc";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setToken } from "@/redux/modules/global/action";
-import { setTabsList } from "@/redux/modules/tabs/action";
+import { setToken, setUserInfo } from "@/redux/modules/global/action";
 
 interface LoginComponentProps {
 	form: FormInstance<any>;
@@ -33,7 +32,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 				throw new Error("No access token received");
 			}
 			dispatch(setToken(access_token));
-			dispatch(setTabsList([]));
+			dispatch(setUserInfo(null));
 			localStorage.setItem("access_token", access_token);
 			if (loginForm.email) {
 				const kycResponse = await getKYCApi(); // approved unfilled underReview rejected

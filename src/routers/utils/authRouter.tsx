@@ -7,6 +7,10 @@ import { AxiosCanceler } from "@/api/helper/axiosCancel";
 import useLogout from "@/hooks/useLogout";
 import { useEffect } from "react";
 import useInactivityLogout from "@/hooks/useInactivityLogout";
+import { AccountApi } from "@/api/modules/user";
+import { setUserInfo } from "@/redux/modules/global/action";
+import { message } from "antd";
+import { useDispatch } from "react-redux";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -14,6 +18,7 @@ const axiosCanceler = new AxiosCanceler();
  * @description 路由守卫组件
  * */
 const AuthRouter = (props: { children: JSX.Element }) => {
+	const dispatch = useDispatch();
 	const { pathname } = useLocation();
 	const route = searchRoute(pathname, rootRouter);
 	const token = store.getState().global.token;
@@ -41,7 +46,19 @@ const AuthRouter = (props: { children: JSX.Element }) => {
 	const routerList = dynamicRouter.concat(staticRouter);
 	if (routerList.indexOf(pathname) == -1) return <Navigate to="/403" />;
 
-	return props.children;
+	const userInfo = store.getState().global.userInfo;
+	if (!userInfo) {
+		AccountApi()
+			.then(res => {
+				dispatch(setUserInfo(res));
+				return props.children;
+			})
+			.catch(() => {
+				message.error("获取用户信息失败!");
+			});
+	} else {
+		return props.children;
+	}
 };
 
 export default AuthRouter;

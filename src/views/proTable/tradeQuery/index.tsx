@@ -109,7 +109,7 @@ const TradeQuery = () => {
 
 	const getCSV = async (): Promise<void> => {
 		try {
-			const response = await TransactionsCSVApi({
+			await TransactionsCSVApi({
 				where: {
 					startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
 					endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
@@ -122,7 +122,6 @@ const TradeQuery = () => {
 				pageNum: 1,
 				pageSize: TRANSACTION_DEFAULT_PAGE_SIZE
 			});
-			console.log(response);
 		} catch (e: any) {
 			console.log(e);
 		}
@@ -289,7 +288,6 @@ const TradeQuery = () => {
 
 	const handleTimeChange = (dates: any) => {
 		setSelectedTimeRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : []);
-		console.log("dates", [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")]);
 	};
 
 	const handleChange = (value: string) => {
@@ -381,7 +379,6 @@ const TradeQuery = () => {
 			pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
 		};
 		SearchTransactionApi(requestBody).then(res => {
-			console.log("search result", res);
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					...tran,
@@ -409,7 +406,6 @@ const TradeQuery = () => {
 
 	const applyFilters = () => {
 		let filtered = [...dataSource];
-		console.log("filter" + filtered);
 
 		// Apply date range filter
 		if (selectedTimeRange.length > 0) {
@@ -477,7 +473,6 @@ const TradeQuery = () => {
 								style={{ width: 200 }}
 								onChange={(e: any) => {
 									setMerchant(e.target.value);
-									console.log("merchant status " + merchant + " merchant value：" + e.target.value);
 								}}
 							/>
 							<Select
@@ -486,7 +481,6 @@ const TradeQuery = () => {
 								style={{ width: 120 }}
 								onChange={value => {
 									setTranStatus(value);
-									console.log("tran status " + tranStatus + " value：" + value);
 								}}
 								options={Object.entries(StatusMapping).map(([key, label]) => ({ value: key, label }))}
 								className="transactionType"
@@ -501,7 +495,6 @@ const TradeQuery = () => {
 									// 使用正则表达式过滤掉非数字字符
 									const filteredValue = value.replace(/[^0-9*]/g, ""); // \D 表示非数字
 									setCardNoSearch(filteredValue); // 更新用户输入的值
-									console.log("card No search: " + filteredValue);
 								}}
 							/>
 

@@ -6,17 +6,17 @@ import { HOME_URL } from "@/config/config";
 import PasswordModal from "./PasswordModal";
 import avatar from "@/assets/icons/avatar.svg";
 import useLogout from "@/hooks/useLogout";
+import { store } from "@/redux";
+interface ModalProps {
+	showModal: (params: { name: number }) => void;
+}
 
 const AvatarIcon = () => {
 	const logoutHandle = useLogout();
 	const navigate = useNavigate();
-
-	interface ModalProps {
-		showModal: (params: { name: number }) => void;
-	}
+	const userInfo = store.getState().global.userInfo;
 	const passRef = useRef<ModalProps>(null);
 
-	// 退出登录
 	const logout = () => {
 		Modal.confirm({
 			title: "温馨提示 🧡",
@@ -64,12 +64,21 @@ const AvatarIcon = () => {
 	return (
 		<>
 			<Dropdown overlay={menu} placement="bottom" arrow trigger={["click"]}>
-				{/* <span style={{ display: "inline-flex", cursor: "pointer", marginTop: "2px", lineHeight: 1 }}> */}
-				<Avatar src={avatar} className="avatar" style={{ marginRight: "10px" }} />
-				{/* <span style={{
-						display: "inline-block", paddingTop: "5px", maxWidth: "115px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
-					}}>Mia</span>
-				</span> */}
+				<span style={{ display: "inline-flex", cursor: "pointer", marginTop: "2px", lineHeight: 1 }}>
+					<Avatar src={avatar} className="avatar" style={{ marginRight: "10px" }} />
+					<span
+						style={{
+							display: "inline-block",
+							paddingTop: "5px",
+							maxWidth: "115px",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							whiteSpace: "nowrap"
+						}}
+					>
+						{userInfo ? userInfo.fullName : "Loading..."}
+					</span>
+				</span>
 			</Dropdown>
 			<PasswordModal innerRef={passRef}></PasswordModal>
 		</>

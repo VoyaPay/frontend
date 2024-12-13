@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
@@ -102,7 +99,7 @@ const cashback = () => {
 			}
 		};
 		getBalance();
-	}, []); // 依赖为空数组，表示只在组件挂载时运行一次
+	}, []);
 	const handleCancel = () => {
 		setOpen(false);
 	};
@@ -141,7 +138,7 @@ const cashback = () => {
 						</div>
 					</div>
 					<div className="btns">
-						<Button type="primary" className="actionBtn" onClick={recharge} style={{marginRight:"20px"}}>
+						<Button type="primary" className="actionBtn" onClick={recharge} style={{ marginRight: "20px" }}>
 							立刻提现
 						</Button>
 						<Button type="primary" className="actionBtn">

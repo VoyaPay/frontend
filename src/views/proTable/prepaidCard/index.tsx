@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { AccountApi } from "@/api/modules/user";
 import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -8,6 +7,7 @@ import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi, GetTotalBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 import SvgIcon from "@/components/svgIcon";
+import { store } from "@/redux";
 
 interface BinData {
 	bin: string;
@@ -17,7 +17,6 @@ interface BinData {
 
 const Auth = localStorage.getItem("username");
 
-console.log("AUTH IS " + Auth);
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
@@ -53,7 +52,6 @@ interface FormattedCard {
 }
 
 const PrepaidCard = () => {
-	// State to hold the card data
 	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
 	const [bins, setbins] = useState<BinData[]>([]);
@@ -70,25 +68,7 @@ const PrepaidCard = () => {
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
-	const [totalCardNumber, setTotalCardNumber] = useState<number | null>(null);
-	const userInformation = async (): Promise<number> => {
-		try {
-			const response = await AccountApi();
-			const formattedData = {
-				id: response.id || 0,
-				fullName: response.fullName || "N/A",
-				email: response.email || "N/A",
-				companyName: response.companyName || "N/A",
-				cardCreationFee: response.userConfig.cardCreationFee || "N/A",
-				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
-			};
-			setTotalCardNumber(formattedData.maximumCardsAllowed);
-			return formattedData.maximumCardsAllowed; // Return the value
-		} catch (error) {
-			console.log("Error fetching user information: " + error);
-			return 0; // Return 0 in case of error
-		}
-	};
+	const [totalCardNumber, setTotalCardNumber] = useState<number>(0);
 
 	const getCardBin = async () => {
 		try {
@@ -112,12 +92,12 @@ const PrepaidCard = () => {
 		label: `${bin.bin}`
 	}));
 	const fetchUserCards = async () => {
+		const userInfo = store.getState().global.userInfo;
+		const maxCards = userInfo?.userConfig?.maximumCardsAllowed || 0;
 		try {
-			const maxCards = await userInformation();
 			const response = await UserCardApi();
 			let remainCardsCountToDisplay;
 			if (maxCards === 0) {
-				// unlimited user
 				remainCardsCountToDisplay = 99;
 			} else {
 				remainCardsCountToDisplay = maxCards - parseFloat(response.length as string);
@@ -159,7 +139,6 @@ const PrepaidCard = () => {
 		getCardBin();
 		getBalance();
 		fetchUserCards();
-		console.log(binOptions);
 	}, []);
 	const goCheck = (record: FormattedCard) => {
 		navigate("/proTable/tradeQuery", {
@@ -327,7 +306,6 @@ const PrepaidCard = () => {
 	};
 
 	const handlerRechargeDetails = (record: FormattedCard) => {
-		console.log(record);
 		if (record.cardStatus === "Closed") {
 			// Display error message and prevent editing
 			message.error("无法充值已注销的卡片");

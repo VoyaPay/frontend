@@ -43,7 +43,6 @@ const ControllingShareholderInfo = () => {
 	useEffect(() => {
 		getKYCData().then(storedData => {
 			if (storedData) {
-				console.log("storedData", storedData?.controllingShareholderInfo);
 				form.setFieldsValue({
 					shareholders: storedData.controllingShareholderInfo?.shareholders || []
 				});
