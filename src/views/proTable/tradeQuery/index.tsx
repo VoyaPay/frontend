@@ -5,7 +5,7 @@ import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 
 import "./index.less";
-import { SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
+import { CardsCSVApi, SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { SearchTransactionRequest, TransactionListItem } from "@/api/interface";
 import { SorterResult } from "antd/es/table/interface";
@@ -42,12 +42,21 @@ const CardTypeMapping = {
 interface FormattedCard {
 	key: string;
 	cardName: string;
-	cardOwner: string;
 	cardGroup: string;
 	cardNo: string;
 	cardStatus: string;
-	balance: string;
+	balance: number;
 	createCardTime: string;
+	updateCardTime: string;
+	cardHolderAddressStreet: string;
+	cardHolderAddressCity: string;
+	cardHolderAddressState: string;
+	cardHolderAddressPostalCode: string;
+	cardHolderAddressCountry: string;
+	partnerIdempotencyKey: string;
+	cardHolderName: string;
+	number?: string;
+	maximumCardsAllowed?: number;
 }
 
 interface CardData {
@@ -68,7 +77,6 @@ interface TableParams {
 	pagination?: TablePaginationConfig;
 	sortField?: SorterResult<any>["field"];
 	sortOrder?: SorterResult<any>["order"];
-	// filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
 }
 
 interface FormattedTransaction extends TransactionListItem {
@@ -94,7 +102,6 @@ const TradeQuery = () => {
 
 	const { RangePicker } = DatePicker;
 	const [tradeType, setTradeType] = useState("auth");
-	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
 	const [transactionPage, setTransactionPage] = useState<FormattedTransaction[]>([]);
 	const [transactionTableParams, setTransactionTableParams] = useState<TableParams>({
@@ -106,8 +113,15 @@ const TradeQuery = () => {
 		sortField: TRANSACTION_DEFAULT_SORT_FIELD,
 		sortOrder: "descend"
 	});
+	const [cardTableParams, setCardTableParams] = useState<TableParams>({
+		pagination: {
+			current: 1,
+			pageSize: TRANSACTION_DEFAULT_PAGE_SIZE,
+			showSizeChanger: false
+		}
+	});
 
-	const getCSV = async (): Promise<void> => {
+	const getBillCSV = async (): Promise<void> => {
 		try {
 			const response = await TransactionsCSVApi({
 				where: {
@@ -128,59 +142,102 @@ const TradeQuery = () => {
 		}
 	};
 
+	const getCardCSV = () => {
+		CardsCSVApi({
+			where: {
+				createdAt: {
+					min: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[0] : undefined,
+					max: selectedTimeRange && selectedTimeRange.length > 0 ? handleTimeFormat(selectedTimeRange[1]) : undefined
+				}
+			},
+			pageNum: cardTableParams.pagination?.current ?? 1,
+			pageSize: cardTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
+		});
+	};
+
 	useEffect(() => {
-		fetchUserCards();
+		fetchUserCards(1, TRANSACTION_DEFAULT_PAGE_SIZE);
 		searchTransaction(1, TRANSACTION_DEFAULT_PAGE_SIZE);
 	}, []);
 
 	const createCardColumns: any[] = [
 		{
-			title: "卡号",
-			dataIndex: "cardNo",
-			key: "cardNo",
-			align: "center",
-			width: "200px"
-		},
-		{
-			title: "卡片类型",
-			dataIndex: "cardType",
-			key: "cardType",
-			align: "center",
-			width: "100px",
-			render: (cardType: string) => (cardType === "PrefundCredit" ? "预充卡" : "共享卡")
-		},
-
-		{
-			title: "开卡时间",
-			dataIndex: "createTime",
-			key: "createTime",
-			align: "center",
-			width: "200px",
-			defaultSortOrder: "descend",
-			sorter: (a: any, b: any) => {
-				const dateA = new Date(a.createTime).getTime();
-				const dateB = new Date(b.createTime).getTime();
-				return dateA - dateB;
-			}
-		},
-		{
 			title: "卡昵称",
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: "200px", // Fixed width in pixels
+			width: "40px", // Fixed width for this column
 			render: (cardName: string) => (
-				<Tooltip title={cardName.length > 17 ? cardName : ""}>
-					{cardName.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+				<Tooltip title={cardName?.length > 17 ? cardName : ""}>
+					{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
 				</Tooltip>
 			)
 		},
+		{
+			title: "持卡人",
+			dataIndex: "cardHolderName",
+			key: "cardHolderName",
+			align: "center",
+			width: "40px",
+			render: (cardHolderName: string) => (
+				<Tooltip title={cardHolderName?.length > 17 ? cardHolderName : ""}>
+					{cardHolderName?.length > 17 ? `${cardHolderName.substring(0, 17)}...` : cardHolderName}
+				</Tooltip>
+			)
+		},
+
 		{
 			title: "卡组",
 			dataIndex: "cardGroup",
 			key: "cardGroup",
 			align: "center",
-			width: "100px" // Fixed width in pixels
+			width: "30px"
+		},
+		{
+			title: "卡号",
+			dataIndex: "cardNo",
+			key: "cardNo",
+			align: "center",
+			width: "50px"
+		},
+		{
+			title: "状态",
+			dataIndex: "cardStatus",
+			key: "cardStatus",
+			align: "center",
+			width: "30px",
+			render: (status: string) =>
+				status === "Active"
+					? "活跃"
+					: status === "Inactive"
+					? "已冻结"
+					: status === "Closed"
+					? "已注销"
+					: status === "PreClose"
+					? "待注销"
+					: "N/A"
+		},
+		{
+			title: "余额",
+			dataIndex: "balance",
+			key: "balance",
+			align: "center",
+			width: "30px",
+			sorter: (a: any, b: any) => a.balance - b.balance,
+			render: (balance: number) => (balance >= 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
+		},
+		{
+			title: "开卡时间",
+			dataIndex: "createCardTime",
+			key: "createCardTime",
+			align: "center",
+			width: "50px",
+			defaultSortOrder: "descend",
+			sorter: (a: any, b: any) => {
+				const dateA = new Date(a.createCardTime).getTime();
+				const dateB = new Date(b.createCardTime).getTime();
+				return dateA - dateB;
+			}
 		}
 	];
 
@@ -284,16 +341,16 @@ const TradeQuery = () => {
 	const [columns, setColumns] = useState(transactionColumns);
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [cardNoSearch, setCardNoSearch] = useState(cardData.cardNo || "");
+	const [cardType, setCardType] = useState<string[]>([]);
 	const [merchant, setMerchant] = useState("");
 	const [tranStatus, setTranStatus] = useState(undefined);
 
 	const handleTimeChange = (dates: any) => {
 		setSelectedTimeRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : []);
-		console.log("dates", [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")]);
 	};
 
-	const handleChange = (value: string) => {
-		console.log(`selected ${value}`);
+	const handleCardTypeChange = (value: string[]) => {
+		setCardType(value);
 	};
 
 	const changeTradeType = (type: any) => {
@@ -316,6 +373,12 @@ const TradeQuery = () => {
 		searchTransaction(1, transactionTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE);
 	};
 
+	const handleTimeFormat = (time: string) => {
+		const date = new Date(time);
+		date.setHours(23, 59, 59, 999);
+		return date;
+	};
+
 	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = (pagination, filters, sorter) => {
 		const sortField = Array.isArray(sorter) ? TRANSACTION_DEFAULT_SORT_FIELD : sorter.field?.toString();
 		const sortOrder = Array.isArray(sorter) ? "ascend" : sorter.order;
@@ -336,24 +399,56 @@ const TradeQuery = () => {
 		);
 	};
 
-	const fetchUserCards = async () => {
+	const handleCardTableChange: TableProps<FormattedCard>["onChange"] = pagination => {
+		setCardTableParams({
+			pagination: {
+				...cardTableParams.pagination,
+				current: pagination.current,
+				pageSize: pagination.pageSize
+			}
+		});
+		fetchUserCards(pagination.current ?? 1, pagination.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE);
+	};
+
+	const fetchUserCards = async (pageNum: number, pageSize: number, adjustedStart?: number, adjustedEnd?: number) => {
 		try {
-			const response = await UserCardApi();
-			if (Array.isArray(response)) {
-				const formattedData = response.map(card => ({
+			const response = await UserCardApi({
+				where: {
+					createdAt: {
+						min: adjustedStart ?? undefined,
+						max: adjustedEnd ?? undefined
+					}
+				},
+				pageNum: pageNum ?? 1,
+				pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
+			});
+			setCardTableParams({
+				pagination: {
+					...cardTableParams.pagination,
+					current: response.pageNum ?? 1,
+					total: response.total ?? 0
+				}
+			});
+			if (Array.isArray(response?.datalist)) {
+				const formattedData = response?.datalist.map((card: any) => ({
 					key: card.id || "",
 					cardName: card.alias || "",
-					cardOwner: "NA",
 					cardGroup: card.network || "",
 					cardNo: card.number || "",
 					cardStatus: card.status || "",
-					balance: card.initialLimit || "",
-					createCardTime: formatDate(card.transactionTime) || "",
-					createTime: formatDate(card.createdAt) || "",
-					cardType: card.type || ""
+					balance: card.balance || "",
+					createCardTime: formatDate(card.createdAt) || "",
+					updateCardTime: formatDate(card.updatedAt) || "",
+					cardHolderAddressStreet: card.cardHolderAddressStreet || "",
+					cardHolderAddressCity: card.cardHolderAddressCity || "",
+					cardHolderAddressState: card.cardHolderAddressState || "",
+					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode || "",
+					cardHolderAddressCountry: card.cardHolderAddressPostalCountry || "",
+					partnerIdempotencyKey: card.partnerIdempotencyKey || "",
+					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
+						card.cardHolderLastName ? card.cardHolderLastName : "LM"
+					}`
 				}));
-
-				setDataSource(formattedData);
 				setFilteredData(formattedData);
 			}
 		} catch (error) {
@@ -369,8 +464,8 @@ const TradeQuery = () => {
 	) => {
 		const requestBody: SearchTransactionRequest = {
 			where: {
-				startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
-				endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
+				startDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[0] : undefined,
+				endDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[1] : undefined,
 				status: tranStatus,
 				merchant: merchant,
 				cardNumber: cardNoSearch
@@ -381,7 +476,6 @@ const TradeQuery = () => {
 			pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
 		};
 		SearchTransactionApi(requestBody).then(res => {
-			console.log("search result", res);
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					...tran,
@@ -408,29 +502,14 @@ const TradeQuery = () => {
 	};
 
 	const applyFilters = () => {
-		let filtered = [...dataSource];
-		console.log("filter" + filtered);
-
-		// Apply date range filter
+		let adjustedStart: number | undefined = undefined;
+		let adjustedEnd: number | undefined = undefined;
 		if (selectedTimeRange.length > 0) {
 			const [start, end] = selectedTimeRange;
-			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-
-			// Set end time to 23:59:59 for the end date
-			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
-
-			filtered = filtered.filter(card => {
-				const cardDate = new Date(card.createCardTime).getTime();
-				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
-			});
+			adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+			adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
 		}
-
-		// Apply card group filter
-		if (cardNoSearch) {
-			filtered = filtered.filter(card => card.cardNo.includes(cardNoSearch));
-		}
-
-		setFilteredData(filtered);
+		fetchUserCards(1, TRANSACTION_DEFAULT_PAGE_SIZE, adjustedStart, adjustedEnd);
 	};
 
 	return (
@@ -460,24 +539,11 @@ const TradeQuery = () => {
 					{tradeType === "auth" ? (
 						<Space>
 							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
-							{/*<Select*/}
-							{/*	placeholder="卡片类型"*/}
-							{/*	mode="multiple"*/}
-							{/*	allowClear*/}
-							{/*	style={{ width: 120 }}*/}
-							{/*	onChange={handleChange}*/}
-							{/*	options={[*/}
-							{/*		{ value: "PrefundCredit", label: "预充卡" },*/}
-							{/*		{ value: "share", label: "共享卡" }*/}
-							{/*	]}*/}
-							{/*	className="transactionType"*/}
-							{/*/>*/}
 							<Input
 								placeholder="商户名称" // Provide a default placeholder
 								style={{ width: 200 }}
 								onChange={(e: any) => {
 									setMerchant(e.target.value);
-									console.log("merchant status " + merchant + " merchant value：" + e.target.value);
 								}}
 							/>
 							<Select
@@ -486,7 +552,6 @@ const TradeQuery = () => {
 								style={{ width: 120 }}
 								onChange={value => {
 									setTranStatus(value);
-									console.log("tran status " + tranStatus + " value：" + value);
 								}}
 								options={Object.entries(StatusMapping).map(([key, label]) => ({ value: key, label }))}
 								className="transactionType"
@@ -501,7 +566,6 @@ const TradeQuery = () => {
 									// 使用正则表达式过滤掉非数字字符
 									const filteredValue = value.replace(/[^0-9*]/g, ""); // \D 表示非数字
 									setCardNoSearch(filteredValue); // 更新用户输入的值
-									console.log("card No search: " + filteredValue);
 								}}
 							/>
 
@@ -516,8 +580,9 @@ const TradeQuery = () => {
 								placeholder="卡片类型"
 								mode="multiple"
 								allowClear
+								value={cardType}
 								style={{ width: 120 }}
-								onChange={handleChange}
+								onChange={handleCardTypeChange}
 								options={[
 									{ value: "PrefundCredit", label: "预充卡" },
 									{ value: "Share", label: "共享卡" }
@@ -530,9 +595,15 @@ const TradeQuery = () => {
 						</Space>
 					)}
 				</div>
-				<Button type="primary" onClick={getCSV}>
-					导出账单明细
-				</Button>
+				{tradeType === "auth" ? (
+					<Button type="primary" onClick={getBillCSV}>
+						导出账单明细
+					</Button>
+				) : (
+					<Button type="primary" onClick={getCardCSV}>
+						导出开卡明细
+					</Button>
+				)}
 			</div>
 			{tradeType === "auth" ? (
 				<Table
@@ -547,7 +618,8 @@ const TradeQuery = () => {
 					bordered={true}
 					dataSource={filteredData}
 					columns={columns}
-					pagination={{ pageSize: 10, showSizeChanger: false }}
+					pagination={cardTableParams.pagination}
+					onChange={handleCardTableChange}
 				/>
 			)}
 		</div>

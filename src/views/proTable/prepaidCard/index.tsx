@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { AccountApi } from "@/api/modules/user";
-import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
+import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input, TablePaginationConfig } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./index.less";
@@ -8,6 +7,8 @@ import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi, GetTotalBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 import SvgIcon from "@/components/svgIcon";
+import { SorterResult } from "antd/lib/table/interface";
+import { AccountApi } from "@/api/modules/user";
 
 interface BinData {
 	bin: string;
@@ -15,9 +16,14 @@ interface BinData {
 	orgCompanyId?: string;
 }
 
+interface TableParams {
+	pagination?: TablePaginationConfig;
+	sortField?: SorterResult<any>["field"];
+	sortOrder?: SorterResult<any>["order"];
+}
+
 const Auth = localStorage.getItem("username");
 
-console.log("AUTH IS " + Auth);
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const year = date.getFullYear();
@@ -53,8 +59,6 @@ interface FormattedCard {
 }
 
 const PrepaidCard = () => {
-	// State to hold the card data
-	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
 	const [bins, setbins] = useState<BinData[]>([]);
 
@@ -63,32 +67,29 @@ const PrepaidCard = () => {
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-	const [cardNameSearch, setCardNameSearch] = useState("");
+	const [cardNameSearch, setCardNameSearch] = useState<string[]>([]);
 	const [cardOwnerSearch, setCardOwnerSearch] = useState("");
-	const [cardNoSearch, setCardNoSearch] = useState("");
+	const [cardNoSearch, setCardNoSearch] = useState<string[]>([]);
 	const iconStyle = { width: "32px", height: "32px", marginTop: "8px", color: "#0D99FF" };
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
-	const [totalCardNumber, setTotalCardNumber] = useState<number | null>(null);
-	const userInformation = async (): Promise<number> => {
-		try {
-			const response = await AccountApi();
-			const formattedData = {
-				id: response.id || 0,
-				fullName: response.fullName || "N/A",
-				email: response.email || "N/A",
-				companyName: response.companyName || "N/A",
-				cardCreationFee: response.userConfig.cardCreationFee || "N/A",
-				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
-			};
-			setTotalCardNumber(formattedData.maximumCardsAllowed);
-			return formattedData.maximumCardsAllowed; // Return the value
-		} catch (error) {
-			console.log("Error fetching user information: " + error);
-			return 0; // Return 0 in case of error
+	const [maxCards, setMaxCards] = useState<number>(0);
+	const [totalCardNumber, setTotalCardNumber] = useState<number>(0);
+	const [cardTableParams, setCardTableParams] = useState<TableParams>({
+		pagination: {
+			current: 1,
+			pageSize: 10
 		}
-	};
+	});
+
+	// useEffect(() => {
+	// 	const userInfo = async () => {
+	// 		const response = await AccountApi();
+	// 		const maxCards = response.userConfig.maximumCardsAllowed
+	// 		setMaxCards(maxCards);
+	// 	}
+	// }, []);
 
 	const getCardBin = async () => {
 		try {
@@ -111,55 +112,73 @@ const PrepaidCard = () => {
 		value: bin.bin,
 		label: `${bin.bin}`
 	}));
-	const fetchUserCards = async () => {
+	const fetchUserCards = async (adjustedStart?: number, adjustedEnd?: number) => {
 		try {
-			const maxCards = await userInformation();
-			const response = await UserCardApi();
-			let remainCardsCountToDisplay;
-			if (maxCards === 0) {
-				// unlimited user
-				remainCardsCountToDisplay = 99;
-			} else {
-				remainCardsCountToDisplay = maxCards - parseFloat(response.length as string);
-				if (remainCardsCountToDisplay < 0) {
-					remainCardsCountToDisplay = 0;
-				}
-			}
-			setTotalCardNumber(remainCardsCountToDisplay);
-
-			if (Array.isArray(response)) {
-				const formattedData = response.map(card => ({
-					key: card.id || "",
-					cardName: card.alias || "",
-					cardOwner: Auth ? Auth : "NA",
-					cardGroup: card.network || "",
-					cardNo: card.number || "",
-					cardStatus: card.status || "",
-					balance: card.balance || "",
-					createCardTime: formatDate(card.createdAt) || "",
-					updateCardTime: formatDate(card.updatedAt) || "",
-					cardHolderAddressStreet: card.cardHolderAddressStreet || "",
-					cardHolderAddressCity: card.cardHolderAddressCity || "",
-					cardHolderAddressState: card.cardHolderAddressState || "",
-					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode || "",
-					cardHolderAddressCountry: card.cardHolderAddressPostalCountry || "",
-					partnerIdempotencyKey: card.partnerIdempotencyKey || "",
-					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
-						card.cardHolderLastName ? card.cardHolderLastName : "LM"
-					}`
-				}));
-				setDataSource(formattedData);
-				setFilteredData(formattedData);
-			}
+			const userInfo = await AccountApi();
+			const maxCards = userInfo.userConfig.maximumCardsAllowed;
+			console.log(userInfo, "maxCards");
+			setMaxCards(maxCards);
+			const response = await UserCardApi({
+				where: {
+					createdAt: {
+						min: adjustedStart ?? undefined,
+						max: adjustedEnd ?? undefined
+					},
+					bin: selectedGroups && selectedGroups.length > 0 ? selectedGroups.join(",") : undefined,
+					status: selectedStatuses ?? undefined,
+					alias: cardNameSearch && cardNameSearch.length > 0 && cardNameSearch[0] !== "" ? cardNameSearch : undefined,
+					cardHolderName: cardOwnerSearch ?? undefined,
+					last4: cardNoSearch && cardNoSearch.length > 0 && cardNoSearch[0] !== "" ? cardNoSearch : undefined
+				},
+				pageNum: cardTableParams.pagination?.current ?? 1,
+				pageSize: cardTableParams.pagination?.pageSize ?? 10
+			});
+			processUserCardData(response);
 		} catch (error) {
 			console.error("Failed to fetch user cards:", error);
+		}
+	};
+
+	const processUserCardData = (response: any) => {
+		let remainCardsCountToDisplay;
+		if (maxCards === 0) {
+			remainCardsCountToDisplay = 99;
+		} else {
+			remainCardsCountToDisplay = maxCards - (response.total || 0);
+			if (remainCardsCountToDisplay < 0) {
+				remainCardsCountToDisplay = 0;
+			}
+		}
+		setTotalCardNumber(remainCardsCountToDisplay);
+
+		if (Array.isArray(response?.datalist)) {
+			const formattedData = response?.datalist.map((card: any) => ({
+				key: card.id || "",
+				cardName: card.alias || "",
+				cardOwner: Auth ? Auth : "NA",
+				cardGroup: card.network || "",
+				cardNo: card.number || "",
+				cardStatus: card.status || "",
+				balance: card.balance || "",
+				createCardTime: formatDate(card.createdAt) || "",
+				updateCardTime: formatDate(card.updatedAt) || "",
+				cardHolderAddressStreet: card.cardHolderAddressStreet || "",
+				cardHolderAddressCity: card.cardHolderAddressCity || "",
+				cardHolderAddressState: card.cardHolderAddressState || "",
+				cardHolderAddressPostalCode: card.cardHolderAddressPostalCode || "",
+				cardHolderAddressCountry: card.cardHolderAddressPostalCountry || "",
+				partnerIdempotencyKey: card.partnerIdempotencyKey || "",
+				cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
+					card.cardHolderLastName ? card.cardHolderLastName : "LM"
+				}`
+			}));
+			setFilteredData(formattedData);
 		}
 	};
 	useEffect(() => {
 		getCardBin();
 		getBalance();
 		fetchUserCards();
-		console.log(binOptions);
 	}, []);
 	const goCheck = (record: FormattedCard) => {
 		navigate("/proTable/tradeQuery", {
@@ -304,7 +323,6 @@ const PrepaidCard = () => {
 		}
 	];
 	const handleViewDetails = (record: FormattedCard) => {
-		console.log("navigation: " + record.key);
 		navigate("/detail/index", {
 			state: {
 				key: record.key,
@@ -327,7 +345,6 @@ const PrepaidCard = () => {
 	};
 
 	const handlerRechargeDetails = (record: FormattedCard) => {
-		console.log(record);
 		if (record.cardStatus === "Closed") {
 			// Display error message and prevent editing
 			message.error("无法充值已注销的卡片");
@@ -353,43 +370,31 @@ const PrepaidCard = () => {
 		});
 	};
 	const applyFilters = () => {
-		let filtered = [...dataSource];
-
-		// Apply date range filter
+		let adjustedStart: number | undefined = undefined;
+		let adjustedEnd: number | undefined = undefined;
 		if (selectedTimeRange?.length > 0) {
 			const [start, end] = selectedTimeRange;
-			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-
-			// Set end time to 23:59:59 for the end date
-			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
-
-			filtered = filtered.filter(card => {
-				const cardDate = new Date(card.createCardTime).getTime();
-				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
-			});
+			adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+			adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
 		}
+		setCardTableParams({
+			pagination: {
+				current: 1,
+				pageSize: 10
+			}
+		});
+		fetchUserCards(adjustedStart, adjustedEnd);
+	};
 
-		// Apply card group filter
-		if (selectedGroups?.length > 0) {
-			filtered = filtered.filter(card => selectedGroups.includes(card.cardNo.slice(0, 6)));
-		}
-
-		// Apply card status filter
-		if (selectedStatuses?.length > 0) {
-			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
-		}
-
-		if (cardNameSearch) {
-			filtered = filtered.filter(card => card.cardName.toLowerCase().includes(cardNameSearch.toLowerCase()));
-		}
-		if (cardOwnerSearch) {
-			filtered = filtered.filter(card => card.cardHolderName.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
-		}
-		if (cardNoSearch) {
-			filtered = filtered.filter(card => card.cardNo.slice(-4).includes(cardNoSearch));
-		}
-
-		setFilteredData(filtered);
+	const handleTableChange = (pagination: TablePaginationConfig) => {
+		setCardTableParams({
+			pagination: {
+				...cardTableParams.pagination,
+				current: pagination.current,
+				pageSize: pagination.pageSize
+			}
+		});
+		fetchUserCards(pagination.current ?? 1, pagination.pageSize ?? 10);
 	};
 
 	const handleTimeChange = (dates: any) => {
@@ -484,20 +489,23 @@ const PrepaidCard = () => {
 								<Input
 									placeholder="搜索卡昵称"
 									value={cardNameSearch}
-									onChange={(e: any) => setCardNameSearch(e.target.value)}
+									onChange={(e: any) => setCardNameSearch([e.target.value])}
 									style={{ width: 250 }}
+									allowClear
 								/>
 								<Input
 									placeholder="搜索持卡人"
 									value={cardOwnerSearch}
 									onChange={(e: any) => setCardOwnerSearch(e.target.value)}
 									style={{ width: 250 }}
+									allowClear
 								/>
 								<Input
 									placeholder="搜索卡号后四位"
 									value={cardNoSearch}
-									onChange={(e: any) => setCardNoSearch(e.target.value)}
+									onChange={(e: any) => setCardNoSearch([e.target.value])}
 									style={{ width: 250 }}
+									allowClear
 								/>
 							</Space>
 						</div>
@@ -509,7 +517,8 @@ const PrepaidCard = () => {
 					dataSource={filteredData}
 					columns={columns}
 					tableLayout="fixed"
-					pagination={{ pageSize: 10, showSizeChanger: false }}
+					pagination={cardTableParams.pagination}
+					onChange={handleTableChange}
 				/>
 			</div>
 		</div>
