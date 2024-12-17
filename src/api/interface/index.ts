@@ -147,16 +147,34 @@ export namespace Login {
 
 export class SearchTransactionWhere {
 	cardNumber?: string;
+	cardType?: string;
 	startDate?: Date;
 	endDate?: Date;
 	status?: string;
 	merchant?: string;
 }
 
+export interface CardsCSVWhere {
+	ids?: number[];
+	externalIds?: string[];
+	last4?: string[];
+	alias?: string[];
+	bin?: string;
+	cardType?: string;
+	createdAt?: {
+		min?: Date;
+		max?: Date;
+	};
+}
+
 export interface SearchTransactionRequest extends ReqPage {
 	where?: SearchTransactionWhere;
 	sortBy: string;
 	asc: boolean;
+}
+
+export interface CardsCSVRequest extends ReqPage {
+	where?: CardsCSVWhere;
 }
 
 export class SearchTransferWhere {

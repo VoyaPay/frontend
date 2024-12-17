@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input } from "antd";
+import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input, TablePaginationConfig } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./index.less";
@@ -7,12 +7,19 @@ import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi, GetTotalBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 import SvgIcon from "@/components/svgIcon";
+import { SorterResult } from "antd/lib/table/interface";
 import { store } from "@/redux";
 
 interface BinData {
 	bin: string;
 	network?: string;
 	orgCompanyId?: string;
+}
+
+interface TableParams {
+	pagination?: TablePaginationConfig;
+	sortField?: SorterResult<any>["field"];
+	sortOrder?: SorterResult<any>["order"];
 }
 
 const Auth = localStorage.getItem("username");
@@ -52,7 +59,6 @@ interface FormattedCard {
 }
 
 const PrepaidCard = () => {
-	const [dataSource, setDataSource] = useState<FormattedCard[]>([]);
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
 	const [bins, setbins] = useState<BinData[]>([]);
 
@@ -61,14 +67,20 @@ const PrepaidCard = () => {
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-	const [cardNameSearch, setCardNameSearch] = useState("");
+	const [cardNameSearch, setCardNameSearch] = useState<string[]>([]);
 	const [cardOwnerSearch, setCardOwnerSearch] = useState("");
-	const [cardNoSearch, setCardNoSearch] = useState("");
+	const [cardNoSearch, setCardNoSearch] = useState<string[]>([]);
 	const iconStyle = { width: "32px", height: "32px", marginTop: "8px", color: "#0D99FF" };
 
 	const navigate = useNavigate();
 	const { RangePicker } = DatePicker;
 	const [totalCardNumber, setTotalCardNumber] = useState<number>(0);
+	const [cardTableParams, setCardTableParams] = useState<TableParams>({
+		pagination: {
+			current: 1,
+			pageSize: 10
+		}
+	});
 
 	const getCardBin = async () => {
 		try {
@@ -91,54 +103,86 @@ const PrepaidCard = () => {
 		value: bin.bin,
 		label: `${bin.bin}`
 	}));
-	const fetchUserCards = async () => {
-		const userInfo = store.getState().global.userInfo;
-		const maxCards = userInfo?.userConfig?.maximumCardsAllowed || 0;
+	const fetchUserCards = async (pageNum: number, pageSize: number) => {
+		let adjustedStart: number | undefined = undefined;
+		let adjustedEnd: number | undefined = undefined;
+		if (selectedTimeRange?.length > 0) {
+			const [start, end] = selectedTimeRange;
+			adjustedStart = new Date(start).setHours(0, 0, 0, 0);
+			adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+		}
 		try {
-			const response = await UserCardApi();
-			let remainCardsCountToDisplay;
-			if (maxCards === 0) {
-				remainCardsCountToDisplay = 99;
-			} else {
-				remainCardsCountToDisplay = maxCards - parseFloat(response.length as string);
-				if (remainCardsCountToDisplay < 0) {
-					remainCardsCountToDisplay = 0;
-				}
-			}
-			setTotalCardNumber(remainCardsCountToDisplay);
-
-			if (Array.isArray(response)) {
-				const formattedData = response.map(card => ({
-					key: card.id || "",
-					cardName: card.alias || "",
-					cardOwner: Auth ? Auth : "NA",
-					cardGroup: card.network || "",
-					cardNo: card.number || "",
-					cardStatus: card.status || "",
-					balance: card.balance || "",
-					createCardTime: formatDate(card.createdAt) || "",
-					updateCardTime: formatDate(card.updatedAt) || "",
-					cardHolderAddressStreet: card.cardHolderAddressStreet || "",
-					cardHolderAddressCity: card.cardHolderAddressCity || "",
-					cardHolderAddressState: card.cardHolderAddressState || "",
-					cardHolderAddressPostalCode: card.cardHolderAddressPostalCode || "",
-					cardHolderAddressCountry: card.cardHolderAddressPostalCountry || "",
-					partnerIdempotencyKey: card.partnerIdempotencyKey || "",
-					cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
-						card.cardHolderLastName ? card.cardHolderLastName : "LM"
-					}`
-				}));
-				setDataSource(formattedData);
-				setFilteredData(formattedData);
-			}
+			const response = await UserCardApi({
+				where: {
+					createdAt: {
+						min: adjustedStart ?? undefined,
+						max: adjustedEnd ?? undefined
+					},
+					bin: selectedGroups && selectedGroups.length > 0 ? selectedGroups.join(",") : undefined,
+					status: selectedStatuses && selectedStatuses.length > 0 ? selectedStatuses : undefined,
+					alias: cardNameSearch && cardNameSearch.length > 0 && cardNameSearch[0] !== "" ? cardNameSearch : undefined,
+					cardHolderName: cardOwnerSearch ?? undefined,
+					last4: cardNoSearch && cardNoSearch.length > 0 && cardNoSearch[0] !== "" ? cardNoSearch : undefined
+				},
+				pageNum: pageNum ?? 1,
+				pageSize: pageSize ?? 10
+			});
+			processUserCardData(response);
 		} catch (error) {
 			console.error("Failed to fetch user cards:", error);
+		}
+	};
+
+	const processUserCardData = (response: any) => {
+		const userInfo = store.getState().global.userInfo;
+		const maxCards = userInfo.userConfig.maximumCardsAllowed;
+		let remainCardsCountToDisplay;
+		if (maxCards === 0) {
+			remainCardsCountToDisplay = 99;
+		} else {
+			remainCardsCountToDisplay = maxCards - (response.total || 0);
+			if (remainCardsCountToDisplay < 0) {
+				remainCardsCountToDisplay = 0;
+			}
+		}
+		setCardTableParams({
+			pagination: {
+				...cardTableParams.pagination,
+				current: response?.pageNum ?? 1,
+				pageSize: response?.pageSize ?? 10,
+				total: response?.total ?? 0
+			}
+		});
+		setTotalCardNumber(remainCardsCountToDisplay);
+
+		if (Array.isArray(response?.datalist)) {
+			const formattedData = response?.datalist.map((card: any) => ({
+				key: card.id || "",
+				cardName: card.alias || "",
+				cardOwner: Auth ? Auth : "NA",
+				cardGroup: card.network || "",
+				cardNo: card.number || "",
+				cardStatus: card.status || "",
+				balance: card.balance || "",
+				createCardTime: formatDate(card.createdAt) || "",
+				updateCardTime: formatDate(card.updatedAt) || "",
+				cardHolderAddressStreet: card.cardHolderAddressStreet || "",
+				cardHolderAddressCity: card.cardHolderAddressCity || "",
+				cardHolderAddressState: card.cardHolderAddressState || "",
+				cardHolderAddressPostalCode: card.cardHolderAddressPostalCode || "",
+				cardHolderAddressCountry: card.cardHolderAddressPostalCountry || "",
+				partnerIdempotencyKey: card.partnerIdempotencyKey || "",
+				cardHolderName: `${card.cardHolderFirstName ? card.cardHolderFirstName : "FM"} ${
+					card.cardHolderLastName ? card.cardHolderLastName : "LM"
+				}`
+			}));
+			setFilteredData(formattedData);
 		}
 	};
 	useEffect(() => {
 		getCardBin();
 		getBalance();
-		fetchUserCards();
+		fetchUserCards(1, 10);
 	}, []);
 	const goCheck = (record: FormattedCard) => {
 		navigate("/proTable/tradeQuery", {
@@ -283,7 +327,6 @@ const PrepaidCard = () => {
 		}
 	];
 	const handleViewDetails = (record: FormattedCard) => {
-		console.log("navigation: " + record.key);
 		navigate("/detail/index", {
 			state: {
 				key: record.key,
@@ -331,43 +374,24 @@ const PrepaidCard = () => {
 		});
 	};
 	const applyFilters = () => {
-		let filtered = [...dataSource];
+		setCardTableParams({
+			pagination: {
+				current: 1,
+				pageSize: 10
+			}
+		});
+		fetchUserCards(1, 10);
+	};
 
-		// Apply date range filter
-		if (selectedTimeRange?.length > 0) {
-			const [start, end] = selectedTimeRange;
-			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-
-			// Set end time to 23:59:59 for the end date
-			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
-
-			filtered = filtered.filter(card => {
-				const cardDate = new Date(card.createCardTime).getTime();
-				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
-			});
-		}
-
-		// Apply card group filter
-		if (selectedGroups?.length > 0) {
-			filtered = filtered.filter(card => selectedGroups.includes(card.cardNo.slice(0, 6)));
-		}
-
-		// Apply card status filter
-		if (selectedStatuses?.length > 0) {
-			filtered = filtered.filter(card => selectedStatuses.includes(card.cardStatus));
-		}
-
-		if (cardNameSearch) {
-			filtered = filtered.filter(card => card.cardName.toLowerCase().includes(cardNameSearch.toLowerCase()));
-		}
-		if (cardOwnerSearch) {
-			filtered = filtered.filter(card => card.cardHolderName.toLowerCase().includes(cardOwnerSearch.toLowerCase()));
-		}
-		if (cardNoSearch) {
-			filtered = filtered.filter(card => card.cardNo.slice(-4).includes(cardNoSearch));
-		}
-
-		setFilteredData(filtered);
+	const handleTableChange = (pagination: TablePaginationConfig) => {
+		setCardTableParams({
+			pagination: {
+				...cardTableParams.pagination,
+				current: pagination.current,
+				pageSize: pagination.pageSize
+			}
+		});
+		fetchUserCards(pagination.current ?? 1, pagination.pageSize ?? 10);
 	};
 
 	const handleTimeChange = (dates: any) => {
@@ -462,20 +486,23 @@ const PrepaidCard = () => {
 								<Input
 									placeholder="搜索卡昵称"
 									value={cardNameSearch}
-									onChange={(e: any) => setCardNameSearch(e.target.value)}
+									onChange={(e: any) => setCardNameSearch([e.target.value])}
 									style={{ width: 250 }}
+									allowClear
 								/>
 								<Input
 									placeholder="搜索持卡人"
 									value={cardOwnerSearch}
 									onChange={(e: any) => setCardOwnerSearch(e.target.value)}
 									style={{ width: 250 }}
+									allowClear
 								/>
 								<Input
 									placeholder="搜索卡号后四位"
 									value={cardNoSearch}
-									onChange={(e: any) => setCardNoSearch(e.target.value)}
+									onChange={(e: any) => setCardNoSearch([e.target.value])}
 									style={{ width: 250 }}
+									allowClear
 								/>
 							</Space>
 						</div>
@@ -487,7 +514,8 @@ const PrepaidCard = () => {
 					dataSource={filteredData}
 					columns={columns}
 					tableLayout="fixed"
-					pagination={{ pageSize: 10, showSizeChanger: false }}
+					pagination={cardTableParams.pagination}
+					onChange={handleTableChange}
 				/>
 			</div>
 		</div>
