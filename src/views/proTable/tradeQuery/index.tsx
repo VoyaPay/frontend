@@ -609,6 +609,7 @@ const TradeQuery = () => {
 					bordered={true}
 					dataSource={transactionPage}
 					columns={columns}
+					scroll={{ x: 1400 }}
 					pagination={transactionTableParams.pagination}
 					onChange={handleTransactionTableChange}
 				/>
@@ -617,6 +618,7 @@ const TradeQuery = () => {
 					bordered={true}
 					dataSource={filteredData}
 					columns={columns}
+					scroll={{ x: 1400 }}
 					pagination={cardTableParams.pagination}
 					onChange={handleCardTableChange}
 				/>
