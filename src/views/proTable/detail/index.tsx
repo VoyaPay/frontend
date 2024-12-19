@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, message, Modal } from "antd";
@@ -460,10 +460,17 @@ const Detail = () => {
 					</Button>
 				</div>
 			</div>
-			{/* tabs 组件 */}
-			<CardTabs id={cardData.key} />
+			<CardProvider cardData={cardData}>
+				<CardTabs id={cardData.key} />
+			</CardProvider>
 		</div>
 	);
+};
+
+export const CardContext = createContext<CardData | null>(null);
+
+export const CardProvider = ({ children, cardData }: { children: React.ReactNode; cardData: CardData }) => {
+	return <CardContext.Provider value={cardData}>{children}</CardContext.Provider>;
 };
 
 export default Detail;

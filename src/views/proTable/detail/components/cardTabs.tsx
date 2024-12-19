@@ -1,9 +1,8 @@
 import React from "react";
 import "./cardTabs.less";
-
 import { Tabs } from "antd";
 import CardTransactionRecord from "./cardTransactionRecord";
-
+import CardInformationChangeRecord from "./cardInformationChangeRecord";
 const { TabPane } = Tabs;
 
 const CardTabs: React.FC<{ id: string }> = ({ id }) => {
@@ -14,7 +13,7 @@ const CardTabs: React.FC<{ id: string }> = ({ id }) => {
 					<CardTransactionRecord id={id} />
 				</TabPane>
 				<TabPane tab="卡信息变更记录" key="2">
-					{/* <CardInformationChangeRecord /> */}
+					<CardInformationChangeRecord id={id} />
 				</TabPane>
 			</Tabs>
 		</div>

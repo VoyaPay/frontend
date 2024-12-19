@@ -3,7 +3,7 @@ import { Table, Input, Select, Button, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { CardTransactionRecordApi, CardTransactionRecordParams } from "@/api/modules/card";
 import { formatDate } from "@/utils/util";
-interface cardTransactionRecordList {
+interface CardTransactionRecordList {
 	id: string;
 	cardId: number;
 	type: string;
@@ -21,7 +21,7 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const CardTransactionRecord = ({ id }: { id: string }) => {
-	const [list, setList] = useState<cardTransactionRecordList[]>([]);
+	const [list, setList] = useState<CardTransactionRecordList[]>([]);
 	const [, setSelectedTimeRange] = useState<any[]>([]);
 	const [pageObj, setPageObj] = useState<any>({
 		current: 1,
@@ -46,12 +46,52 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 			const list = res.datalist.map((item: any) => ({
 				...item,
 				transactionTime: formatDate(item.transactionTime),
-				amount: `$${item.amount.toFixed(2)}`,
-				merchantAmount: `$${item.merchantAmount.toFixed(2)}`,
-				totalAmount: `$${item.totalAmount.toFixed(2)}`
+				amount: item.amount ? parseFloat(item.amount).toFixed(2) : "",
+				merchantAmount: item.merchantAmount ? parseFloat(item.merchantAmount).toFixed(2) : "",
+				totalAmount: item.totalAmount ? parseFloat(item.totalAmount).toFixed(2) : "",
+				status: setStatus(item.status),
+				type: setType(item.type)
 			}));
 			setList(list);
 		});
+	};
+
+	const setType = (type: string) => {
+		switch (type) {
+			case "transaction":
+				return "消费";
+			case "cardPurchase":
+				return "首充";
+			case "cardTopup":
+				return "充值";
+			case "cardWithdrawn":
+				return "提现";
+			case "closeCardRefund":
+				return "销卡";
+			case "fee":
+				return "手续费";
+			default:
+				return type;
+		}
+	};
+
+	const setStatus = (status: string) => {
+		switch (status) {
+			case "Authorized":
+				return "已授权";
+			case "AuthDeleted":
+				return "授权已删除";
+			case "Reversed":
+				return "已退款";
+			case "Cancelled":
+				return "已取消";
+			case "Declined":
+				return "已拒绝";
+			case "Settled":
+				return "已结算";
+			default:
+				return status;
+		}
 	};
 
 	const handleFilterChange = (key: string, value: any) => {
@@ -98,11 +138,12 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 					allowClear
 					style={{ marginLeft: 10, width: 160 }}
 				>
-					<Option value="消费">消费</Option>
-					<Option value="首充">首充</Option>
-					<Option value="充值">充值</Option>
-					<Option value="提现">提现</Option>
-					<Option value="销卡">销卡</Option>
+					<Option value="transaction">消费</Option>
+					<Option value="cardPurchase">首充</Option>
+					<Option value="cardTopup">充值</Option>
+					<Option value="cardWithdrawn">提现</Option>
+					<Option value="closeCardRefund">销卡</Option>
+					<Option value="fee">手续费</Option>
 				</Select>
 				<Select
 					value={filters.where.status}
@@ -111,8 +152,12 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 					allowClear
 					style={{ marginLeft: 10, width: 160 }}
 				>
-					<Option value="success">成功</Option>
-					<Option value="failed">失败</Option>
+					<Option value="Authorized">已授权</Option>
+					<Option value="AuthDeleted">授权已删除</Option>
+					<Option value="Reversed">已退款</Option>
+					<Option value="Cancelled">已取消</Option>
+					<Option value="Declined">已拒绝</Option>
+					<Option value="Settled">已结算</Option>
 				</Select>
 				<Input
 					value={filters.where.merchantName}
@@ -130,6 +175,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				columns={columns}
 				dataSource={list.map(item => ({ ...item, key: item.id }))}
 				pagination={pageObj}
+				scroll={{ x: 1400 }}
 				onChange={pagination => {
 					setPageObj(pagination);
 					fetchData();

@@ -45,3 +45,7 @@ export const ChangeCardInformationApi = (id: string, params: CardData) => {
 export const CardTransactionRecordApi = (id: string, params: CardTransactionRecordParams) => {
 	return http.postPage<ResultData>(PORT3 + `/cards/${id}/statement/search`, params);
 };
+
+export const CardInformationChangeRecordApi = (id: string, params: { pageNum: number; pageSize: number }) => {
+	return http.get<ResultData>(PORT3 + `/audit-log/cards/${id}/change-history`, params);
+};
