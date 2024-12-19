@@ -18,9 +18,9 @@ const Login = (props: LoginProps) => {
 				</div>
 			</div>
 			<div className="login-footer">
-				<span>info@vayapay.com</span>
+				<span>&copy;2024 VoyaPay Rights Reserved</span>
 				<span style={{ margin: "0 10px" }}>|</span>
-				<span>&copy; 2024 VoyaPay Rights Reserved</span>
+				<span>info@vayapay.com</span>
 			</div>
 		</div>
 	);
