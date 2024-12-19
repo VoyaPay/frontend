@@ -17,6 +17,11 @@ const Login = (props: LoginProps) => {
 					<LoginForm loginRouterType={props.loginRouterType} />
 				</div>
 			</div>
+			<div className="login-footer">
+				<span>info@vayapay.com</span>
+				<span style={{ margin: "0 10px" }}>|</span>
+				<span>&copy; 2024 VoyaPay Rights Reserved</span>
+			</div>
 		</div>
 	);
 };
