@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, message, Modal } from "antd";
@@ -7,6 +7,8 @@ import back from "@/assets/images/return.png";
 import "./index.less";
 import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
+import CardTabs from "./components/cardTabs";
+import { formatDate } from "@/utils/util";
 
 interface CardData {
 	key: string;
@@ -56,19 +58,6 @@ const updateCardInformation = async (id: string, newDate: any) => {
 	}
 };
 
-const formatDate2 = (dateString: string) => {
-	const date = new Date(dateString);
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const day = String(date.getDate()).padStart(2, "0");
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
-	const seconds = String(date.getSeconds()).padStart(2, "0");
-
-	// 返回格式为 yyyy-MM-dd hh:mm:ss
-	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
 const Detail = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -98,30 +87,12 @@ const Detail = () => {
 	const [openFreezeModal, setOpenFreezeModal] = useState(false);
 	const [openCloseModal, setOpenCloseModal] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
-	// const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
-	// const [isNameModalVisible, setIsNameModalVisible] = useState(false);
-	// const [streetAddress, setStreetAddress] = useState("street");
-	// const [city, setCity] = useState("city");
-	// const [state, setState] = useState("state");
-	// const [zipcode, setZipCode] = useState("zipcode");
-
-	// // Cardholder name states
-	// const [firstName, setFirstName] = useState("first");
-	// const [lastName, setLastName] = useState("last");
 
 	useEffect(() => {
 		if (cardData.key) {
 			fetchCardInformation(cardData.key, setCardData);
 		}
 	}, [cardData.key]);
-	// const changeStreetAddress = (e: React.ChangeEvent<HTMLInputElement>) => setStreetAddress(e.target.value);
-	// const changeCity = (e: React.ChangeEvent<HTMLInputElement>) => setCity(e.target.value);
-	// const changeState = (e: React.ChangeEvent<HTMLInputElement>) => setState(e.target.value);
-	// const changeZipCode = (e: React.ChangeEvent<HTMLInputElement>) => setZipCode(e.target.value);
-
-	// // Handlers for name input changes
-	// const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value);
-	// const changeLastName = (e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value);
 
 	const saveChanges1 = async () => {
 		if (cardData.cardStatus === "Closed") {
@@ -143,22 +114,6 @@ const Detail = () => {
 		}
 	};
 
-	// const showAddressModal = () => {
-	// 	setIsAddressModalVisible(true);
-	// };
-
-	// const showNameModal = () => {
-	// 	setIsNameModalVisible(true);
-	// };
-
-	// const handleAddressCancel = () => {
-	// 	setIsAddressModalVisible(false);
-	// };
-
-	// const handleNameCancel = () => {
-	// 	setIsNameModalVisible(false);
-	// };
-
 	const saveChanges2 = async () => {
 		const maxLength = 16;
 		if (cardData.cardStatus === "Closed") {
@@ -176,46 +131,14 @@ const Detail = () => {
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
+			setCardData(prevData => ({
+				...prevData,
+				cardName: cardName
+			}));
 			message.success("卡片信息修改成功");
 			fetchCardInformation(cardData.key, setCardData);
 		}
 	};
-
-	// const saveAddressChanges = async () => {
-	// 	if (cardData.cardStatus === "Closed") {
-	// 		// Display error message and prevent editing
-	// 		message.error("无法修改已注销的卡片");
-	// 		return;
-	// 	}
-	// 	const updatedAddress = {
-	// 		streetAddress,
-	// 		city,
-	// 		state,
-	// 		zipcode
-	// 	};
-	// 	try {
-	// 		await ChangeCardInformationApi("some-id", updatedAddress); // Replace 'some-id' with the actual card id
-	// 		message.success("地址修改成功");
-	// 		setIsAddressModalVisible(false); // Close the modal after saving
-	// 	} catch (error) {
-	// 		message.error("修改地址失败");
-	// 	}
-	// };
-
-	// const saveNameChanges = async () => {
-	// 	// Simulate saving the name (e.g., API call)
-	// 	const updatedName = {
-	// 		firstName,
-	// 		lastName
-	// 	};
-	// 	try {
-	// 		await ChangeCardInformationApi("some-id", updatedName); // Replace 'some-id' with the actual card id
-	// 		message.success("姓名修改成功");
-	// 		setIsNameModalVisible(false); // Close the modal after saving
-	// 	} catch (error) {
-	// 		message.error("修改姓名失败");
-	// 	}
-	// };
 
 	const saveChanges3 = async () => {
 		// 先保存原来的状态，以便在出错时恢复
@@ -288,7 +211,6 @@ const Detail = () => {
 	};
 	const handlecashback = (record: CardData) => {
 		if (cardData.cardStatus === "Closed") {
-			// Display error message and prevent editing
 			message.error("无法充值已注销的卡片");
 			return;
 		}
@@ -321,7 +243,6 @@ const Detail = () => {
 		});
 	};
 
-	// Freeze modal handler
 	const showFreezeModal = () => {
 		setOpenFreezeModal(true);
 	};
@@ -337,7 +258,6 @@ const Detail = () => {
 		setOpenFreezeModal(false);
 	};
 
-	// Close modal handler
 	const showCloseModal = () => {
 		setOpenCloseModal(true);
 	};
@@ -372,8 +292,6 @@ const Detail = () => {
 	return (
 		<div className="detail-wrap">
 			{contextHolder}
-
-			{/* Freeze Confirmation Modal */}
 			<Modal
 				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"} // 根据状态动态调整标题
 				visible={openFreezeModal}
@@ -383,8 +301,6 @@ const Detail = () => {
 			>
 				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p> {/* 根据状态动态调整内容 */}
 			</Modal>
-
-			{/* Close Confirmation Modal */}
 			<Modal
 				title="确认注销"
 				visible={openCloseModal}
@@ -488,7 +404,7 @@ const Detail = () => {
 								: cardData.cardStatus === "PreClose"
 								? "待注销"
 								: cardData.cardStatus === "Closed"
-								? `已注销 (${formatDate2(cardData.updatecardTime)})`
+								? `已注销 (${formatDate(cardData.updatecardTime)})`
 								: "N/A"}
 						</div>
 					</div>
@@ -507,20 +423,6 @@ const Detail = () => {
 						<div className="text">{cardData.createCardTime || "N/A"}</div>
 					</div>
 				</div>
-
-				{/* <Modal title="修改账单地址" visible={isAddressModalVisible} onOk={saveAddressChanges} onCancel={handleAddressCancel}>
-					<Input value={streetAddress} onChange={changeStreetAddress} className="edit" placeholder="Street Address" />
-					<Input value={city} onChange={changeCity} className="edit" placeholder="City" />
-					<Input value={state} onChange={changeState} className="edit" placeholder="State" />
-					<Input value="USA" className="edit" placeholder="Country" disabled />
-					<Input value={zipcode} onChange={changeZipCode} className="edit" placeholder="Zip Code" />
-				</Modal> */}
-
-				{/* Cardholder Name Modification Modal */}
-				{/* <Modal title="修改持卡人姓名" visible={isNameModalVisible} onOk={saveNameChanges} onCancel={handleNameCancel}>
-					<Input value={firstName} onChange={changeFirstName} className="edit" placeholder="First Name" />
-					<Input value={lastName} onChange={changeLastName} className="edit" placeholder="Last Name" />
-				</Modal> */}
 
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
@@ -562,8 +464,17 @@ const Detail = () => {
 					</Button>
 				</div>
 			</div>
+			<CardProvider cardData={cardData}>
+				<CardTabs id={cardData.key} />
+			</CardProvider>
 		</div>
 	);
+};
+
+export const CardContext = createContext<CardData | null>(null);
+
+export const CardProvider = ({ children, cardData }: { children: React.ReactNode; cardData: CardData }) => {
+	return <CardContext.Provider value={cardData}>{children}</CardContext.Provider>;
 };
 
 export default Detail;
