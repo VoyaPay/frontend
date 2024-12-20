@@ -135,7 +135,7 @@ const PrepaidCard = () => {
 
 	const processUserCardData = (response: any) => {
 		const userInfo = store.getState().global.userInfo;
-		const maxCards = userInfo.userConfig.maximumCardsAllowed ?? 0;
+		const maxCards = userInfo.userConfig?.maximumCardsAllowed || 0;
 		let remainCardsCountToDisplay;
 		if (maxCards === 0) {
 			remainCardsCountToDisplay = 99;
