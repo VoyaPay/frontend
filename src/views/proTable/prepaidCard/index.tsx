@@ -83,14 +83,6 @@ const PrepaidCard = () => {
 		}
 	});
 
-	// useEffect(() => {
-	// 	const userInfo = async () => {
-	// 		const response = await AccountApi();
-	// 		const maxCards = response.userConfig.maximumCardsAllowed
-	// 		setMaxCards(maxCards);
-	// 	}
-	// }, []);
-
 	const getCardBin = async () => {
 		try {
 			const response = await CardbinApi();
@@ -115,7 +107,7 @@ const PrepaidCard = () => {
 	const fetchUserCards = async (adjustedStart?: number, adjustedEnd?: number) => {
 		try {
 			const userInfo = await AccountApi();
-			const maxCards = userInfo.userConfig.maximumCardsAllowed;
+			const maxCards = userInfo.userConfig.maximumCardsAllowed ?? 0;
 			console.log(userInfo, "maxCards");
 			setMaxCards(maxCards);
 			const response = await UserCardApi({
