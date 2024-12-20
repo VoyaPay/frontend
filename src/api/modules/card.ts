@@ -2,6 +2,7 @@ import { PORT3 } from "@/api/config/servicePort";
 
 import { ResultData } from "@/api/interface/index";
 
+import { downloadCSV } from "./csv";
 import http from "@/api";
 
 interface CardData {
@@ -44,6 +45,10 @@ export const ChangeCardInformationApi = (id: string, params: CardData) => {
 
 export const CardTransactionRecordApi = (id: string, params: CardTransactionRecordParams) => {
 	return http.postPage<ResultData>(PORT3 + `/cards/${id}/statement/search`, params);
+};
+
+export const CardTransactionRecordCSVApi = (id: string, params: CardTransactionRecordParams) => {
+	return downloadCSV(PORT3 + `/cards/${id}/statement/csv`, "CardTransactionRecord.csv", params);
 };
 
 export const CardInformationChangeRecordApi = (id: string, params: { pageNum: number; pageSize: number }) => {

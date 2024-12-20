@@ -1,8 +1,8 @@
 import { CardInformationChangeRecordApi } from "@/api/modules/card";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Table } from "antd";
 import { formatDate } from "@/utils/util";
-// import { CardContext } from "@/views/proTable/detail";
+import { CardContext } from "@/views/proTable/detail";
 
 interface CardInformationChangeRecordList {
 	id: number;
@@ -12,7 +12,7 @@ interface CardInformationChangeRecordList {
 	actionDesc: string;
 	notes: string | null;
 	payload: {
-		alias: {
+		[k: string]: {
 			new: string;
 			old: string;
 		};
@@ -24,17 +24,19 @@ interface CardInformationChangeRecordList {
 }
 
 const CardInformationChangeRecord = ({ id }: { id: string }) => {
-	// const cardData = useContext(CardContext);
+	const cardData = useContext(CardContext) || { cardName: "", cardStatus: "" };
 	const [list, setList] = useState<CardInformationChangeRecordList[]>([]);
 	const [pageObj, setPageObj] = useState<any>({
 		current: 1,
 		pageSize: 5,
-		total: 0
+		total: 0,
+		showSizeChanger: true,
+		pageSizeOptions: ["5", "10", "50", "100"]
 	});
 
 	useEffect(() => {
 		fetchData();
-	}, []);
+	}, [cardData.cardName, cardData.cardStatus]);
 
 	const fetchData = (pageNum: number = 1, pageSize: number = 5) => {
 		CardInformationChangeRecordApi(id, { pageNum, pageSize }).then((res: any) => {
@@ -42,10 +44,18 @@ const CardInformationChangeRecord = ({ id }: { id: string }) => {
 				.filter((item: CardInformationChangeRecordList) => item.actionDesc === "UpdateCard")
 				.map((item: CardInformationChangeRecordList) => ({
 					...item,
-					createdAt: formatDate(item.createdAt)
+					createdAt: formatDate(item.createdAt),
+					alias: Object.keys(item.payload).join(","),
+					oldAlias: Object.keys(item.payload)
+						.map((key: string) => item.payload[key].old)
+						.join(","),
+					newAlias: Object.keys(item.payload)
+						.map((key: string) => item.payload[key].new)
+						.join(",")
 				}));
 			setList(list);
 			setPageObj({
+				...pageObj,
 				current: pageNum,
 				pageSize,
 				total: res.total
@@ -54,11 +64,11 @@ const CardInformationChangeRecord = ({ id }: { id: string }) => {
 	};
 
 	const columns = [
-		{ title: "时间", dataIndex: "createdAt", key: "createdAt" },
-		{ title: "变更项目", dataIndex: "action", key: "action" },
-		{ title: "变更前", render: (record: any) => record.payload.alias.old, key: "oldAlias" },
-		{ title: "变更后", render: (record: any) => record.payload.alias.new, key: "newAlias" },
-		{ title: "操作人", dataIndex: "createdBy", key: "createdBy" }
+		{ title: "变更项目", dataIndex: "alias", key: "alias" },
+		{ title: "变更前", render: (record: any) => record.oldAlias, key: "oldAlias" },
+		{ title: "变更后", render: (record: any) => record.newAlias, key: "newAlias" },
+		{ title: "操作人", render: (record: any) => record.actionBy.fullName, key: "createdBy" },
+		{ title: "时间", dataIndex: "createdAt", key: "createdAt" }
 	];
 
 	return (

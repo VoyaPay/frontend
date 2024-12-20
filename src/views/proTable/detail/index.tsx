@@ -131,6 +131,10 @@ const Detail = () => {
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
+			setCardData(prevData => ({
+				...prevData,
+				cardName: cardName
+			}));
 			message.success("卡片信息修改成功");
 			fetchCardInformation(cardData.key, setCardData);
 		}
