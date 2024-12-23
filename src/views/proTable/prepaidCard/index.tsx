@@ -327,12 +327,6 @@ const PrepaidCard = () => {
 	};
 
 	const handlerRechargeDetails = (record: FormattedCard) => {
-		console.log(record);
-		if (record.cardStatus === "Closed") {
-			// Display error message and prevent editing
-			message.error("无法充值已注销的卡片");
-			return;
-		}
 		if (record.cardStatus === "Invaild") {
 			// Display error message and prevent editing
 			message.error("无法充值已冻结的卡片");

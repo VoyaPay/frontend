@@ -268,11 +268,6 @@ const Detail = () => {
 	};
 
 	const handlerRechargeDetails = (record: CardData) => {
-		if (cardData.cardStatus === "Closed") {
-			// Display error message and prevent editing
-			message.error("无法充值已注销的卡片");
-			return;
-		}
 		navigate("/prepaidRecharge/index", {
 			state: {
 				key: record.key,
@@ -287,11 +282,6 @@ const Detail = () => {
 		});
 	};
 	const handlecashback = (record: CardData) => {
-		if (cardData.cardStatus === "Closed") {
-			// Display error message and prevent editing
-			message.error("无法充值已注销的卡片");
-			return;
-		}
 		navigate("/cashback/index", {
 			state: {
 				key: record.key,
@@ -529,7 +519,7 @@ const Detail = () => {
 						className="actionBtn"
 						size="large"
 						onClick={() => handlerRechargeDetails(cardData)}
-						disabled={cardData.cardStatus !== "Active"}
+						disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Closed"}
 					>
 						充值
 					</Button>
