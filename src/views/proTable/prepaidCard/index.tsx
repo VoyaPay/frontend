@@ -482,6 +482,7 @@ const PrepaidCard = () => {
 									placeholder="搜索卡昵称"
 									value={cardNameSearch}
 									onChange={(e: any) => setCardNameSearch([e.target.value])}
+									onPressEnter={applyFilters}
 									style={{ width: 250 }}
 									allowClear
 								/>
@@ -489,6 +490,7 @@ const PrepaidCard = () => {
 									placeholder="搜索持卡人"
 									value={cardOwnerSearch}
 									onChange={(e: any) => setCardOwnerSearch(e.target.value)}
+									onPressEnter={applyFilters}
 									style={{ width: 250 }}
 									allowClear
 								/>
@@ -496,6 +498,7 @@ const PrepaidCard = () => {
 									placeholder="搜索卡号后四位"
 									value={cardNoSearch}
 									onChange={(e: any) => setCardNoSearch([e.target.value])}
+									onPressEnter={applyFilters}
 									style={{ width: 250 }}
 									allowClear
 								/>
@@ -509,6 +512,7 @@ const PrepaidCard = () => {
 					dataSource={filteredData}
 					columns={columns}
 					tableLayout="fixed"
+					scroll={{ x: 1200 }}
 					pagination={cardTableParams.pagination}
 					onChange={handleTableChange}
 				/>

@@ -276,7 +276,7 @@ const Detail = () => {
 		if (cardNumber) {
 			return cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
 		} else {
-			return 1234 - 5678 - 9000;
+			return "0000 0000 0000";
 		}
 	};
 
@@ -284,13 +284,13 @@ const Detail = () => {
 		<div className="detail-wrap">
 			{contextHolder}
 			<Modal
-				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"} // 根据状态动态调整标题
+				title={cardData.cardStatus === "Inactive" ? "确认解冻" : "确认冻结"}
 				visible={openFreezeModal}
 				onOk={handleFreezeOk}
 				confirmLoading={confirmLoading}
 				onCancel={handleFreezeCancel}
 			>
-				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p> {/* 根据状态动态调整内容 */}
+				<p>{cardData.cardStatus === "Inactive" ? "确定要解冻此卡片吗？" : "确定要冻结此卡片吗？"}</p>
 			</Modal>
 			<Modal
 				title="确认注销"
@@ -359,7 +359,7 @@ const Detail = () => {
 
 					<div className="content">
 						<div className="pre">卡号：</div>
-						<div className="text">{formatCardNumber(cardData.cardTotal) || "123 456 789"}</div>
+						<div className="text">{formatCardNumber(cardData.cardTotal)}</div>
 						<span className="action" onClick={toCopy}>
 							复制完整卡号
 						</span>

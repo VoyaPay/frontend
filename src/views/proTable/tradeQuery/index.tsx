@@ -128,7 +128,7 @@ const TradeQuery = () => {
 					startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
 					endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
 					status: tranStatus,
-					merchant: merchant,
+					merchantName: merchant,
 					cardNumber: cardNoSearch
 				},
 				sortBy: TRANSACTION_DEFAULT_SORT_FIELD,
@@ -259,7 +259,8 @@ const TradeQuery = () => {
 			title: "卡片类型",
 			dataIndex: "cardType",
 			key: "cardType",
-			align: "center"
+			align: "center",
+			width: 100
 		},
 		{
 			title: "商户名称",
@@ -271,13 +272,15 @@ const TradeQuery = () => {
 			title: "支付状态",
 			dataIndex: "status",
 			key: "status",
-			align: "center"
+			align: "center",
+			width: 100
 		},
 		{
 			title: "交易金额",
 			dataIndex: "merchantAmount",
 			key: "merchantAmount",
 			align: "center",
+			width: 120,
 			sorter: true,
 			render: (amount: string, row: any) => {
 				if (!amount) {
@@ -466,7 +469,7 @@ const TradeQuery = () => {
 				startDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[0] : undefined,
 				endDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[1] : undefined,
 				status: tranStatus,
-				merchant: merchant,
+				merchantName: merchant,
 				cardNumber: cardNoSearch
 			},
 			sortBy: sortBy,
@@ -539,8 +542,10 @@ const TradeQuery = () => {
 						<Space>
 							<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
 							<Input
-								placeholder="商户名称" // Provide a default placeholder
+								placeholder="商户名称"
 								style={{ width: 200 }}
+								onPressEnter={onClickSearch}
+								allowClear
 								onChange={(e: any) => {
 									setMerchant(e.target.value);
 								}}
@@ -560,6 +565,8 @@ const TradeQuery = () => {
 								placeholder="卡号"
 								style={{ width: 200 }}
 								value={cardNoSearch}
+								onPressEnter={onClickSearch}
+								allowClear
 								onChange={(e: any) => {
 									const value = e.target.value;
 									// 使用正则表达式过滤掉非数字字符

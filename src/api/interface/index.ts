@@ -151,7 +151,7 @@ export class SearchTransactionWhere {
 	startDate?: Date;
 	endDate?: Date;
 	status?: string;
-	merchant?: string;
+	merchantName?: string;
 }
 
 export interface CardsCSVWhere {
