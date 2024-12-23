@@ -42,20 +42,20 @@ const PrepaidRecharge = () => {
 		setOpen(true);
 	};
 	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+		const value = e.target.value;
 
-    const valueAsNumber = Number(value);
-		
-    if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
+		const valueAsNumber = Number(value);
+
+		if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
 			if (valueAsNumber > accountBalance) {
-        message.error("沃易卡账户余额不足");
-        return;
-      }
-      setAmount(valueAsNumber);
-    } else {
-      message.error("请输入有效的金额，最多两位小数"); 
-    }
-  };
+				message.error("沃易卡账户余额不足");
+				return;
+			}
+			setAmount(valueAsNumber);
+		} else {
+			message.error("请输入有效的金额，最多两位小数");
+		}
+	};
 
 	const [open, setOpen] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
@@ -65,9 +65,7 @@ const PrepaidRecharge = () => {
 		try {
 			setConfirmLoading(true);
 			const response = await RechargeCardApi(cardData.key, { amount: amount });
-
-			// 检查是否成功并给出提示
-			if (response.id) {
+			if (response.card) {
 				message.success("充值成功 !"); // 成功消息
 			}
 
@@ -95,7 +93,7 @@ const PrepaidRecharge = () => {
 		const getBalance = async () => {
 			try {
 				const response = await GetBalanceApi();
-				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2))  : 0;
+				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
 				setAccountBalance(balance);
 			} catch (error) {
 				console.log("Cannot get balance of the account:", error);
