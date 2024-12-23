@@ -1,9 +1,7 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { NavLink } from "react-router-dom";
 import { Input, Button, message, Modal } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
@@ -301,14 +299,6 @@ const Detail = () => {
 			>
 				<p>确定要注销此卡片吗？</p>
 			</Modal>
-
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" /> 预充卡{" "}
-				</NavLink>
-				-&gt; 查看详情
-			</div>
-
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<span className="title">卡片信息</span>

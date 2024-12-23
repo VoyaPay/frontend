@@ -1,28 +1,11 @@
-// import { useEffect } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-// import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-import back from "@/assets/images/return.png";
 import "./index.less";
-// const Authname = localStorage.getItem("username");
 const Authemail = localStorage.getItem("useremail");
 const Authid = localStorage.getItem("userid");
 const Authcompany = localStorage.getItem("companyName");
 
 const Recharge = () => {
 	return (
-		// <div className="card content-box">
-		// </div>
 		<div className="recharge-wrap">
-			<div className="nav">
-				<NavLink to="/proTable/account" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					我的账户
-				</NavLink>
-				-&gt; 充值
-			</div>
 			<div className="firstCol">
 				<div className="userInfo">
 					<span className="title">当前登录账户</span>

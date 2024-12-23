@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
@@ -287,13 +286,6 @@ const AddPrepaidCard = () => {
 					充值金额 {amount} USD， 开卡费 {cardsfee} USD，总计 {parseFloat(cardsfee) + amount} USD，继续申请？
 				</p>
 			</Modal>
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					预充卡{" "}
-				</NavLink>
-				-&gt; 新增预充卡
-			</div>
 			<div className="contentWrap">
 				<div className="title">1.卡产品选择</div>
 				<div className="cardWrap">

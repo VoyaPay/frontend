@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
@@ -106,13 +105,6 @@ const cashback = () => {
 
 	return (
 		<div className="prepaidRecharge-wrap">
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					预充卡{" "}
-				</NavLink>
-				-&gt; 提现
-			</div>
 			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>提现金额 ${amount}，继续提现？</p>
 			</Modal>

@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
@@ -107,13 +103,6 @@ const PrepaidRecharge = () => {
 
 	return (
 		<div className="prepaidRecharge-wrap">
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					预充卡{" "}
-				</NavLink>
-				-&gt; 充值
-			</div>
 			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>充值金额 ${amount}，继续充值？</p>
 			</Modal>
