@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal, message } from "antd";
+import { Button, Modal, message, InputNumber } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
@@ -37,17 +37,13 @@ const cashback = () => {
 	const recharge = () => {
 		setOpen(true);
 	};
-	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-
-		const valueAsNumber = Number(value);
-
-		if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
-			if (valueAsNumber > parseFloat(cardData.balance)) {
+	const changeAmount = (value: number) => {
+		if (value === undefined || /^\d+(\.\d{0,2})?$/.test(value.toString())) {
+			if (value > parseFloat(cardData.balance)) {
 				message.error("该预充卡余额不足");
 				return;
 			}
-			setAmount(valueAsNumber);
+			setAmount(value);
 		} else {
 			message.error("请输入有效的金额，最多两位小数");
 		}
@@ -125,7 +121,16 @@ const cashback = () => {
 					<div className="content">
 						<div className="pre">提现金额:</div>
 						<div className="input-wrapper">
-							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$" />
+							<InputNumber
+								value={amount || undefined}
+								onChange={changeAmount}
+								className="edit"
+								placeholder="0"
+								addonBefore="$"
+								min={0}
+								step={0.01}
+								controls={false}
+							/>
 							<div className="input-tips">注意：提现金额不能大于该预充卡余额</div>
 						</div>
 					</div>
