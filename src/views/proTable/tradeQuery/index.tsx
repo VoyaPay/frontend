@@ -316,7 +316,7 @@ const TradeQuery = () => {
 			sorter: true,
 			render: (amount: string) => {
 				if (!amount) {
-					return "";
+					return "--";
 				}
 				return parseFloat(amount);
 			}
@@ -325,7 +325,10 @@ const TradeQuery = () => {
 			title: "授权ID",
 			dataIndex: "orderNumber",
 			key: "orderNumber",
-			align: "center"
+			align: "center",
+			render: (record: any) => {
+				return record ? record : "--";
+			}
 		},
 		{
 			title: "失败原因",
@@ -486,7 +489,7 @@ const TradeQuery = () => {
 					transactionTime: formatDate(tran.transactionTime),
 					status: StatusMapping[tran.status as keyof typeof StatusMapping],
 					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping],
-					wrongReason: tran.status === "Declined" ? tran.notes : ""
+					wrongReason: tran.status === "Declined" ? tran.notes : "--"
 				};
 				return t;
 			});

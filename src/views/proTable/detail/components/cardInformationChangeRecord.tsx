@@ -64,16 +64,17 @@ const CardInformationChangeRecord = ({ id }: { id: string }) => {
 	};
 
 	const columns = [
-		{ title: "变更项目", dataIndex: "alias", key: "alias" },
-		{ title: "变更前", render: (record: any) => record.oldAlias, key: "oldAlias" },
-		{ title: "变更后", render: (record: any) => record.newAlias, key: "newAlias" },
-		{ title: "操作人", render: (record: any) => record.actionBy.fullName, key: "createdBy" },
+		{ title: "变更项目", render: (record: any) => record.alias || "--", key: "alias" },
+		{ title: "变更前", render: (record: any) => record.oldAlias || "--", key: "oldAlias" },
+		{ title: "变更后", render: (record: any) => record.newAlias || "--", key: "newAlias" },
+		{ title: "操作人", render: (record: any) => record.actionBy.fullName || "--", key: "createdBy" },
 		{ title: "时间", dataIndex: "createdAt", key: "createdAt" }
 	];
 
 	return (
 		<div>
 			<Table
+				bordered={true}
 				columns={columns}
 				dataSource={list.map(item => ({ ...item, key: item.id }))}
 				pagination={pageObj}

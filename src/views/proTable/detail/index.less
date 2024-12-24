@@ -61,9 +61,16 @@
 	}
 	.basicInfo {
 		width: 70%;
+		min-height: 294px;
 		padding: 15px 20px;
 		background-color: #ffffff;
 		border-radius: 8px;
+		.basicInfo-column {
+			max-width: 50%;
+		}
+		.basicInfo-column + .basicInfo-column {
+			margin-left: 20px;
+		}
 		.title {
 			font-size: 15px;
 			font-weight: bold;
@@ -71,7 +78,6 @@
 		.content {
 			display: flex;
 			flex-direction: row;
-			align-items: center;
 			height: 20px;
 			margin-top: 15px;
 			font-size: 14px;
@@ -100,6 +106,12 @@
 		flex-direction: column;
 		align-items: center;
 		margin-left: 20px;
+		.actionBtnWrap {
+			display: flex;
+			button + button {
+				margin-left: 10px;
+			}
+		}
 		.bankCard {
 			width: 100%;
 			max-width: 300px;

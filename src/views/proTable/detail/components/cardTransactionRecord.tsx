@@ -51,8 +51,8 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				amount: item.amount ? parseFloat(item.amount).toFixed(2) : "",
 				merchantAmount: item.merchantAmount ? parseFloat(item.merchantAmount).toFixed(2) : "",
 				totalAmount: item.totalAmount ? parseFloat(item.totalAmount).toFixed(2) : "",
-				status: setStatus(item.status),
-				type: setType(item.type)
+				statusZh: setStatus(item.status),
+				typeZh: setType(item.type)
 			}));
 			setList(list);
 		});
@@ -92,7 +92,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 			case "Settled":
 				return "已结算";
 			default:
-				return status;
+				return "--";
 		}
 	};
 
@@ -123,15 +123,18 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 	};
 
 	const columns = [
-		{ title: "交易类型", dataIndex: "type", key: "type" },
-		{ title: "支付状态", dataIndex: "status", key: "status" },
-		{ title: "商户名称", dataIndex: "merchantName", key: "merchantName" },
-		{ title: "交易金额", dataIndex: "amount", key: "amount" },
-		{ title: "授权金额", dataIndex: "merchantAmount", key: "merchantAmount" },
-		{ title: "结算金额", dataIndex: "totalAmount", key: "totalAmount" },
-		{ title: "授权ID", dataIndex: "orderNumber", key: "orderNumber" },
-		{ title: "失败原因", dataIndex: "notes", key: "notes" },
-		{ title: "时间", dataIndex: "transactionTime", key: "transactionTime" }
+		{ title: "交易类型", render: (record: any) => record.typeZh || "--", key: "type" },
+		{ title: "支付状态", render: (record: any) => record.statusZh || "--", key: "status" },
+		{ title: "商户名称", render: (record: any) => record.merchantName || "--", key: "merchantName" },
+		{ title: "结算金额(USD)", render: (record: any) => record.totalAmount || "--", key: "totalAmount" },
+		{
+			title: "失败原因",
+			render: (record: any) => {
+				return record.status === "Declined" ? record.notes : "--";
+			},
+			key: "notes"
+		},
+		{ title: "时间", render: (record: any) => record.transactionTime || "--", key: "transactionTime" }
 	];
 
 	return (
@@ -184,6 +187,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				</Button>
 			</div>
 			<Table
+				bordered={true}
 				columns={columns}
 				dataSource={list.map(item => ({ ...item, key: item.id }))}
 				pagination={pageObj}

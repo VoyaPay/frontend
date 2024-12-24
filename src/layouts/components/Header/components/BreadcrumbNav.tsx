@@ -38,7 +38,6 @@ const BreadcrumbNav = (props: any) => {
 			parentTitle: "沃易卡账户"
 		}
 	];
-	console.log(breadcrumbMap.find(mapItem => mapItem.path === pathname));
 	const mapItem = breadcrumbMap.find(mapItem => mapItem.path === pathname);
 	return (
 		<>

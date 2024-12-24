@@ -302,147 +302,156 @@ const Detail = () => {
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<span className="title">卡片信息</span>
-					<div className="content">
-						<div className="pre">卡昵称：</div>
-						{cardNameStatus ? (
-							<Input
-								value={cardName}
-								onChange={e => {
-									const value = e.target.value;
-									if (value.length <= 16) {
-										setCardName(value);
-									} else {
-										message.error("卡昵称长度不能超过16个字符");
-									}
-								}}
-								className="edit"
-								placeholder="请输入卡昵称"
-							/>
-						) : (
-							<div className="text">{cardName}</div>
-						)}
-						{cardNameStatus ? (
-							<span
-								className="action"
-								onClick={() => {
-									toggleCardName("finish");
-								}}
-							>
-								修改完成
-							</span>
-						) : (
-							<span
-								className="action"
-								onClick={() => {
-									cardData.cardStatus !== "Closed" ? toggleCardName("change") : message.error("无法修改已注销的卡片");
-								}}
-							>
-								修改
-							</span>
-						)}
-					</div>
+					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "900px" }}>
+						<div className="basicInfo-column">
+							<div className="content">
+								<div className="pre">卡昵称：</div>
+								{cardNameStatus ? (
+									<Input
+										value={cardName}
+										onChange={e => {
+											const value = e.target.value;
+											if (value.length <= 16) {
+												setCardName(value);
+											} else {
+												message.error("卡昵称长度不能超过16个字符");
+											}
+										}}
+										className="edit"
+										placeholder="请输入卡昵称"
+									/>
+								) : (
+									<div className="text">{cardName}</div>
+								)}
+								{cardNameStatus ? (
+									<span
+										className="action"
+										onClick={() => {
+											toggleCardName("finish");
+										}}
+									>
+										修改完成
+									</span>
+								) : (
+									<span
+										className="action"
+										onClick={() => {
+											cardData.cardStatus !== "Closed" ? toggleCardName("change") : message.error("无法修改已注销的卡片");
+										}}
+									>
+										修改
+									</span>
+								)}
+							</div>
 
-					<div className="content">
-						<div className="pre">卡组：</div>
-						<div className="text">{cardData.cardGroup || "N/A"}</div>
-					</div>
+							<div className="content">
+								<div className="pre">卡组：</div>
+								<div className="text">{cardData.cardGroup || "N/A"}</div>
+							</div>
 
-					<div className="content">
-						<div className="pre">卡号：</div>
-						<div className="text">{formatCardNumber(cardData.cardTotal)}</div>
-						<span className="action" onClick={toCopy}>
-							复制完整卡号
-						</span>
-					</div>
+							<div className="content">
+								<div className="pre">卡号：</div>
+								<div className="text">{formatCardNumber(cardData.cardTotal)}</div>
+								<span className="action" onClick={toCopy}>
+									复制完整卡号
+								</span>
+							</div>
 
-					<div className="content">
-						<div className="pre">有效期：</div>
-						<div className="text">{cardData.expirationDate}</div>
-					</div>
+							<div className="content">
+								<div className="pre">有效期：</div>
+								<div className="text">{cardData.expirationDate}</div>
+							</div>
 
-					<div className="content">
-						<div className="pre">CVV2：</div>
-						<div className="text">{cardData.cvv2 || "N/A"}</div>
-					</div>
-
-					<div className="content">
-						<div className="pre">账单地址：</div>
-						<div className="text">1201 North Market Street , Wilmington , DE , USA , 19801</div>
-					</div>
-
-					<div className="content">
-						<div className="pre">持卡人：</div>
-						<div className="text">{cardData.cardHolderName || "N/A"}</div>
-					</div>
-
-					<div className="content">
-						<div className="pre">卡状态：</div>
-						<div className="text">
-							{cardData.cardStatus === "Active"
-								? "活跃"
-								: cardData.cardStatus === "Inactive"
-								? "已冻结"
-								: cardData.cardStatus === "PreClose"
-								? "待注销"
-								: cardData.cardStatus === "Closed"
-								? `已注销 (${formatDate(cardData.updatecardTime)})`
-								: "N/A"}
+							<div className="content">
+								<div className="pre">CVV2：</div>
+								<div className="text">{cardData.cvv2 || "N/A"}</div>
+							</div>
 						</div>
-					</div>
+						<div className="basicInfo-column">
+							<div className="content">
+								<div className="pre">持卡人：</div>
+								<div className="text">{cardData.cardHolderName || "N/A"}</div>
+							</div>
 
-					<div className="content">
-						<div className="pre">余额：</div>
-						<div className="text"> {cardData.balance ? `$ ${cardData.balance}` : "$0"}</div>
+							<div className="content">
+								<div className="pre">卡状态：</div>
+								<div className="text">
+									{cardData.cardStatus === "Active"
+										? "活跃"
+										: cardData.cardStatus === "Inactive"
+										? "已冻结"
+										: cardData.cardStatus === "PreClose"
+										? "待注销"
+										: cardData.cardStatus === "Closed"
+										? `已注销 (${formatDate(cardData.updatecardTime)})`
+										: "N/A"}
+								</div>
+							</div>
 
-						<div className="check" onClick={() => goCheck(cardData)}>
-							查看消费记录
+							<div className="content">
+								<div className="pre">余额：</div>
+								<div className="text"> {cardData.balance ? `$ ${cardData.balance}` : "$0"}</div>
+
+								<div className="check" onClick={() => goCheck(cardData)}>
+									查看消费记录
+								</div>
+							</div>
+
+							<div className="content">
+								<div className="pre">开卡时间：</div>
+								<div className="text">{cardData.createCardTime || "N/A"}</div>
+							</div>
+
+							<div className="content">
+								<div className="pre">账单地址：</div>
+								<div className="text">1201 North Market Street , Wilmington , DE , USA , 19801</div>
+							</div>
 						</div>
-					</div>
-
-					<div className="content">
-						<div className="pre">开卡时间：</div>
-						<div className="text">{cardData.createCardTime || "N/A"}</div>
 					</div>
 				</div>
 
 				<div className="right">
 					<img src={bankcard} alt="" className="bankCard" />
-					<Button
-						type="primary"
-						className="actionBtn"
-						size="large"
-						onClick={() => handlerRechargeDetails(cardData)}
-						disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Closed"}
-					>
-						充值
-					</Button>
-					<Button
-						type="primary"
-						className="actionBtn"
-						size="large"
-						onClick={() => handlecashback(cardData)}
-						disabled={cardData.cardStatus !== "Active"}
-					>
-						提现
-					</Button>
-					<Button
-						type="primary"
-						className="actionBtn"
-						size="large"
-						onClick={showFreezeModal}
-						disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Inactive"}
-					>
-						{cardData.cardStatus === "Inactive" ? "解冻" : "冻结"}
-					</Button>
-					<Button
-						type="primary"
-						size="large"
-						className="actionBtn"
-						onClick={showCloseModal}
-						disabled={cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose"}
-					>
-						{cardData.cardStatus === "PreClose" ? "注销中" : cardData.cardStatus === "Closed" ? "已注销" : "注销"}
-					</Button>
+					<div className="actionBtnWrap">
+						<Button
+							type="primary"
+							className="actionBtn"
+							size="large"
+							onClick={() => handlerRechargeDetails(cardData)}
+							disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Closed"}
+						>
+							充值
+						</Button>
+						<Button
+							type="primary"
+							className="actionBtn"
+							size="large"
+							onClick={() => handlecashback(cardData)}
+							disabled={cardData.cardStatus !== "Active"}
+						>
+							提现
+						</Button>
+					</div>
+					<div className="actionBtnWrap">
+						<Button
+							type="primary"
+							className="actionBtn"
+							size="large"
+							onClick={showFreezeModal}
+							disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Inactive"}
+						>
+							{cardData.cardStatus === "Inactive" ? "解冻" : "冻结"}
+						</Button>
+						<Button
+							type="primary"
+							size="large"
+							className="actionBtn"
+							onClick={showCloseModal}
+							disabled={cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose"}
+						>
+							{cardData.cardStatus === "PreClose" ? "注销中" : cardData.cardStatus === "Closed" ? "已注销" : "注销"}
+						</Button>
+					</div>
 				</div>
 			</div>
 			<CardProvider cardData={cardData}>
