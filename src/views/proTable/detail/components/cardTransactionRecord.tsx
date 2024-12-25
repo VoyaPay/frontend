@@ -25,10 +25,10 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 	const [, setSelectedTimeRange] = useState<any[]>([]);
 	const [pageObj, setPageObj] = useState<any>({
 		current: 1,
-		pageSize: 5,
+		pageSize: 10,
 		total: 0,
 		showSizeChanger: true,
-		pageSizeOptions: ["5", "10", "50", "100"]
+		pageSizeOptions: ["10", "20", "50"]
 	});
 	const [filters, setFilters] = useState<CardTransactionRecordParams>({
 		where: {
@@ -126,6 +126,8 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 		{ title: "交易类型", render: (record: any) => record.typeZh || "--", key: "type" },
 		{ title: "支付状态", render: (record: any) => record.statusZh || "--", key: "status" },
 		{ title: "商户名称", render: (record: any) => record.merchantName || "--", key: "merchantName" },
+		{ title: "交易金额", render: (record: any) => record.merchantAmount || "--", key: "merchantAmount" },
+		{ title: "授权金额(USD)", render: (record: any) => record.amount || "--", key: "amount" },
 		{ title: "结算金额(USD)", render: (record: any) => record.totalAmount || "--", key: "totalAmount" },
 		{
 			title: "失败原因",
