@@ -28,17 +28,17 @@ const CardInformationChangeRecord = ({ id }: { id: string }) => {
 	const [list, setList] = useState<CardInformationChangeRecordList[]>([]);
 	const [pageObj, setPageObj] = useState<any>({
 		current: 1,
-		pageSize: 5,
+		pageSize: 10,
 		total: 0,
 		showSizeChanger: true,
-		pageSizeOptions: ["5", "10", "50", "100"]
+		pageSizeOptions: ["10", "20", "50"]
 	});
 
 	useEffect(() => {
 		fetchData();
 	}, [cardData.cardName, cardData.cardStatus]);
 
-	const fetchData = (pageNum: number = 1, pageSize: number = 5) => {
+	const fetchData = (pageNum: number = 1, pageSize: number = 10) => {
 		CardInformationChangeRecordApi(id, { pageNum, pageSize }).then((res: any) => {
 			const list = res.datalist
 				.filter((item: CardInformationChangeRecordList) => item.actionDesc === "UpdateCard")

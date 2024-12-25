@@ -302,7 +302,7 @@ const Detail = () => {
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<span className="title">卡片信息</span>
-					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "900px" }}>
+					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "930px" }}>
 						<div className="basicInfo-column">
 							<div className="content">
 								<div className="pre">卡昵称：</div>
@@ -404,7 +404,9 @@ const Detail = () => {
 
 							<div className="content">
 								<div className="pre">账单地址：</div>
-								<div className="text">1201 North Market Street , Wilmington , DE , USA , 19801</div>
+								<div className="text" style={{ flex: 1 }}>
+									1201 North Market Street, Wilmington, DE, USA, 19801
+								</div>
 							</div>
 						</div>
 					</div>
@@ -431,8 +433,6 @@ const Detail = () => {
 						>
 							提现
 						</Button>
-					</div>
-					<div className="actionBtnWrap">
 						<Button
 							type="primary"
 							className="actionBtn"
