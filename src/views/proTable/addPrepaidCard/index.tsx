@@ -349,7 +349,7 @@ const AddPrepaidCard = () => {
 					立即申请
 				</Button>
 				<Button type="text" className="return">
-					<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<NavLink to="/prepaidCard" className="myAccount">
 						返回
 					</NavLink>
 				</Button>

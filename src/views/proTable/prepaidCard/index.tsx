@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Space, DatePicker, Select, message, Tooltip, Input, TablePaginationConfig } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi, GetTotalBalanceApi } from "@/api/modules/ledger";
@@ -73,6 +73,7 @@ const PrepaidCard = () => {
 	const iconStyle = { width: "32px", height: "32px", marginTop: "8px", color: "#0D99FF" };
 
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { RangePicker } = DatePicker;
 	const [totalCardNumber, setTotalCardNumber] = useState<number>(0);
 	const [cardTableParams, setCardTableParams] = useState<TableParams>({
@@ -185,7 +186,7 @@ const PrepaidCard = () => {
 		fetchUserCards(1, 10);
 	}, []);
 	const goCheck = (record: FormattedCard) => {
-		navigate("/proTable/tradeQuery", {
+		navigate("/tradeQuery", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
@@ -199,7 +200,7 @@ const PrepaidCard = () => {
 		});
 	};
 	const cashback = (record: FormattedCard) => {
-		navigate("/cashback/index", {
+		navigate("/prepaidCard/cashback", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
@@ -327,7 +328,7 @@ const PrepaidCard = () => {
 		}
 	];
 	const handleViewDetails = (record: FormattedCard) => {
-		navigate("/detail/index", {
+		navigate("/prepaidCard/detail", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
@@ -355,7 +356,7 @@ const PrepaidCard = () => {
 			return;
 		}
 
-		navigate("/prepaidRecharge/index", {
+		navigate("/prepaidCard/prepaidRecharge", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
@@ -402,122 +403,128 @@ const PrepaidCard = () => {
 	};
 
 	return (
-		<div className="newtable">
-			<div className="card content-box">
-				<div className="prepaidCardInfo">
-					<div className="balanceWrap">
-						<span className="pre">沃易卡账户余额</span>
-						<div className="amountWrap">
-							<SvgIcon name="account_balance" iconStyle={iconStyle} />
-							<span className="amount">${accountBalance}</span>
-						</div>
-					</div>
-					<div className="balanceWrap">
-						<span className="pre">卡内总余额</span>
-						<div className="amountWrap">
-							<SvgIcon name="total_balance" iconStyle={iconStyle} />
-							<span className="amount">${totalBalance}</span>
-						</div>
-					</div>
-					<div className="balanceWrap">
-						<span className="pre">剩余可用开卡数</span>
-						<div className="amountWrap">
-							<SvgIcon name="cards_to_apply" iconStyle={iconStyle} />
-							<span className="amount">{totalCardNumber}</span>
+		<>
+			{location.pathname !== "/prepaidCard" ? (
+				<Outlet />
+			) : (
+				<div className="newtable">
+					<div className="card content-box">
+						<div className="prepaidCardInfo">
+							<div className="balanceWrap">
+								<span className="pre">沃易卡账户余额</span>
+								<div className="amountWrap">
+									<SvgIcon name="account_balance" iconStyle={iconStyle} />
+									<span className="amount">${accountBalance}</span>
+								</div>
+							</div>
+							<div className="balanceWrap">
+								<span className="pre">卡内总余额</span>
+								<div className="amountWrap">
+									<SvgIcon name="total_balance" iconStyle={iconStyle} />
+									<span className="amount">${totalBalance}</span>
+								</div>
+							</div>
+							<div className="balanceWrap">
+								<span className="pre">剩余可用开卡数</span>
+								<div className="amountWrap">
+									<SvgIcon name="cards_to_apply" iconStyle={iconStyle} />
+									<span className="amount">{totalCardNumber}</span>
+								</div>
+							</div>
+
+							<div className="buttonWrap">
+								<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
+									<NavLink to="/prepaidCard/addPrepaidCard" className="addPrepaidCard">
+										新增预充卡
+									</NavLink>
+								</Button>
+							</div>
 						</div>
 					</div>
 
-					<div className="buttonWrap">
-						<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
-							<NavLink to="/addPrepaidCard/index" className="addPrepaidCard">
-								新增预充卡
-							</NavLink>
-						</Button>
+					<div className="card content-box">
+						<div className="search" style={{ marginBottom: 10 }}>
+							<div className="actionWrap">
+								<div className="left">
+									<span className="title">预充卡</span>
+									<Space>
+										<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
+										<Select
+											placeholder="请选择卡bin"
+											mode="multiple"
+											allowClear
+											style={{ width: 250 }}
+											onChange={handleGroupChange}
+											options={binOptions}
+										/>
+										<Select
+											placeholder="请选择状态"
+											mode="multiple"
+											allowClear
+											style={{ width: 250 }}
+											onChange={handleStatusChange}
+											options={[
+												{ value: "Active", label: "活跃" },
+												{ value: "Inactive", label: "已冻结" },
+												{ value: "PreClose", label: "待注销" },
+												{ value: "Closed", label: "已注销" }
+											]}
+										/>
+									</Space>
+								</div>
+
+								<div className="buttonWrap">
+									<Button type="primary" onClick={applyFilters} style={{ width: 150, marginRight: "10%" }}>
+										查询
+									</Button>
+								</div>
+							</div>
+
+							<div className="actionWrap" style={{ marginBottom: 10, marginLeft: "4em" }}>
+								<div className="left">
+									<Space>
+										<Input
+											placeholder="搜索卡昵称"
+											value={cardNameSearch}
+											onChange={(e: any) => setCardNameSearch([e.target.value])}
+											onPressEnter={applyFilters}
+											style={{ width: 250 }}
+											allowClear
+										/>
+										<Input
+											placeholder="搜索持卡人"
+											value={cardOwnerSearch}
+											onChange={(e: any) => setCardOwnerSearch(e.target.value)}
+											onPressEnter={applyFilters}
+											style={{ width: 250 }}
+											allowClear
+										/>
+										<Input
+											placeholder="搜索卡号后四位"
+											value={cardNoSearch}
+											onChange={(e: any) => setCardNoSearch([e.target.value])}
+											onPressEnter={applyFilters}
+											style={{ width: 250 }}
+											allowClear
+										/>
+									</Space>
+								</div>
+							</div>
+						</div>
+						<Table
+							style={{ marginBottom: 50 }}
+							bordered={true}
+							dataSource={filteredData}
+							columns={columns}
+							tableLayout="fixed"
+							scroll={{ x: 1200 }}
+							pagination={cardTableParams.pagination}
+							onChange={handleTableChange}
+						/>
 					</div>
 				</div>
-			</div>
-
-			<div className="card content-box">
-				<div className="search" style={{ marginBottom: 10 }}>
-					<div className="actionWrap">
-						<div className="left">
-							<span className="title">预充卡</span>
-							<Space>
-								<RangePicker onChange={handleTimeChange} style={{ width: 250 }} />
-								<Select
-									placeholder="请选择卡bin"
-									mode="multiple"
-									allowClear
-									style={{ width: 250 }}
-									onChange={handleGroupChange}
-									options={binOptions}
-								/>
-								<Select
-									placeholder="请选择状态"
-									mode="multiple"
-									allowClear
-									style={{ width: 250 }}
-									onChange={handleStatusChange}
-									options={[
-										{ value: "Active", label: "活跃" },
-										{ value: "Inactive", label: "已冻结" },
-										{ value: "PreClose", label: "待注销" },
-										{ value: "Closed", label: "已注销" }
-									]}
-								/>
-							</Space>
-						</div>
-
-						<div className="buttonWrap">
-							<Button type="primary" onClick={applyFilters} style={{ width: 150, marginRight: "10%" }}>
-								查询
-							</Button>
-						</div>
-					</div>
-
-					<div className="actionWrap" style={{ marginBottom: 10, marginLeft: "4em" }}>
-						<div className="left">
-							<Space>
-								<Input
-									placeholder="搜索卡昵称"
-									value={cardNameSearch}
-									onChange={(e: any) => setCardNameSearch([e.target.value])}
-									onPressEnter={applyFilters}
-									style={{ width: 250 }}
-									allowClear
-								/>
-								<Input
-									placeholder="搜索持卡人"
-									value={cardOwnerSearch}
-									onChange={(e: any) => setCardOwnerSearch(e.target.value)}
-									onPressEnter={applyFilters}
-									style={{ width: 250 }}
-									allowClear
-								/>
-								<Input
-									placeholder="搜索卡号后四位"
-									value={cardNoSearch}
-									onChange={(e: any) => setCardNoSearch([e.target.value])}
-									onPressEnter={applyFilters}
-									style={{ width: 250 }}
-									allowClear
-								/>
-							</Space>
-						</div>
-					</div>
-				</div>
-				<Table
-					style={{ marginBottom: 50 }}
-					bordered={true}
-					dataSource={filteredData}
-					columns={columns}
-					tableLayout="fixed"
-					scroll={{ x: 1200 }}
-					pagination={cardTableParams.pagination}
-					onChange={handleTableChange}
-				/>
-			</div>
-		</div>
+			)}
+		</>
 	);
 };
 

@@ -139,7 +139,7 @@ const cashback = () => {
 							立刻提现
 						</Button>
 						<Button type="primary" className="actionBtn">
-							<NavLink to="/proTable/prepaidCard" className="myAccount">
+							<NavLink to="/prepaidCard" className="myAccount">
 								返回
 							</NavLink>
 						</Button>

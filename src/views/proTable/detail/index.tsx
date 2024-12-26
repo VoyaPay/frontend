@@ -218,7 +218,7 @@ const Detail = () => {
 	};
 
 	const goCheck = (record: CardData) => {
-		navigate("/proTable/tradeQuery", {
+		navigate("/tradeQuery", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,

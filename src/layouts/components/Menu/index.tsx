@@ -19,24 +19,8 @@ const LayoutMenu = (props: any) => {
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-	const pathPrepaidCardMap = {
-		"/addPrepaidCard/index": "/proTable/prepaidCard",
-		"/proTable/prepaidCard": "/proTable/prepaidCard",
-		"/detail/index": "/proTable/prepaidCard",
-		"/prepaidRecharge/index": "/proTable/prepaidCard",
-		"/cashback/index": "/proTable/prepaidCard"
-	};
-
-	const pathAccountMap = {
-		"/proTable/account": "/proTable/account",
-		"/recharge/index": "/proTable/account"
-	};
-
 	useEffect(() => {
-		const activeKey =
-			pathPrepaidCardMap[pathname as keyof typeof pathPrepaidCardMap] ||
-			pathAccountMap[pathname as keyof typeof pathAccountMap] ||
-			pathname;
+		let activeKey = pathname.split("/")[1] ? `/${pathname.split("/")[1]}` : "/";
 		setSelectedKeys([activeKey]);
 		isCollapse ? null : setOpenKeys(getOpenKeys(activeKey));
 	}, [pathname, isCollapse]);

@@ -1,59 +1,34 @@
 import { Breadcrumb } from "antd";
 import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
+import { rootRouter } from "@/routers";
+import React from "react";
 
 const BreadcrumbNav = (props: any) => {
 	const { pathname } = useLocation();
 	const { themeConfig } = props.global;
-
-	const breadcrumbMap = [
-		{
-			title: "新增预充卡",
-			path: "/addPrepaidCard/index",
-			parentPath: "/proTable/prepaidCard",
-			parentTitle: "预充卡"
-		},
-		{
-			title: "查看详情",
-			path: "/detail/index",
-			parentPath: "/proTable/prepaidCard",
-			parentTitle: "预充卡"
-		},
-		{
-			title: "充值",
-			path: "/prepaidRecharge/index",
-			parentPath: "/proTable/prepaidCard",
-			parentTitle: "预充卡"
-		},
-		{
-			title: "提现",
-			path: "/cashback/index",
-			parentPath: "/proTable/prepaidCard",
-			parentTitle: "预充卡"
-		},
-		{
-			title: "充值",
-			path: "/recharge/index",
-			parentPath: "/proTable/account",
-			parentTitle: "沃易卡账户"
+	const mainRouter = rootRouter.find((item: any) => item.meta?.title === "主页面")?.children;
+	const routerPath = pathname.split("/");
+	const renderBreadcrumb = (router: any) => {
+		if (routerPath.includes(router.path.split("/").pop())) {
+			return (
+				<React.Fragment key={router.path}>
+					<Breadcrumb.Item
+						href={router.children ? `#${router.path}` : undefined}
+						className={routerPath.includes(router.path.split("/").pop()) ? "ant-breadcrumb-link-active" : ""}
+					>
+						{router.meta?.title}
+					</Breadcrumb.Item>
+					{router.children && router.children.map((child: any) => renderBreadcrumb(child))}
+				</React.Fragment>
+			);
 		}
-	];
-	const mapItem = breadcrumbMap.find(mapItem => mapItem.path === pathname);
+		return null;
+	};
 	return (
 		<>
 			{themeConfig.breadcrumb && (
-				<Breadcrumb>
-					{mapItem ? (
-						<>
-							<Breadcrumb.Item key={mapItem.parentTitle} href={`#${mapItem.parentPath}`}>
-								{mapItem.parentTitle}
-							</Breadcrumb.Item>
-							<Breadcrumb.Item key={mapItem.title} href={`#${mapItem.path}`}>
-								{mapItem.title}
-							</Breadcrumb.Item>
-						</>
-					) : null}
-				</Breadcrumb>
+				<Breadcrumb>{mainRouter ? <>{mainRouter.map((router: any) => renderBreadcrumb(router))}</> : null}</Breadcrumb>
 			)}
 		</>
 	);

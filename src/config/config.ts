@@ -2,7 +2,7 @@
 
 // * 首页地址（默认）
 export const HOME_URL: string = "/home/index";
-export const CHARGE_URL: string = "/proTable/account";
+export const CHARGE_URL: string = "/account";
 
 // * Tabs（黑名单地址，不需要添加到 tabs 的路由地址，暂时没用）
 export const TABS_BLACK_LIST: string[] = ["/403", "/404", "/500", "/layout", "/login", "/dataScreen"];
@@ -19,39 +19,13 @@ export const menu: any = [
 	{
 		icon: "CreditCardOutlined",
 		title: "沃易卡账户",
-		path: "/proTable/account"
+		path: "/account"
 	},
 	{
-		icon: "AreaChartOutlined",
 		title: "充值",
-		path: "/recharge/index",
+		path: "/account/recharge",
 		hide: true
 	},
-	{
-		icon: "AreaChartOutlined",
-		title: "查看详情",
-		path: "/detail/index",
-		hide: true
-	},
-	{
-		icon: "AreaChartOutlined",
-		title: "预付卡充值",
-		path: "/prepaidRecharge/index",
-		hide: true
-	},
-	{
-		icon: "AreaChartOutlined",
-		title: "预付卡提现",
-		path: "/cashback/index",
-		hide: true
-	},
-	{
-		icon: "AreaChartOutlined",
-		title: "新增预付卡",
-		path: "/addPrepaidCard/index",
-		hide: true
-	},
-
 	{
 		icon: "AreaChartOutlined",
 		title: "账户设置",
@@ -67,12 +41,36 @@ export const menu: any = [
 	{
 		icon: "ShoppingOutlined",
 		title: "预充卡",
-		path: "/proTable/prepaidCard"
+		path: "/prepaidCard"
+	},
+	{
+		icon: "AreaChartOutlined",
+		title: "查看详情",
+		path: "/prepaidCard/detail",
+		hide: true
+	},
+	{
+		icon: "AreaChartOutlined",
+		title: "新增预付卡",
+		path: "/prepaidCard/addPrepaidCard",
+		hide: true
+	},
+	{
+		icon: "AreaChartOutlined",
+		title: "预付卡充值",
+		path: "/prepaidCard/prepaidRecharge",
+		hide: true
+	},
+	{
+		icon: "AreaChartOutlined",
+		title: "预付卡提现",
+		path: "/prepaidCard/cashback",
+		hide: true
 	},
 	{
 		icon: "BugOutlined",
 		title: "交易查询",
-		path: "/proTable/tradeQuery"
+		path: "/tradeQuery"
 	}
 ];
 

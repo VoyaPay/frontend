@@ -3,75 +3,40 @@ import lazyLoad from "@/routers/utils/lazyLoad";
 import { LayoutIndex } from "@/routers/constant";
 import { RouteObject } from "@/routers/interface";
 
-// 超级表格模块
 const proTableRouter: Array<RouteObject> = [
 	{
 		element: <LayoutIndex />,
 		meta: {
-			title: "表格"
+			title: "主页面"
 		},
 		children: [
 			{
-				path: "/proTable/account",
+				path: "/account",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/account/index"))),
 				meta: {
 					requiresAuth: true,
 					title: "沃易卡账户",
 					key: "account"
-				}
+				},
+				children: [
+					{
+						path: "recharge",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/recharge/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "充值",
+							key: "recharge"
+						}
+					}
+				]
 			},
 			{
-				path: "/proTable/tradeQuery",
+				path: "/tradeQuery",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/tradeQuery/index"))),
 				meta: {
 					requiresAuth: true,
 					title: "交易查询",
 					key: "tradeQuery"
-				}
-			},
-			{
-				path: "/recharge/index",
-				element: lazyLoad(React.lazy(() => import("@/views/proTable/recharge/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "充值",
-					key: "recharge"
-				}
-			},
-			{
-				path: "/detail/index",
-				element: lazyLoad(React.lazy(() => import("@/views/proTable/detail/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "查看详情",
-					key: "detail"
-				}
-			},
-			{
-				path: "/prepaidRecharge/index",
-				element: lazyLoad(React.lazy(() => import("@/views/proTable/prepaidRecharge/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "预付卡充值",
-					key: "prepaidRecharge"
-				}
-			},
-			{
-				path: "/cashback/index",
-				element: lazyLoad(React.lazy(() => import("@/views/proTable/cashback/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "预付卡提现",
-					key: "cashback"
-				}
-			},
-			{
-				path: "/addPrepaidCard/index",
-				element: lazyLoad(React.lazy(() => import("@/views/proTable/addPrepaidCard/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "新增预付卡",
-					key: "addPrepaidCard"
 				}
 			},
 			{
@@ -93,13 +58,51 @@ const proTableRouter: Array<RouteObject> = [
 				}
 			},
 			{
-				path: "/proTable/prepaidCard",
+				path: "/prepaidCard",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/prepaidCard/index"))),
 				meta: {
 					requiresAuth: true,
-					title: "预付卡",
+					title: "预充卡",
 					key: "prepaidCard"
-				}
+				},
+				children: [
+					{
+						path: "detail",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/detail/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "查看详情",
+							key: "detail"
+						}
+					},
+					{
+						path: "addPrepaidCard",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/addPrepaidCard/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "新增预付卡",
+							key: "addPrepaidCard"
+						}
+					},
+					{
+						path: "prepaidRecharge",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/prepaidRecharge/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "预付卡充值",
+							key: "prepaidRecharge"
+						}
+					},
+					{
+						path: "cashback",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/cashback/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "预付卡提现",
+							key: "cashback"
+						}
+					}
+				]
 			}
 		]
 	}

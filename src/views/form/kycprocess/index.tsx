@@ -41,7 +41,7 @@ const KycProcess = () => {
 						)}
 						{kycStatus === "approved" ? (
 							<Button type="primary" className="return">
-								<NavLink to="/proTable/account" className="myAccount">
+								<NavLink to="/account" className="myAccount">
 									首页
 								</NavLink>
 							</Button>

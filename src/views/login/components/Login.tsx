@@ -38,7 +38,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 				const kycResponse = await getKYCApi(); // approved unfilled underReview rejected
 				if (kycResponse.status === "approved") {
 					message.success("登录成功！");
-					navigate("/proTable/account");
+					navigate("/account");
 					return;
 				} else if (kycResponse.status === "unfilled") {
 					navigate("/form/product");
