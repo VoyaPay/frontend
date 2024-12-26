@@ -132,10 +132,7 @@ const HKEntityInfo = () => {
 									<Form.Item
 										name="hkEntityName"
 										label="香港主体全称 / HK Entity Legal Name:"
-										rules={[
-											{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" },
-											{ validator: validateAlphanumeric }
-										]}
+										rules={[{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" }]}
 									>
 										<Input />
 									</Form.Item>

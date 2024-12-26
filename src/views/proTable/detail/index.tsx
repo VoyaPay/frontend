@@ -125,23 +125,22 @@ const Detail = () => {
 		}
 		const updatedData = {
 			status: cardData.cardStatus,
-			alias: cardName
+			alias: cardName.trim()
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
 			setCardData(prevData => ({
 				...prevData,
-				cardName: cardName
+				cardName: cardName.trim()
 			}));
+			setCardName(cardName.trim());
 			message.success("卡片信息修改成功");
 			fetchCardInformation(cardData.key, setCardData);
 		}
 	};
 
 	const saveChanges3 = async () => {
-		// 先保存原来的状态，以便在出错时恢复
 		if (cardData.cardStatus === "Closed") {
-			// Display error message and prevent editing
 			message.error("无法修改已注销的卡片");
 			return;
 		}
@@ -189,7 +188,7 @@ const Detail = () => {
 	};
 
 	const handlerRechargeDetails = (record: CardData) => {
-		navigate("/prepaidRecharge/index", {
+		navigate("/prepaidCard/prepaidRecharge", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,
@@ -203,7 +202,7 @@ const Detail = () => {
 		});
 	};
 	const handlecashback = (record: CardData) => {
-		navigate("/cashback/index", {
+		navigate("/prepaidCard/cashback", {
 			state: {
 				key: record.key,
 				cardName: record.cardName,

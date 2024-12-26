@@ -60,8 +60,8 @@ const Account = () => {
 				const formattedData = response.map(transaction => {
 					let cardName = "预充卡 ";
 					if (transaction.card) {
+						cardName += transaction.card.number;
 						if (transaction.card.alias) {
-							cardName += transaction.card.number;
 							cardName += " ( ";
 							cardName += transaction.card.alias;
 							cardName += " )";
