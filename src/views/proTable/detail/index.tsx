@@ -362,7 +362,7 @@ const Detail = () => {
 							</div>
 
 							<div className="content">
-								<div className="pre">CVV2：</div>
+								<div className="pre">CVV：</div>
 								<div className="text">{cardData.cvv2 || "N/A"}</div>
 							</div>
 						</div>
