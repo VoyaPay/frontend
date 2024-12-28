@@ -1,14 +1,15 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Input, Button, message, Modal } from "antd";
+import { Input, Button, message, Modal, Switch, Popconfirm } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
 import "./index.less";
 import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
 import CardTabs from "./components/cardTabs";
 import { formatDate } from "@/utils/util";
+import { GetRulesApi, UpdateRuleStatusApi } from "@/api/modules/rules";
 
-interface CardData {
+export interface CardData {
 	key: string;
 	cardName: string;
 	cardOwner: string;
@@ -29,6 +30,7 @@ interface CardData {
 	cardHolderAddressCountry: string;
 	partnerIdempotencyKey: string;
 	cardHolderName: string;
+	autoRecharge: boolean;
 }
 
 const fetchCardInformation = async (id: string, setCardData: React.Dispatch<React.SetStateAction<CardData>>) => {
@@ -77,10 +79,12 @@ const Detail = () => {
 		cardHolderAddressPostalCode: "zipcode",
 		cardHolderAddressCountry: "country",
 		partnerIdempotencyKey: "0",
-		cardHolderName: "name"
+		cardHolderName: "name",
+		autoRecharge: false
 	};
 	const [cardData, setCardData] = useState<CardData>((location.state as CardData) ?? defaultCardData);
 	const [cardName, setCardName] = useState(cardData.cardName || "cardname");
+	const [rule, setRule] = useState<any>(null);
 	const [cardNameStatus, setCardNameStatus] = useState(false);
 	const [openFreezeModal, setOpenFreezeModal] = useState(false);
 	const [openCloseModal, setOpenCloseModal] = useState(false);
@@ -89,8 +93,21 @@ const Detail = () => {
 	useEffect(() => {
 		if (cardData.key) {
 			fetchCardInformation(cardData.key, setCardData);
+			fetchRules();
 		}
 	}, [cardData.key]);
+
+	const fetchRules = async () => {
+		await GetRulesApi({ where: { name: `autoRecharge:[${cardData.key}]`, trigger: "cardBalanceChanged" } }).then((res: any) => {
+			if (res && res.datalist.length > 0) {
+				setRule(res.datalist[0]);
+				setCardData(prevData => ({
+					...prevData,
+					autoRecharge: res.datalist[0].isEnable
+				}));
+			}
+		});
+	};
 
 	const saveChanges1 = async () => {
 		if (cardData.cardStatus === "Closed") {
@@ -255,6 +272,9 @@ const Detail = () => {
 		saveChanges3();
 		setConfirmLoading(false);
 		setOpenCloseModal(false);
+		if (cardData.autoRecharge) {
+			handleAutoRechargeChange(cardData.key, false);
+		}
 	};
 
 	const handleCloseCancel = () => {
@@ -275,6 +295,39 @@ const Detail = () => {
 		} else {
 			return "0000 0000 0000";
 		}
+	};
+
+	const handleAutoRechargeChange = (key: string, value: boolean) => {
+		if (cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose") {
+			message.error("已注销或待注销的卡片不能开启自动充值");
+			setCardData(prevData => ({
+				...prevData,
+				autoRecharge: false
+			}));
+			return;
+		}
+		if (!rule) {
+			message.error("请先配置自动充值规则");
+			setCardData(prevData => ({
+				...prevData,
+				autoRecharge: false
+			}));
+			return;
+		}
+		UpdateRuleStatusApi(rule.id, value).then(() => {
+			setCardData(prevData => ({
+				...prevData,
+				autoRecharge: value
+			}));
+		});
+	};
+
+	const goAutoRecharge = () => {
+		navigate("/prepaidCard/autoRecharge", {
+			state: {
+				...cardData
+			}
+		});
 	};
 
 	return (
@@ -365,6 +418,24 @@ const Detail = () => {
 								<div className="pre">CVV：</div>
 								<div className="text">{cardData.cvv2 || "N/A"}</div>
 							</div>
+							<div className="content">
+								<div className="pre">自动充值：</div>
+								<div className="switch-wrap">
+									<Popconfirm
+										title={cardData.autoRecharge ? "确定要关闭自动充值吗？" : "确定要开启自动充值吗？"}
+										okText="确定"
+										cancelText="取消"
+										onConfirm={() => {
+											handleAutoRechargeChange(cardData.key, !cardData.autoRecharge);
+										}}
+									>
+										<Switch size="small" checked={cardData.autoRecharge} />
+									</Popconfirm>
+									<span className="action" onClick={goAutoRecharge}>
+										配置规则
+									</span>
+								</div>
+							</div>
 						</div>
 						<div className="basicInfo-column">
 							<div className="content">
@@ -404,7 +475,9 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">账单地址：</div>
 								<div className="text" style={{ flex: 1 }}>
-									1201 North Market Street, Wilmington, DE, USA, 19801
+									1201 North Market Street,
+									<br />
+									Wilmington, DE, USA, 19801
 								</div>
 							</div>
 						</div>

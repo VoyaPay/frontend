@@ -68,6 +68,12 @@ export const menu: any = [
 		hide: true
 	},
 	{
+		icon: "AreaChartOutlined",
+		title: "自动充值",
+		path: "/prepaidCard/autoRecharge",
+		hide: true
+	},
+	{
 		icon: "BugOutlined",
 		title: "交易查询",
 		path: "/tradeQuery"

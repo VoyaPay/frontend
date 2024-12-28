@@ -101,6 +101,15 @@ const proTableRouter: Array<RouteObject> = [
 							title: "预付卡提现",
 							key: "cashback"
 						}
+					},
+					{
+						path: "autoRecharge",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/autoRecharge/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "自动充值",
+							key: "autoRecharge"
+						}
 					}
 				]
 			}
