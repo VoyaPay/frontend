@@ -286,7 +286,7 @@ const PrepaidCard = () => {
 			dataIndex: "balance",
 			key: "balance",
 			align: "center",
-			width: "30px",
+			width: "40px",
 			sorter: (a: any, b: any) => a.balance - b.balance,
 			render: (balance: number) => (balance >= 0 ? `$${balance}` : `-$${Math.abs(balance)}`)
 		},
@@ -517,7 +517,6 @@ const PrepaidCard = () => {
 							dataSource={filteredData}
 							columns={columns}
 							tableLayout="fixed"
-							scroll={{ x: 1200 }}
 							pagination={cardTableParams.pagination}
 							onChange={handleTableChange}
 						/>

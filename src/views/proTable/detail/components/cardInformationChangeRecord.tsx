@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from "react";
 import { Table } from "antd";
 import { formatDate } from "@/utils/util";
 import { CardContext } from "@/views/proTable/detail";
-
 interface CardInformationChangeRecordList {
 	id: number;
 	action: string;
@@ -26,6 +25,16 @@ interface CardInformationChangeRecordList {
 const CardInformationChangeRecord = ({ id }: { id: string }) => {
 	const cardData = useContext(CardContext) || { cardName: "", cardStatus: "" };
 	const [list, setList] = useState<CardInformationChangeRecordList[]>([]);
+	const payloadMapping = {
+		alias: "卡昵称",
+		status: "状态"
+	};
+	const statusMapping = {
+		Active: "活跃",
+		Inactive: "已冻结",
+		Closed: "已注销",
+		PreClose: "待注销"
+	};
 	const [pageObj, setPageObj] = useState<any>({
 		current: 1,
 		pageSize: 10,
@@ -45,12 +54,24 @@ const CardInformationChangeRecord = ({ id }: { id: string }) => {
 				.map((item: CardInformationChangeRecordList) => ({
 					...item,
 					createdAt: formatDate(item.createdAt),
-					alias: Object.keys(item.payload).join(","),
+					alias: Object.keys(item.payload)
+						.map(key => payloadMapping[key as keyof typeof payloadMapping] || key)
+						.join(","),
 					oldAlias: Object.keys(item.payload)
-						.map((key: string) => item.payload[key].old)
+						.map((key: string) => {
+							if (key === "status") {
+								return statusMapping[item.payload[key].old as keyof typeof statusMapping] || item.payload[key].old;
+							}
+							return item.payload[key].old;
+						})
 						.join(","),
 					newAlias: Object.keys(item.payload)
-						.map((key: string) => item.payload[key].new)
+						.map((key: string) => {
+							if (key === "status") {
+								return statusMapping[item.payload[key].new as keyof typeof statusMapping] || item.payload[key].new;
+							}
+							return item.payload[key].new;
+						})
 						.join(",")
 				}));
 			setList(list);

@@ -260,7 +260,7 @@ const TradeQuery = () => {
 			dataIndex: "cardType",
 			key: "cardType",
 			align: "center",
-			width: 100
+			width: "90px"
 		},
 		{
 			title: "商户名称",
@@ -334,13 +334,15 @@ const TradeQuery = () => {
 			title: "失败原因",
 			dataIndex: "wrongReason",
 			key: "wrongReason",
-			align: "center"
+			align: "center",
+			width: "90px"
 		},
 		{
 			title: "索引号",
 			dataIndex: "id",
 			key: "id",
-			align: "center"
+			align: "center",
+			width: "120px"
 		}
 	];
 	const [columns, setColumns] = useState(transactionColumns);
@@ -487,8 +489,8 @@ const TradeQuery = () => {
 					key: tran.id,
 					amount: tran.amount,
 					transactionTime: formatDate(tran.transactionTime),
-					status: StatusMapping[tran.status as keyof typeof StatusMapping],
-					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping],
+					status: StatusMapping[tran.status as keyof typeof StatusMapping] || "--",
+					cardType: CardTypeMapping[tran.cardType as keyof typeof CardTypeMapping] || "--",
 					wrongReason: tran.status === "Declined" ? tran.notes : "--"
 				};
 				return t;
@@ -619,7 +621,6 @@ const TradeQuery = () => {
 					bordered={true}
 					dataSource={transactionPage}
 					columns={columns}
-					scroll={{ x: 1400 }}
 					pagination={transactionTableParams.pagination}
 					onChange={handleTransactionTableChange}
 				/>
@@ -628,7 +629,6 @@ const TradeQuery = () => {
 					bordered={true}
 					dataSource={filteredData}
 					columns={columns}
-					scroll={{ x: 1400 }}
 					pagination={cardTableParams.pagination}
 					onChange={handleCardTableChange}
 				/>

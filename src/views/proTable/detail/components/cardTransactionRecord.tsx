@@ -126,8 +126,16 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 		{ title: "交易类型", render: (record: any) => record.typeZh || "--", key: "type" },
 		{ title: "支付状态", render: (record: any) => record.statusZh || "--", key: "status" },
 		{ title: "商户名称", render: (record: any) => record.merchantName || "--", key: "merchantName" },
-		{ title: "交易金额", render: (record: any) => record.merchantAmount || "--", key: "merchantAmount" },
-		{ title: "授权金额(USD)", render: (record: any) => record.amount || "--", key: "amount" },
+		{
+			title: "交易金额",
+			render: (record: any) => (record.typeZh === "transaction" ? record.merchantAmount || "--" : "--"),
+			key: "merchantAmount"
+		},
+		{
+			title: "授权金额(USD)",
+			render: (record: any) => (record.typeZh === "transaction" ? record.amount || "--" : "--"),
+			key: "amount"
+		},
 		{ title: "结算金额(USD)", render: (record: any) => record.totalAmount || "--", key: "totalAmount" },
 		{
 			title: "失败原因",
@@ -193,7 +201,6 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				columns={columns}
 				dataSource={list.map(item => ({ ...item, key: item.id }))}
 				pagination={pageObj}
-				scroll={{ x: 1400 }}
 				onChange={pagination => {
 					setPageObj(pagination);
 					fetchData();
