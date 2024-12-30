@@ -128,12 +128,12 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 		{ title: "商户名称", render: (record: any) => record.merchantName || "--", key: "merchantName" },
 		{
 			title: "交易金额",
-			render: (record: any) => (record.typeZh === "transaction" ? record.merchantAmount || "--" : "--"),
+			render: (record: any) => (record.type === "transaction" ? record.merchantAmount + "" + record.currencyCode || "--" : "--"),
 			key: "merchantAmount"
 		},
 		{
 			title: "授权金额(USD)",
-			render: (record: any) => (record.typeZh === "transaction" ? record.amount || "--" : "--"),
+			render: (record: any) => (record.type === "transaction" ? record.amount || "--" : "--"),
 			key: "amount"
 		},
 		{ title: "结算金额(USD)", render: (record: any) => record.totalAmount || "--", key: "totalAmount" },
