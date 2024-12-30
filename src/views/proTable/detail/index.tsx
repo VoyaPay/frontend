@@ -431,9 +431,11 @@ const Detail = () => {
 									>
 										<Switch size="small" checked={cardData.autoRecharge} />
 									</Popconfirm>
-									<span className="action" onClick={goAutoRecharge}>
-										配置规则
-									</span>
+									{cardData.cardStatus !== "Closed" && cardData.cardStatus !== "PreClose" && (
+										<span className="action" onClick={goAutoRecharge}>
+											配置规则
+										</span>
+									)}
 								</div>
 							</div>
 						</div>
