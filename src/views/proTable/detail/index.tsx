@@ -50,12 +50,7 @@ const fetchCardInformation = async (id: string, setCardData: React.Dispatch<Reac
 };
 
 const updateCardInformation = async (id: string, newDate: any) => {
-	try {
-		const response = await ChangeCardInformationApi(id, newDate);
-		return response;
-	} catch (error) {
-		console.error("Error updating card information:", error);
-	}
+	return await ChangeCardInformationApi(id, newDate);
 };
 
 const Detail = () => {
@@ -111,8 +106,7 @@ const Detail = () => {
 
 	const saveChanges1 = async () => {
 		if (cardData.cardStatus === "Closed") {
-			// Display error message and prevent editing
-			message.error("无法修改已注销的卡片");
+			message.error("无法修改已注销的卡片。");
 			return;
 		}
 		const updatedData = {
@@ -121,7 +115,7 @@ const Detail = () => {
 		};
 		const response: any = await updateCardInformation(cardData.key, updatedData);
 		if (response?.id) {
-			message.success("卡片信息修改成功");
+			message.success("卡片信息修改成功。");
 			setCardData(prevData => ({
 				...prevData,
 				cardStatus: updatedData.status // 更新状态
@@ -133,11 +127,11 @@ const Detail = () => {
 		const maxLength = 16;
 		if (cardData.cardStatus === "Closed") {
 			// Display error message and prevent editing
-			message.error("无法修改已注销的卡片");
+			message.error("无法修改已注销的卡片。");
 			return;
 		}
 		if (cardName.length > maxLength) {
-			message.error("卡昵称长度不能超过16个字符");
+			message.error("卡昵称长度不能超过16个字符。");
 			return;
 		}
 		const updatedData = {
@@ -151,49 +145,30 @@ const Detail = () => {
 				cardName: cardName.trim()
 			}));
 			setCardName(cardName.trim());
-			message.success("卡片信息修改成功");
+			message.success("卡片信息修改成功。");
 			fetchCardInformation(cardData.key, setCardData);
 		}
 	};
 
 	const saveChanges3 = async () => {
-		if (cardData.cardStatus === "Closed") {
-			message.error("无法修改已注销的卡片");
+		if (Number(cardData.balance) < 0) {
+			message.error("余额为负，无法注销。");
 			return;
 		}
-		const previousStatus = cardData.cardStatus;
-
-		setCardData(prevData => ({
-			...prevData,
-			cardStatus: "Closed"
-		}));
-
-		// 构建更新数据
-		const updatedData = {
+		if (cardData.cardStatus === "Closed") {
+			message.error("无法修改已注销的卡片。");
+			return;
+		}
+		const response: any = await updateCardInformation(cardData.key, {
 			status: "Closed",
 			alias: cardName
-		};
-
-		try {
-			const response: any = await updateCardInformation(cardData.key, updatedData);
-
-			if (response?.id) {
-				message.success("操作成功");
-				setCardData(prevData => ({
-					...prevData,
-					cardStatus: updatedData.status // 更新状态
-				}));
-			} else {
-				// 如果没有成功更新，显示失败提示
-				throw new Error("此卡在30天内存在交易记录， 无法注销，请之后重试");
-			}
-		} catch (error) {
-			// 如果发生错误（包括服务器返回 400），恢复原来的状态并显示错误消息
+		});
+		if (response?.id) {
+			message.success("操作成功");
 			setCardData(prevData => ({
 				...prevData,
-				cardStatus: previousStatus // 恢复到之前的状态
+				cardStatus: "Closed"
 			}));
-			message.error("更新失败");
 		}
 	};
 
@@ -299,7 +274,7 @@ const Detail = () => {
 
 	const handleAutoRechargeChange = (key: string, value: boolean) => {
 		if (cardData.cardStatus === "Closed" || cardData.cardStatus === "PreClose") {
-			message.error("已注销或待注销的卡片不能开启自动充值");
+			message.error("已注销或待注销的卡片不能开启自动充值。");
 			setCardData(prevData => ({
 				...prevData,
 				autoRecharge: false
@@ -307,7 +282,7 @@ const Detail = () => {
 			return;
 		}
 		if (!rule) {
-			message.error("请先配置自动充值规则");
+			message.error("请先配置自动充值规则。");
 			setCardData(prevData => ({
 				...prevData,
 				autoRecharge: false
@@ -501,7 +476,7 @@ const Detail = () => {
 							className="actionBtn"
 							size="large"
 							onClick={() => handlecashback(cardData)}
-							disabled={cardData.cardStatus !== "Active"}
+							disabled={cardData.cardStatus !== "Active" && cardData.cardStatus !== "Closed"}
 						>
 							提现
 						</Button>

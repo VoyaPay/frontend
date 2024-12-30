@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Button, Modal, message, InputNumber } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
@@ -21,6 +21,7 @@ interface CardData {
 	cvv2?: string;
 }
 const cashback = () => {
+	const navigate = useNavigate();
 	const location = useLocation();
 	const defaultCardData: CardData = {
 		key: "",
@@ -56,11 +57,10 @@ const cashback = () => {
 	const handleOk = async () => {
 		try {
 			setConfirmLoading(true);
-			const response = await RechargeCardApi(cardData.key, { amount: -amount });
-
-			// 检查是否成功并给出提示
-			if (response.id) {
-				message.success("提现成功 !"); // 成功消息
+			const response: any = await RechargeCardApi(cardData.key, { amount: -amount });
+			if (response?.card?.id) {
+				message.success("提现成功!");
+				navigate("/prepaidCard", { replace: true });
 			}
 
 			setOpen(false);

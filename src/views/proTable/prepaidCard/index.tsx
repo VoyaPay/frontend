@@ -180,11 +180,15 @@ const PrepaidCard = () => {
 			setFilteredData(formattedData);
 		}
 	};
+
 	useEffect(() => {
-		getCardBin();
-		getBalance();
-		fetchUserCards(1, 10);
-	}, []);
+		if (location.pathname === "/prepaidCard") {
+			getCardBin();
+			getBalance();
+			fetchUserCards(1, 10);
+		}
+	}, [location.pathname]);
+
 	const goCheck = (record: FormattedCard) => {
 		navigate("/tradeQuery", {
 			state: {

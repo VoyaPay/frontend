@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Button, Modal, message, InputNumber } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
@@ -21,6 +21,7 @@ interface CardData {
 	cvv2?: string;
 }
 const PrepaidRecharge = () => {
+	const navigate = useNavigate();
 	const location = useLocation();
 	const defaultCardData: CardData = {
 		key: "",
@@ -34,6 +35,11 @@ const PrepaidRecharge = () => {
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
 	const [amount, setAmount] = useState<number | undefined>(undefined);
+
+	useEffect(() => {
+		getBalance();
+	}, []);
+
 	const recharge = () => {
 		setOpen(true);
 	};
@@ -58,7 +64,8 @@ const PrepaidRecharge = () => {
 			setConfirmLoading(true);
 			const response = await RechargeCardApi(cardData.key, { amount: amount });
 			if (response.card) {
-				message.success("充值成功 !"); // 成功消息
+				message.success("充值成功!");
+				navigate("/prepaidCard", { replace: true });
 			}
 
 			setOpen(false);
@@ -81,18 +88,13 @@ const PrepaidRecharge = () => {
 			setOpen(false);
 		}
 	};
-	useEffect(() => {
-		const getBalance = async () => {
-			try {
-				const response = await GetBalanceApi();
-				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
-				setAccountBalance(balance);
-			} catch (error) {
-				console.log("Cannot get balance of the account:", error);
-			}
-		};
-		getBalance();
-	}, []); // 依赖为空数组，表示只在组件挂载时运行一次
+
+	const getBalance = () => {
+		GetBalanceApi().then(res => {
+			const balance = res.currentBalance ? parseFloat(parseFloat(res.currentBalance).toFixed(2)) : 0;
+			setAccountBalance(balance);
+		});
+	};
 	const handleCancel = () => {
 		setOpen(false);
 	};
