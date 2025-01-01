@@ -28,19 +28,28 @@
 			}
 		}
 	}
-	.actionWrap {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+	.accountChart {
 		margin-top: 40px;
 		margin-bottom: 15px;
-		.title {
-			margin-right: 10px;
-			font-size: 15px;
-			font-weight: bold;
+		.chartHeader {
+			display: flex;
+			align-items: center;
+			margin-bottom: 20px;
+			.title {
+				display: block;
+				height: 32px;
+				margin-right: 10px;
+				margin-bottom: 0;
+				font-size: 15px;
+				font-weight: bold;
+				line-height: 32px;
+			}
 		}
-		.transactionType {
-			width: 200px !important;
+		.chartContent {
+			.chartTitle {
+				font-size: 15px;
+				font-weight: bold;
+			}
 		}
 	}
 }
