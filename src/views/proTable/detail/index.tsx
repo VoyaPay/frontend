@@ -294,6 +294,7 @@ const Detail = () => {
 			return;
 		}
 		UpdateRuleStatusApi(rule.id, value).then(() => {
+			message.success(value ? "自动充值开启成功！" : "自动充值关闭成功！");
 			setCardData(prevData => ({
 				...prevData,
 				autoRecharge: value
@@ -302,8 +303,8 @@ const Detail = () => {
 		});
 	};
 
-	const handleSwitchChange = () => {
-		setAutoRechargeSwitch(!autoRechargeSwitch);
+	const handleSwitchChange = (checked: boolean) => {
+		setAutoRechargeSwitch(!checked);
 		setOpenAutoRechargeModal(true);
 	};
 
@@ -406,7 +407,7 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">自动充值：</div>
 								<div className="switch-wrap">
-									<Switch size="small" checked={autoRechargeSwitch} onClick={handleSwitchChange} />
+									<Switch size="small" checked={autoRechargeSwitch} onChange={checked => handleSwitchChange(checked)} />
 									{cardData.cardStatus !== "Closed" && cardData.cardStatus !== "PreClose" && (
 										<span className="action" onClick={goAutoRecharge}>
 											配置规则
