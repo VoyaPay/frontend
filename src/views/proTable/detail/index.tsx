@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Input, Button, message, Modal, Switch, Popconfirm } from "antd";
+import { Input, Button, message, Modal, Switch } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
 import "./index.less";
 import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
@@ -84,7 +84,8 @@ const Detail = () => {
 	const [openFreezeModal, setOpenFreezeModal] = useState(false);
 	const [openCloseModal, setOpenCloseModal] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);
-
+	const [openAutoRechargeModal, setOpenAutoRechargeModal] = useState(false);
+	const [autoRechargeSwitch, setAutoRechargeSwitch] = useState(false);
 	useEffect(() => {
 		if (cardData.key) {
 			fetchCardInformation(cardData.key, setCardData);
@@ -100,6 +101,7 @@ const Detail = () => {
 					...prevData,
 					autoRecharge: res.datalist[0].isEnable
 				}));
+				setAutoRechargeSwitch(res.datalist[0].isEnable);
 			}
 		});
 	};
@@ -169,6 +171,9 @@ const Detail = () => {
 				...prevData,
 				cardStatus: "Closed"
 			}));
+			if (cardData.autoRecharge) {
+				handleAutoRechargeChange(cardData.key, false);
+			}
 		}
 	};
 
@@ -247,9 +252,6 @@ const Detail = () => {
 		saveChanges3();
 		setConfirmLoading(false);
 		setOpenCloseModal(false);
-		if (cardData.autoRecharge) {
-			handleAutoRechargeChange(cardData.key, false);
-		}
 	};
 
 	const handleCloseCancel = () => {
@@ -279,14 +281,16 @@ const Detail = () => {
 				...prevData,
 				autoRecharge: false
 			}));
+			setAutoRechargeSwitch(false);
 			return;
 		}
 		if (!rule) {
-			message.error("请先配置自动充值规则。");
-			setCardData(prevData => ({
-				...prevData,
-				autoRecharge: false
-			}));
+			navigate("/prepaidCard/autoRecharge", {
+				state: {
+					...cardData
+				}
+			});
+			setAutoRechargeSwitch(cardData.autoRecharge);
 			return;
 		}
 		UpdateRuleStatusApi(rule.id, value).then(() => {
@@ -294,7 +298,13 @@ const Detail = () => {
 				...prevData,
 				autoRecharge: value
 			}));
+			setAutoRechargeSwitch(value);
 		});
+	};
+
+	const handleSwitchChange = () => {
+		setAutoRechargeSwitch(!autoRechargeSwitch);
+		setOpenAutoRechargeModal(true);
 	};
 
 	const goAutoRecharge = () => {
@@ -329,7 +339,7 @@ const Detail = () => {
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<span className="title">卡片信息</span>
-					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "930px" }}>
+					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "700px" }}>
 						<div className="basicInfo-column">
 							<div className="content">
 								<div className="pre">卡昵称：</div>
@@ -396,16 +406,7 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">自动充值：</div>
 								<div className="switch-wrap">
-									<Popconfirm
-										title={cardData.autoRecharge ? "确定要关闭自动充值吗？" : "确定要开启自动充值吗？"}
-										okText="确定"
-										cancelText="取消"
-										onConfirm={() => {
-											handleAutoRechargeChange(cardData.key, !cardData.autoRecharge);
-										}}
-									>
-										<Switch size="small" checked={cardData.autoRecharge} />
-									</Popconfirm>
+									<Switch size="small" checked={autoRechargeSwitch} onClick={handleSwitchChange} />
 									{cardData.cardStatus !== "Closed" && cardData.cardStatus !== "PreClose" && (
 										<span className="action" onClick={goAutoRecharge}>
 											配置规则
@@ -501,6 +502,22 @@ const Detail = () => {
 							{cardData.cardStatus === "PreClose" ? "注销中" : cardData.cardStatus === "Closed" ? "已注销" : "注销"}
 						</Button>
 					</div>
+					<Modal
+						title={cardData.autoRecharge ? "确认关闭" : "确认开启"}
+						visible={openAutoRechargeModal}
+						onOk={() => {
+							handleAutoRechargeChange(cardData.key, !cardData.autoRecharge);
+							setOpenAutoRechargeModal(false);
+						}}
+						onCancel={() => {
+							setAutoRechargeSwitch(cardData.autoRecharge);
+							setOpenAutoRechargeModal(false);
+						}}
+						okText={!rule ? "确定，去配置规则" : "确定"}
+						cancelText="取消"
+					>
+						<p>{cardData.autoRecharge ? "确定要关闭自动充值吗？" : "确定要开启自动充值吗？"}</p>
+					</Modal>
 				</div>
 			</div>
 			<CardProvider cardData={cardData}>
