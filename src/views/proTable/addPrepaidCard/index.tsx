@@ -243,7 +243,7 @@ const AddPrepaidCard = () => {
 						orgCompanyId: bins.orgCompanyId,
 						note:
 							bins.bin === "555243"
-								? "支持全球商户全币种消费(除美国经济制裁地区外),以美元结算。"
+								? "支持全球商户全币种消费(除美国经济制裁地区外)，以美元结算。"
 								: "仅支持美国境内商户消费，以美元结算。"
 					}));
 					setDataSource(formattedData);
