@@ -16,7 +16,7 @@ interface BinData {
 }
 
 const AddPrepaidCard = () => {
-	const remainingCards = store.getState().global.userInfo.userConfig.maximumCardsAllowed;
+	const remainingCards = store.getState().global.userInfo?.userConfig?.maximumCardsAllowed || 0;
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
 	const [firstName, setFirstName] = useState("");
