@@ -231,7 +231,7 @@ const AddPrepaidCard = () => {
 			navigate("/applySuccess/index");
 		} catch (error) {
 			navigate("/prepaidCard");
-			message.error((error || "").toString());
+			message.error("部分卡申请失败");
 		}
 	};
 	const userInformation = async () => {
