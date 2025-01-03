@@ -16,7 +16,7 @@ interface BinData {
 }
 
 const AddPrepaidCard = () => {
-	const remainingCards = store.getState().global.userInfo?.userConfig?.maximumCardsAllowed || 0;
+	const remainingCards = store.getState().global.userInfo?.userConfig?.maximumCardsAllowed || 99;
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
 	const [firstName, setFirstName] = useState("");
@@ -243,7 +243,7 @@ const AddPrepaidCard = () => {
 				email: response.email || "N/A",
 				companyName: response.companyName || "N/A",
 				cardCreationFee: response.userConfig.cardCreationFee || "N/A",
-				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
+				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 99
 			};
 			setcardsfee(Number(formattedData.cardCreationFee));
 		} catch (error) {
