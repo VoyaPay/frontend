@@ -10,7 +10,10 @@ export const UserCardApi = (params: object) => {
 
 export const AddCardApi = async (params: object): Promise<ResultData<any>> => {
 	try {
-		const response = await http.post(PORT3 + `/cards`, params, { headers: { "Content-Type": "application/json" } });
+		const response = await http.post(PORT3 + `/cards`, params, {
+			headers: { "Content-Type": "application/json" },
+			isGlobalLoading: false
+		});
 		return response;
 	} catch (error) {
 		console.error("API request failed:", error);

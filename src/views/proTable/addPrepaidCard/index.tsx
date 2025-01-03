@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal, message } from "antd";
+import { Input, Button, Modal, message, InputNumber, Progress } from "antd";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 import { AccountApi } from "@/api/modules/user";
+import { store } from "@/redux";
 interface BinData {
 	bin: string;
 	network?: string;
@@ -15,6 +16,7 @@ interface BinData {
 }
 
 const AddPrepaidCard = () => {
+	const remainingCards = store.getState().global.userInfo.userConfig.maximumCardsAllowed;
 	const [cardName, setCardName] = useState("");
 	const [amount, setAmount] = useState(0);
 	const [firstName, setFirstName] = useState("");
@@ -23,13 +25,72 @@ const AddPrepaidCard = () => {
 	const [city, setCity] = useState("Wilmington");
 	const [state, setState] = useState("DE");
 	const [zipcode, setZipCode] = useState("19801");
-	const [cardsfee, setcardsfee] = useState("0");
+	const [cardsfee, setcardsfee] = useState(0);
 	const [accountBalance, setAccountBalance] = useState(0);
 	const [dataSource, setDataSource] = useState<BinData[]>([]);
 	const [selectedCard, setSelectedCard] = useState<string | null>(null);
 	const navigate = useNavigate();
+	const [newCards, setNewCards] = useState(1);
+	const [successCount, setSuccessCount] = useState<number | undefined>(undefined);
 	const maxLength = 16;
 	const combinedLength = firstName.length + lastName.length;
+
+	const validations = [
+		{
+			condition: !selectedCard,
+			message: "请先选择一个卡号"
+		},
+		{
+			condition: !cardName,
+			message: "请填写卡昵称"
+		},
+		{
+			condition: !firstName,
+			message: "请填写持卡人名字"
+		},
+		{
+			condition: !lastName,
+			message: "请填写持卡人姓氏"
+		},
+		{
+			condition: !streetAddress,
+			message: "请填写地址"
+		},
+		{
+			condition: !city,
+			message: "请填写城市"
+		},
+		{
+			condition: !state,
+			message: "请填写州"
+		},
+		{
+			condition: !zipcode,
+			message: "请填写邮编"
+		},
+		{
+			condition: amount <= 0,
+			message: "充值金额必须大于0"
+		},
+		{
+			condition: newCards * (amount + cardsfee) > accountBalance,
+			message: "开卡总金额和开卡费总额不能超过账户余额"
+		}
+	];
+
+	const showModal = () => {
+		let msg = "";
+		for (const validation of validations) {
+			if (validation.condition) {
+				msg = validation.message;
+			}
+		}
+		if (msg) {
+			message.error(msg);
+			return;
+		}
+		setOpen(true);
+	};
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -40,52 +101,6 @@ const AddPrepaidCard = () => {
 		}
 
 		setCardName(value);
-	};
-	const showModal = () => {
-		if (!selectedCard) {
-			message.error("请先选择一个卡号");
-			return;
-		}
-		if (!cardName) {
-			message.error("请填写卡昵称");
-			return;
-		}
-
-		if (!firstName) {
-			message.error("请填写持卡人名字");
-			return;
-		}
-
-		if (!lastName) {
-			message.error("请填写持卡人姓氏");
-			return;
-		}
-
-		if (!streetAddress) {
-			message.error("请填写地址");
-			return;
-		}
-
-		if (!city) {
-			message.error("请填写城市");
-			return;
-		}
-
-		if (!state) {
-			message.error("请填写州");
-			return;
-		}
-
-		if (!zipcode) {
-			message.error("请填写邮编");
-			return;
-		}
-
-		if (amount <= 0) {
-			message.error("充值金额必须大于0");
-			return;
-		}
-		setOpen(true);
 	};
 
 	const changeFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,6 +212,7 @@ const AddPrepaidCard = () => {
 		setZipCode(value);
 	};
 	const handleSubmit = async () => {
+		setSuccessCount(0);
 		const payload = {
 			type: "PrefundCredit",
 			initialLimit: amount,
@@ -205,14 +221,18 @@ const AddPrepaidCard = () => {
 			cardHolderLastName: lastName,
 			cardBin: selectedCard
 		};
-		await AddCardApi(payload)
-			.then(() => {
-				message.success("申请已提交");
-				navigate("/applySuccess/index");
-			})
-			.catch(error => {
-				message.error(error);
-			});
+		try {
+			for (let i = 0; i < newCards; i++) {
+				await AddCardApi(payload);
+				setSuccessCount(i + 1);
+			}
+			setSuccessCount(undefined);
+			message.success("申请已提交");
+			navigate("/applySuccess/index");
+		} catch (error) {
+			navigate("/prepaidCard");
+			message.error((error || "").toString());
+		}
 	};
 	const userInformation = async () => {
 		try {
@@ -225,7 +245,7 @@ const AddPrepaidCard = () => {
 				cardCreationFee: response.userConfig.cardCreationFee || "N/A",
 				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
 			};
-			setcardsfee(formattedData.cardCreationFee);
+			setcardsfee(Number(formattedData.cardCreationFee));
 		} catch (error) {
 			console.log("Error fetching user information: " + error);
 		}
@@ -284,11 +304,35 @@ const AddPrepaidCard = () => {
 		setOpen(false);
 	};
 
+	const changeNewCards = (value: number) => {
+		if (!Number.isInteger(value)) {
+			message.error("开卡数量必须为整数");
+			return;
+		}
+		if (value > remainingCards) {
+			message.error(`开卡数量不能超过${remainingCards}张`);
+			return;
+		}
+		setNewCards(value);
+	};
+
 	return (
 		<div className="addPrepaidCard-wrap">
+			{successCount !== undefined && (
+				<div className="loading-wrap">
+					<Progress
+						className="loading-progress"
+						strokeColor="#134faf"
+						type="circle"
+						percent={Math.round((successCount / newCards) * 100)}
+						format={() => `${successCount} / ${newCards}`}
+					/>
+				</div>
+			)}
 			<Modal title="申请" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>
-					充值金额 {amount} USD， 开卡费 {cardsfee} USD，总计 {parseFloat(cardsfee) + amount} USD，继续申请？
+					单卡充值金额 {amount} USD，单卡开卡费 {cardsfee} USD，新增卡数 {newCards} 张，总计充值金额 {amount * newCards}{" "}
+					USD，总计开卡费 {cardsfee * newCards} USD，继续申请？
 				</p>
 			</Modal>
 			<div className="contentWrap">
@@ -336,18 +380,54 @@ const AddPrepaidCard = () => {
 				</div>
 			</div>
 			<div className="contentWrap">
-				<div className="title">2.充值</div>
+				{/* 3. 确认开卡数。 展示:剩余可用开卡数,新增开卡数，开卡数是个NumberInput，1的整数，最大不超过剩余可用开卡数 */}
+				<div className="title">3. 确认开卡数</div>
+				<div className="content">
+					<div className="pre">剩余可用开卡数：</div>
+					<div className="text" style={{ marginLeft: "0" }}>
+						{remainingCards} 张
+					</div>
+				</div>
+				<div className="content">
+					<div className="pre">新增开卡数：</div>
+					<InputNumber
+						value={newCards}
+						onChange={changeNewCards}
+						className="edit"
+						style={{ width: "160px", marginRight: "40px" }}
+						min={1}
+						max={remainingCards}
+						step={1}
+					/>
+				</div>
+			</div>
+			<div className="contentWrap">
+				<div className="title">4.充值</div>
 				<div className="content">
 					<div className="pre">扣款账户：</div>
-					<div className="text">沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp; $ {accountBalance}</div>
+					<div className="text" style={{ marginLeft: "0" }}>
+						沃易卡账户&nbsp;&nbsp;&nbsp;&nbsp; $ {accountBalance}
+					</div>
 				</div>
 				<div className="content">
 					<div className="pre">充值金额：</div>
-					<Input value={amount} onChange={changeAmount} className="edit" addonBefore="$" />
+					<Input
+						value={amount}
+						onChange={changeAmount}
+						className="edit"
+						addonBefore="$"
+						style={{ width: "160px", marginRight: "50px" }}
+					/>
+					<div className={`pre ${amount * newCards > accountBalance ? "red" : ""}`}>总计充值金额：</div>
+					<div className={`text ${amount * newCards > accountBalance ? "red" : ""}`}>{amount * newCards} USD</div>
 				</div>
 				<div className="content">
-					<div className="pre">开卡费：</div>
-					<div className="text">{cardsfee} USD</div>
+					<div className="pre">单卡开卡费：</div>
+					<div className="text" style={{ marginLeft: "0" }}>
+						{cardsfee} USD
+					</div>
+					<div className="pre">总计开卡费：</div>
+					<div className="text">{cardsfee * newCards} USD</div>
 				</div>
 			</div>
 			<div className="btns">
