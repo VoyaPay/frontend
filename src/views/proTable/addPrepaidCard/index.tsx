@@ -331,8 +331,17 @@ const AddPrepaidCard = () => {
 			)}
 			<Modal title="申请" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>
-					单卡充值金额 {amount} USD，单卡开卡费 {cardsfee} USD，新增卡数 {newCards} 张，总计充值金额 {amount * newCards}{" "}
-					USD，总计开卡费 {cardsfee * newCards} USD，继续申请？
+					<span className="addPrepaidCard-pre">单卡充值金额</span> {amount} USD
+					<br />
+					<span className="addPrepaidCard-pre">单卡开卡费</span> {cardsfee} USD
+					<br />
+					<span className="addPrepaidCard-pre">新增卡数</span> {newCards} 张
+					<br />
+					<span className="addPrepaidCard-pre">总计充值金额</span> {amount * newCards} USD
+					<br />
+					<span className="addPrepaidCard-pre">总计开卡费</span> {cardsfee * newCards} USD
+					<br />
+					<p style={{ marginTop: "20px", marginBottom: "-10px" }}>继续申请？</p>
 				</p>
 			</Modal>
 			<div className="contentWrap">
@@ -394,11 +403,12 @@ const AddPrepaidCard = () => {
 						value={newCards}
 						onChange={changeNewCards}
 						className="edit"
-						style={{ width: "160px", marginRight: "40px" }}
+						style={{ width: "160px", marginRight: "10px" }}
 						min={1}
 						max={remainingCards}
 						step={1}
 					/>
+					张
 				</div>
 			</div>
 			<div className="contentWrap">
