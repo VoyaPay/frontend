@@ -8,7 +8,7 @@ const Home = () => {
 
 	// Navigate to another page after component renders
 	React.useEffect(() => {
-		navigate("/proTable/account");
+		navigate("/account");
 	}, [navigate]);
 
 	return (

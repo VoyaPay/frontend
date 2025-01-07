@@ -19,10 +19,10 @@ const LayoutMenu = (props: any) => {
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-	// 刷新页面菜单保持高亮
 	useEffect(() => {
-		setSelectedKeys([pathname]);
-		isCollapse ? null : setOpenKeys(getOpenKeys(pathname));
+		let activeKey = pathname.split("/")[1] ? `/${pathname.split("/")[1]}` : "/";
+		setSelectedKeys([activeKey]);
+		isCollapse ? null : setOpenKeys(getOpenKeys(activeKey));
 	}, [pathname, isCollapse]);
 
 	// 设置当前展开的 subMenu
@@ -47,7 +47,7 @@ const LayoutMenu = (props: any) => {
 			icon,
 			children,
 			label,
-			type,
+			type
 		} as MenuItem;
 	};
 
@@ -58,7 +58,7 @@ const LayoutMenu = (props: any) => {
 	};
 
 	interface ExtendedMenuOptions extends Menu.MenuOptions {
-			hide?: boolean;  // 扩展 hide 属性
+		hide?: boolean; // 扩展 hide 属性
 	}
 
 	// 处理后台返回菜单 key 值为 antd 菜单需要的 key 值

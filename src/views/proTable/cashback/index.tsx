@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal, message } from "antd";
+import { Button, Modal, message, InputNumber } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
@@ -25,6 +21,7 @@ interface CardData {
 	cvv2?: string;
 }
 const cashback = () => {
+	const navigate = useNavigate();
 	const location = useLocation();
 	const defaultCardData: CardData = {
 		key: "",
@@ -41,17 +38,13 @@ const cashback = () => {
 	const recharge = () => {
 		setOpen(true);
 	};
-	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-
-		const valueAsNumber = Number(value);
-
-		if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
-			if (valueAsNumber > parseFloat(cardData.balance)) {
+	const changeAmount = (value: number) => {
+		if (value === undefined || /^\d+(\.\d{0,2})?$/.test(value.toString())) {
+			if (value > parseFloat(cardData.balance)) {
 				message.error("该预充卡余额不足");
 				return;
 			}
-			setAmount(valueAsNumber);
+			setAmount(value);
 		} else {
 			message.error("请输入有效的金额，最多两位小数");
 		}
@@ -64,11 +57,10 @@ const cashback = () => {
 	const handleOk = async () => {
 		try {
 			setConfirmLoading(true);
-			const response = await RechargeCardApi(cardData.key, { amount: -amount });
-
-			// 检查是否成功并给出提示
-			if (response.id) {
-				message.success("提现成功 !"); // 成功消息
+			const response: any = await RechargeCardApi(cardData.key, { amount: -amount });
+			if (response?.card?.id) {
+				message.success("提现成功!");
+				navigate("/prepaidCard", { replace: true });
 			}
 
 			setOpen(false);
@@ -102,20 +94,13 @@ const cashback = () => {
 			}
 		};
 		getBalance();
-	}, []); // 依赖为空数组，表示只在组件挂载时运行一次
+	}, []);
 	const handleCancel = () => {
 		setOpen(false);
 	};
 
 	return (
 		<div className="prepaidRecharge-wrap">
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					预充卡{" "}
-				</NavLink>
-				-&gt; 提现
-			</div>
 			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>提现金额 ${amount}，继续提现？</p>
 			</Modal>
@@ -136,16 +121,25 @@ const cashback = () => {
 					<div className="content">
 						<div className="pre">提现金额:</div>
 						<div className="input-wrapper">
-							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$" />
+							<InputNumber
+								value={amount || undefined}
+								onChange={changeAmount}
+								className="edit"
+								placeholder="0"
+								addonBefore="$"
+								min={0}
+								step={0.01}
+								controls={false}
+							/>
 							<div className="input-tips">注意：提现金额不能大于该预充卡余额</div>
 						</div>
 					</div>
 					<div className="btns">
-						<Button type="primary" className="actionBtn" onClick={recharge} style={{marginRight:"20px"}}>
+						<Button type="primary" className="actionBtn" onClick={recharge} style={{ marginRight: "20px" }}>
 							立刻提现
 						</Button>
 						<Button type="primary" className="actionBtn">
-							<NavLink to="/proTable/prepaidCard" className="myAccount">
+							<NavLink to="/prepaidCard" className="myAccount">
 								返回
 							</NavLink>
 						</Button>

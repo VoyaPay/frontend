@@ -11,7 +11,6 @@ const OpeningDetail = () => {
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
-		console.log(link);
 		message.success("Detail.pdf has been downloaded");
 	};
 

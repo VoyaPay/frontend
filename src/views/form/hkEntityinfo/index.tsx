@@ -132,12 +132,9 @@ const HKEntityInfo = () => {
 									<Form.Item
 										name="hkEntityName"
 										label="香港主体全称 / HK Entity Legal Name:"
-										rules={[
-											{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" },
-											{ validator: validateAlphanumeric }
-										]}
+										rules={[{ required: true, message: "请输入香港主体全称 / Please enter the entity legal name" }]}
 									>
-										<Input placeholder="请输入香港主体全称 / Please enter the legal name" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -145,7 +142,7 @@ const HKEntityInfo = () => {
 										label="企业网站链接 / Company Website:"
 										rules={[{ required: true, message: "请输入公司网站链接 / Please enter the website link" }]}
 									>
-										<Input placeholder="请输入公司网站链接 / Please enter company website" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -156,7 +153,7 @@ const HKEntityInfo = () => {
 											{ validator: validateAlphanumeric }
 										]}
 									>
-										<Input placeholder="请输入商业登记证号码 / Please enter certificate number" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -167,7 +164,7 @@ const HKEntityInfo = () => {
 										<DatePicker
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
 											format="YYYY-MM-DD"
-											placeholder="请选择成立时间 / Select Formation Date"
+											placeholder=""
 											style={{ width: "100%" }}
 										/>
 									</Form.Item>
@@ -180,7 +177,7 @@ const HKEntityInfo = () => {
 										<DatePicker
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
 											format="YYYY-MM-DD"
-											placeholder="请选择成立时间 / Select Formation Date"
+											placeholder=""
 											style={{ width: "100%" }}
 										/>
 									</Form.Item>
@@ -190,7 +187,7 @@ const HKEntityInfo = () => {
 										label="香港主体注册地址 / HK Entity Registered Address:"
 										rules={[{ required: true, message: "请输入注册地址 / Please enter registered address" }]}
 									>
-										<Input placeholder="请输入香港主体注册地址 / Please enter the registered address" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -198,7 +195,7 @@ const HKEntityInfo = () => {
 										label="香港主体运营地址 / HK Entity Operating Address:"
 										rules={[{ required: true, message: "请输入香港主体运营地址 / Please enter HK Entity Operating Address" }]}
 									>
-										<Input placeholder="请输入香港主体运营地址 / Please enter HK Entity Operating Address" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -206,10 +203,7 @@ const HKEntityInfo = () => {
 										label="企业总员工人数 / Total Number of Employees:"
 										rules={[{ required: true, message: "请输入员工总人数 / Please enter total number of employees" }]}
 									>
-										<InputNumber
-											placeholder="请输入员工总人数 / Please enter total number of employees"
-											style={{ width: "100%" }}
-										/>
+										<InputNumber style={{ width: "100%" }} />
 									</Form.Item>
 									<Row gutter={16}>
 										{["businessRegistration", "companyIncorporation", "incorporationForm", "annualReturn", "companyArticles"].map(

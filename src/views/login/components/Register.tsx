@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Button, FormInstance, message, Checkbox } from "antd";
 import { getCaptchaApi, registerApi } from "@/api/modules/login";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./Captcha.less";
 
@@ -103,9 +103,12 @@ const RegisterComponent = ({ form }: { form: FormInstance }) => {
 						className="captcha-input"
 						placeholder="验证码"
 						maxLength={6}
-						prefix={<LockOutlined />}
 						suffix={
-							<div className="captcha-svg" onClick={handleCaptchaRefresh} dangerouslySetInnerHTML={{ __html: captcha || "" }} />
+							!captcha ? (
+								<ReloadOutlined onClick={handleCaptchaRefresh} />
+							) : (
+								<div className="captcha-svg" onClick={handleCaptchaRefresh} dangerouslySetInnerHTML={{ __html: captcha }} />
+							)
 						}
 					/>
 				</Form.Item>

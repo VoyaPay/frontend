@@ -60,18 +60,29 @@
 		margin-top: 15px;
 	}
 	.basicInfo {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		width: 70%;
+		min-height: 294px;
 		padding: 15px 20px;
 		background-color: #ffffff;
 		border-radius: 8px;
+		.basicInfo-column {
+			max-width: 50%;
+		}
+		.basicInfo-column + .basicInfo-column {
+			margin-left: 20px;
+		}
 		.title {
+			display: inline-block;
+			margin-bottom: 10px;
 			font-size: 15px;
 			font-weight: bold;
 		}
 		.content {
 			display: flex;
 			flex-direction: row;
-			align-items: center;
 			height: 20px;
 			margin-top: 15px;
 			font-size: 14px;
@@ -92,6 +103,11 @@
 				color: #1890ff;
 				cursor: pointer;
 			}
+			.switch-wrap {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
 		}
 	}
 	.right {
@@ -100,11 +116,18 @@
 		flex-direction: column;
 		align-items: center;
 		margin-left: 20px;
+		.actionBtnWrap {
+			display: flex;
+			button + button {
+				margin-left: 10px;
+			}
+		}
 		.bankCard {
 			width: 100%;
+			max-width: 400px;
 		}
 		.actionBtn {
-			width: 120px;
+			width: 80px;
 			margin-top: 15px;
 		}
 	}

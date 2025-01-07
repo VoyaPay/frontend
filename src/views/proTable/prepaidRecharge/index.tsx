@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-// import { Breadcrumb } from "antd";
-// import useAuthButtons from "@/hooks/useAuthButtons";
-// import { Select } from "antd";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { Input, Button, Modal, message } from "antd";
+import { Button, Modal, message, InputNumber } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { RechargeCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
@@ -25,6 +21,7 @@ interface CardData {
 	cvv2?: string;
 }
 const PrepaidRecharge = () => {
+	const navigate = useNavigate();
 	const location = useLocation();
 	const defaultCardData: CardData = {
 		key: "",
@@ -37,21 +34,22 @@ const PrepaidRecharge = () => {
 		createCardTime: "2023-01-01 00:00:00"
 	};
 	const cardData = (location.state as CardData) ?? defaultCardData;
-	const [amount, setAmount] = useState(0);
+	const [amount, setAmount] = useState<number | undefined>(undefined);
+
+	useEffect(() => {
+		getBalance();
+	}, []);
+
 	const recharge = () => {
 		setOpen(true);
 	};
-	const changeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-
-		const valueAsNumber = Number(value);
-
-		if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
-			if (valueAsNumber > accountBalance) {
+	const changeAmount = (value: number) => {
+		if (value === undefined || /^\d+(\.\d{0,2})?$/.test(value.toString())) {
+			if (value > accountBalance) {
 				message.error("沃易卡账户余额不足");
 				return;
 			}
-			setAmount(valueAsNumber);
+			setAmount(value);
 		} else {
 			message.error("请输入有效的金额，最多两位小数");
 		}
@@ -66,7 +64,8 @@ const PrepaidRecharge = () => {
 			setConfirmLoading(true);
 			const response = await RechargeCardApi(cardData.key, { amount: amount });
 			if (response.card) {
-				message.success("充值成功 !"); // 成功消息
+				message.success("充值成功!");
+				navigate("/prepaidCard", { replace: true });
 			}
 
 			setOpen(false);
@@ -89,31 +88,19 @@ const PrepaidRecharge = () => {
 			setOpen(false);
 		}
 	};
-	useEffect(() => {
-		const getBalance = async () => {
-			try {
-				const response = await GetBalanceApi();
-				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
-				setAccountBalance(balance);
-			} catch (error) {
-				console.log("Cannot get balance of the account:", error);
-			}
-		};
-		getBalance();
-	}, []); // 依赖为空数组，表示只在组件挂载时运行一次
+
+	const getBalance = () => {
+		GetBalanceApi().then(res => {
+			const balance = res.currentBalance ? parseFloat(parseFloat(res.currentBalance).toFixed(2)) : 0;
+			setAccountBalance(balance);
+		});
+	};
 	const handleCancel = () => {
 		setOpen(false);
 	};
 
 	return (
 		<div className="prepaidRecharge-wrap">
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					预充卡{" "}
-				</NavLink>
-				-&gt; 充值
-			</div>
 			<Modal title="充值" visible={open} onOk={handleOk} confirmLoading={confirmLoading} onCancel={handleCancel}>
 				<p>充值金额 ${amount}，继续充值？</p>
 			</Modal>
@@ -132,8 +119,17 @@ const PrepaidRecharge = () => {
 					<div className="content">
 						<div className="pre">充值金额:</div>
 						<div className="input-wrapper">
-							<Input value={amount} onChange={changeAmount} className="edit" type="number" addonBefore="$" />
-							<div className="input-tips">注意：充值金额不能大于沃易卡账户的余额</div> {/* 提示文字在输入框下方 */}
+							<InputNumber
+								value={amount || undefined}
+								onChange={changeAmount}
+								className="edit"
+								placeholder="0"
+								addonBefore="$"
+								min={0}
+								step={0.01}
+								controls={false}
+							/>
+							<div className="input-tips">注意：充值金额不能大于沃易卡账户的余额</div>
 						</div>
 					</div>
 					<div className="btns">
@@ -141,7 +137,7 @@ const PrepaidRecharge = () => {
 							充值
 						</Button>
 						<Button type="primary" className="actionBtn">
-							<NavLink to="/proTable/prepaidCard" className="myAccount">
+							<NavLink to="/prepaidCard" className="myAccount">
 								返回
 							</NavLink>
 						</Button>

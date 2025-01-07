@@ -8,7 +8,7 @@ import AuthRouter from "@/routers/utils/authRouter";
 import Router from "@/routers/index";
 import useTheme from "@/hooks/useTheme";
 import zhCN from "antd/lib/locale/zh_CN";
-import enUS from "antd/lib/locale/en_US";
+// import enUS from "antd/lib/locale/en_US";
 import i18n from "i18next";
 import "moment/dist/locale/zh-cn";
 import "@/assets/stylesheets/vars.less";
@@ -21,10 +21,11 @@ const App = (props: any) => {
 	useTheme(themeConfig);
 
 	const setAntdLanguage = () => {
-		if (language && language == "zh") return setI18nLocale(zhCN);
-		if (language && language == "en") return setI18nLocale(enUS);
-		if (getBrowserLang() == "zh") return setI18nLocale(zhCN);
-		if (getBrowserLang() == "en") return setI18nLocale(enUS);
+		setI18nLocale(zhCN);
+		// if (language && language == "zh") return setI18nLocale(zhCN);
+		// if (language && language == "en") return setI18nLocale(enUS);
+		// if (getBrowserLang() == "zh") return setI18nLocale(zhCN);
+		// if (getBrowserLang() == "en") return setI18nLocale(enUS);
 	};
 	// phone
 	if (window.innerWidth < 768) {

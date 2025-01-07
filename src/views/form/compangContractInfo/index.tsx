@@ -71,7 +71,6 @@ const CompanyContractInfo = () => {
 				<div className="firstCol">
 					<div className="accountInfo">
 						<div className="title">企业负责人信息 / Company Representative Information</div>
-
 						<Form
 							form={form}
 							name="companyContractForm"
@@ -87,7 +86,7 @@ const CompanyContractInfo = () => {
 										label="负责人姓名 / Representative Name:"
 										rules={[{ required: true, message: "请输入负责人姓名 / Please enter representative name:" }]}
 									>
-										<Input placeholder="请输入负责人姓名 / Please enter representative name" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -95,7 +94,7 @@ const CompanyContractInfo = () => {
 										label="负责人联系电话 / Representative Mobile Number:"
 										rules={[{ required: true, message: "请输入负责人联系电话 / Please enter mobile number" }]}
 									>
-										<Input placeholder="请输入负责人联系电话 / Please enter mobile number" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -103,7 +102,7 @@ const CompanyContractInfo = () => {
 										label="负责人部门与职位 / Representative's Position:"
 										rules={[{ required: true, message: "请输入负责人部门与职位 / Please enter representative's position" }]}
 									>
-										<Input placeholder="请输入负责人部门与职位 / Please enter representative's position" />
+										<Input />
 									</Form.Item>
 
 									<Form.Item
@@ -111,7 +110,7 @@ const CompanyContractInfo = () => {
 										label="负责人联系邮箱 / Representative Email:"
 										rules={[{ required: true, type: "email", message: "请输入有效的邮箱地址 / Please enter a valid email" }]}
 									>
-										<Input placeholder="请输入负责人联系邮箱 / Please enter representative email" />
+										<Input />
 									</Form.Item>
 								</div>
 							</div>

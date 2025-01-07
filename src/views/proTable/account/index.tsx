@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Table, DatePicker, Button, Space } from "antd";
 import { Select } from "antd";
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import "./index.less";
 import { UserTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
-import { AccountApi } from "@/api/modules/user";
 
 interface FormattedTransaction {
 	key: string;
@@ -35,13 +34,11 @@ const Account = () => {
 	const [selectedTransferType, setSelectedTransferType] = useState<string>();
 	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [accountBalance, setAccountBalance] = useState(0);
+	const location = useLocation();
 
 	useEffect(() => {
-		// Fetch initial data for balance and transactions
 		const fetchData = async () => {
-			await userInformation();
-			await getBalance();
-			await fetchTransactions();
+			await Promise.all([getBalance(), fetchTransactions()]);
 		};
 		fetchData();
 	}, []);
@@ -63,8 +60,8 @@ const Account = () => {
 				const formattedData = response.map(transaction => {
 					let cardName = "预充卡 ";
 					if (transaction.card) {
+						cardName += transaction.card.number;
 						if (transaction.card.alias) {
-							cardName += transaction.card.number;
 							cardName += " ( ";
 							cardName += transaction.card.alias;
 							cardName += " )";
@@ -105,7 +102,7 @@ const Account = () => {
 
 	const getCSV = async (): Promise<void> => {
 		try {
-			const response = await LedgerCSVApi({
+			await LedgerCSVApi({
 				where: {
 					startDate: selectedTimeRange[0],
 					endDate: selectedTimeRange[1],
@@ -114,7 +111,6 @@ const Account = () => {
 				pageNum: 1,
 				pageSize: 100
 			});
-			console.log(response);
 		} catch (e: any) {
 			console.log(e);
 		}
@@ -165,8 +161,6 @@ const Account = () => {
 	const applyFilters = () => {
 		let filteredData = dataSource; // 初始为所有数据
 
-		// 只根据 selectedTransactionTypes 进行筛选
-		console.log("selectedTransferType", selectedTransferType);
 		if (selectedTransferType) {
 			filteredData = filteredData.filter(transaction => transaction.type === selectedTransferType);
 		}
@@ -188,48 +182,54 @@ const Account = () => {
 	};
 
 	return (
-		<div className="card content-box accountWrap">
-			<div className="accountInfo">
-				<div className="accountBlanceWrap">
-					<span className="pre">沃易卡账户余额</span>
-					<span className="amount">{accountBalance >= 0 ? `$ ${accountBalance}` : `-$ ${Math.abs(accountBalance)}`}</span>
-				</div>
-				<Button>
-					<NavLink to="/recharge/index">充值</NavLink>
-				</Button>
-			</div>
-			<div className="actionWrap">
-				<div>
-					<span className="title">动账明细</span>
-					<Space>
-						<RangePicker onChange={handleTimeChange} />
-						<Select
-							placeholder="请选择交易类型"
-							// mode="multiple"
-							allowClear
-							style={{ width: 200 }}
-							onChange={handleTransactionTypeChange}
-							options={Object.entries(TransferTypeMapping).map(([key, type]) => {
-								return { label: type, value: key };
-							})}
-							className="transactionType"
-						/>
-						<Button type="primary" onClick={applyFilters}>
-							查询
+		<>
+			{location.pathname === "/account/recharge" ? (
+				<Outlet />
+			) : (
+				<div className="card content-box accountWrap">
+					<div className="accountInfo">
+						<div className="accountBlanceWrap">
+							<span className="pre">沃易卡账户余额</span>
+							<span className="amount">{accountBalance >= 0 ? `$ ${accountBalance}` : `-$ ${Math.abs(accountBalance)}`}</span>
+						</div>
+						<Button>
+							<NavLink to="/account/recharge">充值</NavLink>
 						</Button>
-					</Space>
+					</div>
+					<div className="actionWrap">
+						<div>
+							<span className="title">动账明细</span>
+							<Space>
+								<RangePicker onChange={handleTimeChange} />
+								<Select
+									placeholder="请选择交易类型"
+									// mode="multiple"
+									allowClear
+									style={{ width: 200 }}
+									onChange={handleTransactionTypeChange}
+									options={Object.entries(TransferTypeMapping).map(([key, type]) => {
+										return { label: type, value: key };
+									})}
+									className="transactionType"
+								/>
+								<Button type="primary" onClick={applyFilters}>
+									查询
+								</Button>
+							</Space>
+						</div>
+						<Button type="primary" onClick={getCSV}>
+							导出账单明细
+						</Button>
+					</div>
+					<Table
+						bordered={true}
+						dataSource={filteredDataSource}
+						columns={columns}
+						pagination={{ pageSize: 10, showSizeChanger: false }}
+					/>
 				</div>
-				<Button type="primary" onClick={getCSV}>
-					导出账单明细
-				</Button>
-			</div>
-			<Table
-				bordered={true}
-				dataSource={filteredDataSource}
-				columns={columns}
-				pagination={{ pageSize: 10, showSizeChanger: false }}
-			/>
-		</div>
+			)}
+		</>
 	);
 };
 
@@ -244,26 +244,6 @@ const formatDate = (dateString: string) => {
 
 	// 返回格式为 yyyy-MM-dd hh:mm:ss
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-const userInformation = async () => {
-	try {
-		const response = await AccountApi();
-		const formattedData = {
-			id: response.id || 0,
-			fullName: response.fullName || "N/A",
-			email: response.email || "N/A",
-			companyName: response.companyName || "N/A",
-			cardCreationFee: response.userConfig.cardCreationFee || "N/A",
-			maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
-		};
-		localStorage.setItem("userid", String(formattedData.id));
-		localStorage.setItem("username", formattedData.fullName);
-		localStorage.setItem("useremail", formattedData.email);
-		localStorage.setItem("companyName", formattedData.companyName);
-	} catch (error) {
-		console.log("Error fetching user information: " + error);
-	}
 };
 
 export default Account;
