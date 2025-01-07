@@ -96,7 +96,6 @@ const ProductsUseCaseInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择拟开通产品 / Please select requested products"
 										>
 											<Option value="voyaVirtualCard">Voya Virtual Credit Card（沃易虚拟卡）</Option>
 											<Option value="voyaBankAccount">Voya Bank Account（沃易收款账户）</Option>
@@ -110,7 +109,6 @@ const ProductsUseCaseInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择预计月消耗量 / Please select estimated monthly spend"
 										>
 											<Option value="lessthan500">Less than $500K</Option>
 											<Option value="500-1">$500k - $1M</Option>
@@ -127,7 +125,6 @@ const ProductsUseCaseInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择消费场景 / Please select spending use case"
 											mode="multiple"
 										>
 											<Option value="Onlineads">Online Ads（线上广告）</Option>
@@ -143,7 +140,7 @@ const ProductsUseCaseInfo = () => {
 										label='如果选择“其他”，请罗列其他的消费场景 / If "Others", please list the other use cases:'
 										rules={[{ required: false }]}
 									>
-										<Input.TextArea placeholder="请列出其他消费场景 / Please list other use cases" />
+										<Input.TextArea />
 									</Form.Item>
 
 									<Form.Item
@@ -153,7 +150,6 @@ const ProductsUseCaseInfo = () => {
 									>
 										<Select
 											getPopupContainer={(triggerNode?: HTMLElement | undefined) => triggerNode?.parentElement as HTMLElement}
-											placeholder="请选择业务模式 / Please select the business model"
 											onChange={handleBusinessModelChange}
 										>
 											<Option value="b2b">Business to Business(企业客户)</Option>
@@ -164,7 +160,7 @@ const ProductsUseCaseInfo = () => {
 									{businessModel === "b2b" && (
 										<>
 											<Form.Item name="b2bClientNumber" label="预估企业客户数 / Estimated Client Number (B2B):">
-												<Input placeholder="请输入预估企业客户数 / Please enter estimated client number" />
+												<Input />
 											</Form.Item>
 										</>
 									)}

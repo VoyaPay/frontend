@@ -5,12 +5,11 @@ import { findAllBreadcrumb, getOpenKeys, handleRouter, searchRoute } from "@/uti
 import { setMenuList } from "@/redux/modules/menu/action";
 import { setBreadcrumbList } from "@/redux/modules/breadcrumb/action";
 import { setAuthRouter } from "@/redux/modules/auth/action";
-// import { getMenuList } from "@/api/modules/login";
 import { connect } from "react-redux";
 import type { MenuProps } from "antd";
 import * as Icons from "@ant-design/icons";
 import Logo from "./components/Logo";
-import { formStatus, menu2 } from "@/config/config";
+import { menu2 } from "@/config/config";
 import "./index.less";
 
 const LayoutMenu = (props: any) => {
@@ -86,9 +85,6 @@ const LayoutMenu = (props: any) => {
 	const getMenuData = async () => {
 		setLoading(true);
 		try {
-			// const { data } = await getMenuList();
-			// if (!data) return;
-			console.log(formStatus);
 			setMenuList(deepLoopFloat(menu2));
 			// 存储处理过后的所有面包屑导航栏到 redux 中
 			setBreadcrumbList(findAllBreadcrumb(menu2));

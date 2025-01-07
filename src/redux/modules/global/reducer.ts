@@ -5,7 +5,7 @@ import * as types from "@/redux/mutation-types";
 
 const globalState: GlobalState = {
 	token: "",
-	userInfo: "",
+	userInfo: null,
 	language: "",
 	assemblySize: "middle",
 	themeConfig: {
@@ -30,6 +30,9 @@ const global = (state: GlobalState = globalState, action: AnyAction) =>
 		switch (action.type) {
 			case types.SET_TOKEN:
 				draftState.token = action.token;
+				break;
+			case types.SET_USER_INFO:
+				draftState.userInfo = action.userInfo;
 				break;
 			case types.SET_LANGUAGE:
 				draftState.language = action.language;

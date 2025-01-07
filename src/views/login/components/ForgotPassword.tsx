@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Button, FormInstance, message } from "antd";
 import { getCaptchaApi, sendResetPasswordEmailApi } from "@/api/modules/login";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { UserOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./Captcha.less";
 
@@ -63,9 +63,12 @@ const ForgotPasswordComponent = ({ form }: { form: FormInstance }) => {
 						className="captcha-input"
 						placeholder="验证码"
 						maxLength={6}
-						prefix={<LockOutlined />}
 						suffix={
-							<div className="captcha-svg" onClick={handleCaptchaRefresh} dangerouslySetInnerHTML={{ __html: captcha || "" }} />
+							!captcha ? (
+								<ReloadOutlined onClick={handleCaptchaRefresh} />
+							) : (
+								<div className="captcha-svg" onClick={handleCaptchaRefresh} dangerouslySetInnerHTML={{ __html: captcha }} />
+							)
 						}
 					/>
 				</Form.Item>

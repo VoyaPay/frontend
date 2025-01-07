@@ -9,11 +9,10 @@ import ApplySuccessImg from "@/assets/images/applySuccess.png";
 import "./index.less";
 
 const ApplySuccess = () => {
-
 	return (
 		<div className="applySuccess-wrap">
 			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
+				<NavLink to="/prepaidCard" className="myAccount">
 					预充卡{" "}
 				</NavLink>
 				-&gt; 新增预充卡
@@ -24,7 +23,7 @@ const ApplySuccess = () => {
 					<span className="tips">卡片申请成功</span>
 				</div>
 				<Button type="primary" className="return">
-					<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<NavLink to="/prepaidCard" className="myAccount">
 						返回
 					</NavLink>
 				</Button>

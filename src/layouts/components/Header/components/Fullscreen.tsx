@@ -1,5 +1,5 @@
 import screenfull from "screenfull";
-import { message } from "antd";
+import { message, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 
 const Fullscreen = () => {
@@ -28,7 +28,12 @@ const Fullscreen = () => {
 		screenfull.toggle();
 	};
 	return (
-		<i className={["icon-style iconfont", fullScreen ? "icon-suoxiao" : "icon-fangda"].join(" ")} onClick={handleFullScreen}></i>
+		<Tooltip title={fullScreen ? "退出全屏" : "全屏展示"}>
+			<i
+				className={["icon-style iconfont", fullScreen ? "icon-suoxiao" : "icon-fangda"].join(" ")}
+				onClick={handleFullScreen}
+			></i>
+		</Tooltip>
 	);
 };
 export default Fullscreen;

@@ -1,50 +1,16 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import "./index.less";
-import { AccountApi } from "@/api/modules/user";
 import { Button } from "antd";
 import PasswordModal from "@/layouts/components/Header/components/PasswordModal";
+import { store } from "@/redux";
 
-// Define the UserData interface for a single user
-interface UserData {
-	id: number;
-	fullname: string;
-	email: string;
-	companyName: string;
+interface ModalProps {
+	showModal: (params: { name: number }) => void;
 }
 
 const AccountSetting = () => {
-	// Set userData as a single UserData object, initialized to null
-	const [userData, setUserData] = useState<UserData | null>(null);
-
-	// Define the type of ModalProps for passRef
-	interface ModalProps {
-		showModal: (params: { name: number }) => void;
-	}
-
-	// Create the ref for PasswordModal
+	const userInfo = store.getState().global.userInfo;
 	const passRef = useRef<ModalProps>(null);
-
-	const userInformation = async () => {
-		try {
-			const response = await AccountApi(); // Fetch user data from API
-			console.log(response);
-
-			// Format the response data and set it to the state
-			const formattedData: UserData = {
-				id: response.id || 0, // Default to 0 if undefined
-				fullname: response.fullName || "N/A", // Default to "N/A" if undefined
-				email: response.email || "N/A", // Default to "N/A" if undefined
-				companyName: response.companyName || "N/A" // Default to "N/A" if undefined
-			};
-			setUserData(formattedData); // Set formatted data to state
-		} catch (error) {
-			console.log("Error fetching user information: " + error);
-		}
-	};
-
-	useEffect(() => {
-		userInformation();
-	}, []);
 
 	return (
 		<div className="accountSetting-wrap">
@@ -52,15 +18,15 @@ const AccountSetting = () => {
 			<div className="content">
 				<div className="row">
 					<div className="label">公司名称：</div>
-					<div className="value">{userData ? userData.companyName : "Loading..."}</div>
+					<div className="value">{userInfo ? userInfo.companyName : "Loading..."}</div>
 				</div>
 				<div className="row">
 					<div className="label">个人姓名：</div>
-					<div className="value">{userData ? userData.fullname : "Loading..."}</div>
+					<div className="value">{userInfo ? userInfo.fullName : "Loading..."}</div>
 				</div>
 				<div className="row">
 					<div className="label">绑定邮箱：</div>
-					<div className="value">{userData ? userData.email : "Loading..."}</div>
+					<div className="value">{userInfo ? userInfo.email : "Loading..."}</div>
 				</div>
 				<div>
 					<Button type="primary" onClick={() => passRef.current?.showModal({ name: 11 })}>
@@ -69,7 +35,6 @@ const AccountSetting = () => {
 				</div>
 			</div>
 
-			{/* Add PasswordModal component and attach ref */}
 			<PasswordModal innerRef={passRef} />
 		</div>
 	);

@@ -4,8 +4,8 @@ import { ResultData } from "@/api/interface/index";
 import http from "@/api";
 
 // * 获取按钮权限
-export const UserCardApi = () => {
-	return http.get<ResultData>(PORT3 + "/Cards", undefined);
+export const UserCardApi = (params: object) => {
+	return http.postPage(PORT3 + "/cards/search", params);
 };
 
 export const AddCardApi = async (params: object): Promise<ResultData<any>> => {

@@ -7,12 +7,8 @@ export interface MetaProps {
 	key?: string;
 }
 
-export type RouteObject = ReactRouterRouteObject & {
-	caseSensitive?: boolean;
+export type RouteObject = Omit<ReactRouterRouteObject, "children"> & {
 	children?: RouteObject[];
-	element?: React.ReactNode;
-	index?: false | undefined;
-	path?: string;
 	meta?: MetaProps;
 	isLink?: string;
 };

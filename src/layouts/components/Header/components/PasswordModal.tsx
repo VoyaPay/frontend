@@ -14,8 +14,7 @@ const PasswordModal = (props: Props) => {
 		showModal
 	}));
 
-	const showModal = (params: { name: number }) => {
-		console.log(params);
+	const showModal = () => {
 		setIsModalVisible(true);
 	};
 
@@ -29,25 +28,21 @@ const PasswordModal = (props: Props) => {
 				} else if (oldPassword === newPassword) {
 					message.error("新旧密码不能一样！");
 				} else {
-					const ChangePassword = async () => {
-						try {
-							const response = await PasswordApi({
-								oldPassword: oldPassword,
-								newPassword: newPassword,
-								newPasswordConfirmation: newPassword
-							});
-							console.log(response);
+					PasswordApi({
+						oldPassword: oldPassword,
+						newPassword: newPassword,
+						newPasswordConfirmation: newPassword
+					})
+						.then(() => {
 							message.success("修改成功！");
 							setIsModalVisible(false);
 							form.resetFields();
-						} catch (error: any) {
+						})
+						.catch((error: any) => {
 							if (error.response.data.message === "Old password is incorrect") {
 								message.error("旧密码不正确， 请重新输入！");
 							}
-						}
-					};
-					const response = ChangePassword();
-					console.log(response);
+						});
 				}
 			})
 			.catch(errorInfo => {

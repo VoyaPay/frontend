@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Input, Button, Modal, message } from "antd";
-import back from "@/assets/images/return.png";
 import "./index.less";
 import { AddCardApi } from "@/api/modules/prepaid";
 import { GetBalanceApi } from "@/api/modules/ledger";
@@ -12,6 +11,7 @@ interface BinData {
 	bin: string;
 	network?: string;
 	orgCompanyId?: string;
+	note?: string;
 }
 
 const AddPrepaidCard = () => {
@@ -240,7 +240,11 @@ const AddPrepaidCard = () => {
 					const formattedData = response.map((bins: any) => ({
 						bin: bins.bin,
 						network: bins.network, // Include other properties if needed
-						orgCompanyId: bins.orgCompanyId
+						orgCompanyId: bins.orgCompanyId,
+						note:
+							bins.bin === "555243"
+								? "支持全球商户全币种消费(除美国经济制裁地区外)，以美元结算。"
+								: "仅支持美国境内商户消费，以美元结算。"
 					}));
 					setDataSource(formattedData);
 				} else {
@@ -254,7 +258,6 @@ const AddPrepaidCard = () => {
 		const getBalance = async () => {
 			try {
 				const response = await GetBalanceApi();
-				console.log("this balance" + response.currentBalance);
 				const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
 				setAccountBalance(balance);
 			} catch (error) {
@@ -288,26 +291,20 @@ const AddPrepaidCard = () => {
 					充值金额 {amount} USD， 开卡费 {cardsfee} USD，总计 {parseFloat(cardsfee) + amount} USD，继续申请？
 				</p>
 			</Modal>
-			<div className="nav">
-				<NavLink to="/proTable/prepaidCard" className="myAccount">
-					<img src={back} alt="" className="returnIcon" />
-					预充卡{" "}
-				</NavLink>
-				-&gt; 新增预充卡
-			</div>
 			<div className="contentWrap">
 				<div className="title">1.卡产品选择</div>
 				<div className="cardWrap">
 					{dataSource.map((bin, index) => (
-						<div
-							key={index}
-							className={`prepaidCard ${selectedCard === bin.bin ? "selected" : ""}`}
-							onClick={() => {
-								setSelectedCard(bin.bin);
-								console.log("Selected card:", bin.network, bin.bin);
-							}}
-						>
-							{bin.network + " " + bin.bin}
+						<div key={index}>
+							<div
+								className={`prepaidCard ${selectedCard === bin.bin ? "selected" : ""}`}
+								onClick={() => {
+									setSelectedCard(bin.bin);
+								}}
+							>
+								{bin.network + " " + bin.bin}
+								<p className="cardDesc">{bin.note}</p>
+							</div>
 						</div>
 					))}
 				</div>
@@ -358,7 +355,7 @@ const AddPrepaidCard = () => {
 					立即申请
 				</Button>
 				<Button type="text" className="return">
-					<NavLink to="/proTable/prepaidCard" className="myAccount">
+					<NavLink to="/prepaidCard" className="myAccount">
 						返回
 					</NavLink>
 				</Button>

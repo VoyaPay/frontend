@@ -2,6 +2,7 @@ import { PORT3 } from "@/api/config/servicePort";
 
 import { ResultData } from "@/api/interface/index";
 
+import { downloadCSV } from "./csv";
 import http from "@/api";
 
 interface CardData {
@@ -18,6 +19,18 @@ interface CardData {
 	cvv2?: string;
 }
 
+export interface CardTransactionRecordParams {
+	where: {
+		createdAt: {
+			start?: string;
+			end?: string;
+		};
+		type?: string;
+		merchantName?: string;
+		status?: string;
+	};
+}
+
 export const CardInformationApi = (id: string) => {
 	return http.get<ResultData>(PORT3 + "/Cards/" + id + "/details", undefined);
 };
@@ -28,4 +41,16 @@ export const CardbinApi = () => {
 
 export const ChangeCardInformationApi = (id: string, params: CardData) => {
 	return http.patch<ResultData>(PORT3 + "/Cards/" + id, params);
+};
+
+export const CardTransactionRecordApi = (id: string, params: CardTransactionRecordParams) => {
+	return http.postPage<ResultData>(PORT3 + `/cards/${id}/statement/search`, params);
+};
+
+export const CardTransactionRecordCSVApi = (id: string, params: CardTransactionRecordParams) => {
+	return downloadCSV(PORT3 + `/cards/${id}/statement/csv`, "CardTransactionRecord.csv", params);
+};
+
+export const CardInformationChangeRecordApi = (id: string, params: { pageNum: number; pageSize: number }) => {
+	return http.get<ResultData>(PORT3 + `/audit-log/cards/${id}/change-history`, params);
 };

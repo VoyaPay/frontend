@@ -11,6 +11,7 @@ import LayoutFooter from "./components/Footer";
 import "./index.less";
 
 const LayoutIndex = (props: any) => {
+	props.updateCollapse(false);
 	const { Sider, Content } = Layout;
 	// const { isCollapse, updateCollapse, setAuthButtons } = props;
 
