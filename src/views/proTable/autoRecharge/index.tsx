@@ -55,6 +55,11 @@ const AutoRecharge = () => {
 									fact: "balance",
 									operator: "lessThan",
 									value: Number(threshold)
+								},
+								{
+									fact: "cardId",
+									operator: "in",
+									value: [parseInt(cardData.key)]
 								}
 							]
 						},
