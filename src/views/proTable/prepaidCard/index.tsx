@@ -121,7 +121,7 @@ const PrepaidCard = () => {
 					},
 					bin: selectedGroups && selectedGroups.length > 0 ? selectedGroups.join(",") : undefined,
 					status: selectedStatuses && selectedStatuses.length > 0 ? selectedStatuses : undefined,
-					alias: cardNameSearch && cardNameSearch.length > 0 && cardNameSearch[0] !== "" ? cardNameSearch : undefined,
+					aliasKeyword: cardNameSearch?.[0] ?? undefined,
 					cardHolderName: cardOwnerSearch ?? undefined,
 					last4: cardNoSearch && cardNoSearch.length > 0 && cardNoSearch[0] !== "" ? cardNoSearch : undefined
 				},
