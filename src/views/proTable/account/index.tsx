@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space } from "antd";
+import { Table, DatePicker, Button, Space, TableProps, Input } from "antd";
 import { Select } from "antd";
+const { Option } = Select;
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import "./index.less";
-import { UserTransfersApi } from "@/api/modules/ledger";
+import { SearchTransfersApi } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
+import { SearchTransferRequest } from "@/api/interface";
+import { PageResponse } from "@/api";
 
-interface FormattedTransaction {
+interface TransferVo {
 	key: string;
 	typeLabel: string;
 	type: string;
@@ -29,16 +32,18 @@ const TransferTypeMapping = {
 
 const Account = () => {
 	const { RangePicker } = DatePicker;
-	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
-	const [filteredDataSource, setFilteredDataSource] = useState<FormattedTransaction[]>([]);
-	const [selectedTransferType, setSelectedTransferType] = useState<string>();
-	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
+	const [tableSource, setTableSource] = useState<PageResponse<TransferVo>>();
 	const [accountBalance, setAccountBalance] = useState(0);
+	const [cardInput, setCardInput] = useState("");
+	const [cardFilterType, setCardFilterType] = useState("cardLast4");
+	const [searchTransferRequest, setSearchTransferRequest] = useState<SearchTransferRequest>(
+		new SearchTransferRequest({ pageSize: 10 })
+	);
 	const location = useLocation();
 
 	useEffect(() => {
 		const fetchData = async () => {
-			await Promise.all([getBalance(), fetchTransactions()]);
+			await Promise.all([getBalance(), fetchTransfers()]);
 		};
 		fetchData();
 	}, []);
@@ -53,48 +58,51 @@ const Account = () => {
 		}
 	};
 
-	const fetchTransactions = async () => {
+	const fetchTransfers = async () => {
 		try {
-			const response = await UserTransfersApi();
-			if (Array.isArray(response)) {
-				const formattedData = response.map(transaction => {
-					let cardName = "预充卡 ";
-					if (transaction.card) {
-						cardName += transaction.card.number;
-						if (transaction.card.alias) {
-							cardName += " ( ";
-							cardName += transaction.card.alias;
-							cardName += " )";
-						}
+			const response = await SearchTransfersApi(searchTransferRequest);
+			const formattedData = response.datalist.map(transaction => {
+				let cardName = "预充卡 ";
+				if (transaction.card) {
+					cardName += transaction.card.number;
+					if (transaction.card.alias) {
+						cardName += " ( ";
+						cardName += transaction.card.alias;
+						cardName += " )";
 					}
-					return {
-						key: transaction.id,
-						typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
-						type: transaction.type,
-						dynamicAccountType: transaction.origin || "N/A",
-						amount: "$" + String(Math.abs(parseFloat(transaction.amount)).toFixed(2)),
-						currency: "USD",
-						time: formatDate(transaction.createdAt),
-						transactionDetail:
-							transaction.type === "cardPurchase"
-								? "沃易卡账户 -> " + cardName
-								: transaction.type === "cardTopup"
-								? "沃易卡账户 -> " + cardName
-								: transaction.type === "deposit"
-								? "您的资金转入至沃易卡账户"
-								: transaction.type === "closeCardRefund"
-								? cardName + " -> 沃易卡账户"
-								: transaction.type === "fee"
-								? cardName + " 开卡手续费"
-								: transaction.type === "cardWithdrawn"
-								? cardName + " -> 沃易卡账户"
-								: "其他"
-					};
-				});
-
-				setDataSource(formattedData);
-				setFilteredDataSource(formattedData); // Default to show all data initially
-			}
+				}
+				return {
+					key: transaction.id + "",
+					typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
+					type: transaction.type,
+					dynamicAccountType: transaction.origin || "N/A",
+					amount: "$" + String(Math.abs(transaction.amount).toFixed(2)),
+					currency: "USD",
+					time: formatDate(transaction.createdAt),
+					cardNumber: transaction.card?.number,
+					transactionDetail:
+						transaction.type === "cardPurchase"
+							? "沃易卡账户 -> " + cardName
+							: transaction.type === "cardTopup"
+							? "沃易卡账户 -> " + cardName
+							: transaction.type === "deposit"
+							? "您的资金转入至沃易卡账户"
+							: transaction.type === "closeCardRefund"
+							? cardName + " -> 沃易卡账户"
+							: transaction.type === "fee"
+							? cardName + " 开卡手续费"
+							: transaction.type === "cardWithdrawn"
+							? cardName + " -> 沃易卡账户"
+							: "其他"
+				};
+			});
+			setTableSource({
+				total: response.total,
+				pageNum: response.pageNum,
+				pageSize: response.pageSize,
+				datalist: formattedData,
+				totalPage: response.totalPage
+			});
 		} catch (error) {
 			console.error("Error fetching transactions:", error);
 		}
@@ -102,15 +110,7 @@ const Account = () => {
 
 	const getCSV = async (): Promise<void> => {
 		try {
-			await LedgerCSVApi({
-				where: {
-					startDate: selectedTimeRange[0],
-					endDate: selectedTimeRange[1],
-					type: selectedTransferType
-				},
-				pageNum: 1,
-				pageSize: 100
-			});
+			await LedgerCSVApi(searchTransferRequest);
 		} catch (e: any) {
 			console.log(e);
 		}
@@ -118,6 +118,7 @@ const Account = () => {
 
 	const columns: any[] = [
 		{ title: "交易类型", dataIndex: "typeLabel", key: "typeLabel", align: "center", width: "200px" },
+		{ title: "卡号", dataIndex: "cardNumber", key: "cardNumber", align: "center", width: "200px" },
 		{
 			title: "金额",
 			dataIndex: "amount",
@@ -149,36 +150,53 @@ const Account = () => {
 
 	// Update selected transaction types
 	const handleTransactionTypeChange = (selectedType: string) => {
-		setSelectedTransferType(selectedType);
+		searchTransferRequest.where!.type = selectedType;
+		setSearchTransferRequest({ ...searchTransferRequest });
 	};
 
 	// Update selected date range
 	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
+		if (dates) {
+			searchTransferRequest.where!.startDate = dates[0].valueOf();
+			searchTransferRequest.where!.endDate = dates[1].valueOf();
+		} else {
+			searchTransferRequest.where!.startDate = undefined;
+			searchTransferRequest.where!.endDate = undefined;
+		}
+		setSearchTransferRequest({ ...searchTransferRequest });
+	};
+
+	const handlePageChange: TableProps<TransferVo>["onChange"] = (pagination, filters, sorter, extra) => {
+		console.log(pagination, filters, sorter, extra);
+		searchTransferRequest.pageNum = pagination.current ?? 1;
+		searchTransferRequest.pageSize = pagination.pageSize ?? 10;
+		setSearchTransferRequest({ ...searchTransferRequest });
+		fetchTransfers();
+	};
+
+	const onCardFilterChanged = (input: string, type: string) => {
+		searchTransferRequest.where!.cardLast4 = input && type === "cardLast4" ? input : undefined;
+		searchTransferRequest.where!.cardId = input && type === "cardId" ? parseInt(input) : undefined;
+		searchTransferRequest.where!.cardExternalId = input && type === "cardExternalId" ? input : undefined;
+		searchTransferRequest.where!.cardAlias = input && type === "cardAlias" ? input : undefined;
+		setSearchTransferRequest({ ...searchTransferRequest });
+	};
+
+	const handleCardFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCardInput(e.target.value);
+		onCardFilterChanged(e.target.value, cardFilterType);
+	};
+
+	const handleCardFilterTypeChange = (value: string) => {
+		setCardFilterType(value);
+		onCardFilterChanged(cardInput, value);
 	};
 
 	// Apply filters based on transaction type and date range when the user clicks "查询"
 	const applyFilters = () => {
-		let filteredData = dataSource; // 初始为所有数据
-
-		if (selectedTransferType) {
-			filteredData = filteredData.filter(transaction => transaction.type === selectedTransferType);
-		}
-
-		if (selectedTimeRange.length > 0) {
-			const [start, end] = selectedTimeRange;
-			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-
-			// Set end time to 23:59:59 for the end date
-			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
-
-			filteredData = filteredData.filter(transaction => {
-				const cardDate = new Date(transaction.time).getTime();
-				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
-			});
-		}
-
-		setFilteredDataSource(filteredData);
+		searchTransferRequest.pageNum = 1;
+		setSearchTransferRequest({ ...searchTransferRequest });
+		fetchTransfers();
 	};
 
 	return (
@@ -212,6 +230,15 @@ const Account = () => {
 									})}
 									className="transactionType"
 								/>
+								<Input.Group compact>
+									<Select defaultValue="cardLast4" style={{ width: "40%" }} onChange={handleCardFilterTypeChange}>
+										<Option value="cardLast4">卡号</Option>
+										<Option value="cardId">卡ID</Option>
+										<Option value="cardExternalId">卡外部ID</Option>
+										<Option value="cardAlias">卡昵称</Option>
+									</Select>
+									<Input style={{ width: "50%" }} value={cardInput} onChange={handleCardFilterChange} allowClear />
+								</Input.Group>
 								<Button type="primary" onClick={applyFilters}>
 									查询
 								</Button>
@@ -223,9 +250,15 @@ const Account = () => {
 					</div>
 					<Table
 						bordered={true}
-						dataSource={filteredDataSource}
+						dataSource={tableSource?.datalist}
 						columns={columns}
-						pagination={{ pageSize: 10, showSizeChanger: false }}
+						onChange={handlePageChange}
+						pagination={{
+							pageSize: 10,
+							showSizeChanger: false,
+							total: tableSource?.total,
+							showTotal: total => `共 ${total} 条`
+						}}
 					/>
 				</div>
 			)}

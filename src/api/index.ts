@@ -27,6 +27,28 @@ interface ErrorResponse {
 	message: string;
 }
 
+export class PageRequest<T> {
+	where?: T = {} as T;
+	pageNum: number = 1;
+	pageSize: number = 10;
+
+	constructor(src: Partial<PageRequest<T>>) {
+		Object.assign(this, src);
+	}
+}
+
+export class PageResponse<T> {
+	datalist: T[] = [];
+	total: number = 0;
+	pageNum: number = 1;
+	pageSize: number = 10;
+	totalPage: number = 0;
+
+	constructor(src: Partial<PageResponse<T>>) {
+		Object.assign(this, src);
+	}
+}
+
 const axiosCanceler = new AxiosCanceler();
 
 const config = {

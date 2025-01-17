@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space, Input, Tooltip, TablePaginationConfig, TableProps } from "antd";
+import { Table, DatePicker, Button, Space, Input, Tooltip, TableProps } from "antd";
 // import useAuthButtons from "@/hooks/useAuthButtons";
 import { Select } from "antd";
+const { Option } = Select;
 import { useLocation } from "react-router-dom";
 
 import "./index.less";
 import { CardsCSVApi, SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
 import { UserCardApi } from "@/api/modules/prepaid";
 import { SearchTransactionRequest, TransactionListItem } from "@/api/interface";
-import { SorterResult } from "antd/es/table/interface";
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString);
@@ -73,11 +73,11 @@ interface CardData {
 	cvv2?: string;
 }
 
-interface TableParams {
-	pagination?: TablePaginationConfig;
-	sortField?: SorterResult<any>["field"];
-	sortOrder?: SorterResult<any>["order"];
-}
+// interface TableParams {
+// 	pagination?: TablePaginationConfig;
+// 	sortField?: SorterResult<any>["field"];
+// 	sortOrder?: SorterResult<any>["order"];
+// }
 
 interface FormattedTransaction extends TransactionListItem {
 	key: string;
@@ -104,7 +104,16 @@ const TradeQuery = () => {
 	const [tradeType, setTradeType] = useState("auth");
 	const [filteredData, setFilteredData] = useState<FormattedCard[]>([]);
 	const [transactionPage, setTransactionPage] = useState<FormattedTransaction[]>([]);
-	const [transactionTableParams, setTransactionTableParams] = useState<TableParams>({
+	const [searchTransactionRequest, setSearchTransactionRequest] = useState<any>(
+		new SearchTransactionRequest({
+			sortBy: TRANSACTION_DEFAULT_SORT_FIELD,
+			asc: false
+		})
+	);
+
+	const [transactionTablePageNum, setTransactionTablePageNum] = useState<number>(1);
+
+	const [transactionTableParams, setTransactionTableParams] = useState<any>({
 		pagination: {
 			current: 1,
 			pageSize: TRANSACTION_DEFAULT_PAGE_SIZE,
@@ -113,7 +122,14 @@ const TradeQuery = () => {
 		sortField: TRANSACTION_DEFAULT_SORT_FIELD,
 		sortOrder: "descend"
 	});
-	const [cardTableParams, setCardTableParams] = useState<TableParams>({
+
+	const [cardTableParams, setCardTableParams] = useState<any>({
+		where: {
+			createdAt: {
+				min: undefined,
+				max: undefined
+			}
+		},
 		pagination: {
 			current: 1,
 			pageSize: TRANSACTION_DEFAULT_PAGE_SIZE,
@@ -123,41 +139,23 @@ const TradeQuery = () => {
 
 	const getBillCSV = async (): Promise<void> => {
 		try {
-			await TransactionsCSVApi({
-				where: {
-					startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
-					endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
-					status: tranStatus,
-					merchantName: merchant,
-					cardNumber: cardNoSearch
-				},
-				sortBy: TRANSACTION_DEFAULT_SORT_FIELD,
-				asc: false,
-				pageNum: 1,
-				pageSize: TRANSACTION_DEFAULT_PAGE_SIZE
-			});
+			await TransactionsCSVApi(searchTransactionRequest);
 		} catch (e: any) {
 			console.log(e);
 		}
 	};
 
 	const getCardCSV = () => {
-		CardsCSVApi({
-			where: {
-				createdAt: {
-					min: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[0] : undefined,
-					max: selectedTimeRange && selectedTimeRange.length > 0 ? handleTimeFormat(selectedTimeRange[1]) : undefined
-				}
-			},
-			pageNum: cardTableParams.pagination?.current ?? 1,
-			pageSize: cardTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
-		});
+		CardsCSVApi(cardTableParams);
 	};
 
 	useEffect(() => {
-		fetchUserCards(1, TRANSACTION_DEFAULT_PAGE_SIZE);
-		searchTransaction(1, TRANSACTION_DEFAULT_PAGE_SIZE);
-	}, []);
+		fetchUserCards();
+	}, [cardTableParams.pagination?.current]);
+
+	useEffect(() => {
+		searchTransaction();
+	}, [transactionTablePageNum]);
 
 	const createCardColumns: any[] = [
 		{
@@ -248,7 +246,6 @@ const TradeQuery = () => {
 			align: "center",
 			sorter: true
 		},
-
 		{
 			title: "卡号",
 			dataIndex: "cardNum",
@@ -256,9 +253,9 @@ const TradeQuery = () => {
 			align: "center"
 		},
 		{
-			title: "卡片类型",
-			dataIndex: "cardType",
-			key: "cardType",
+			title: "卡昵称",
+			dataIndex: "cardAlias",
+			key: "cardAlias",
 			align: "center",
 			width: "90px"
 		},
@@ -346,14 +343,39 @@ const TradeQuery = () => {
 		}
 	];
 	const [columns, setColumns] = useState(transactionColumns);
-	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
-	const [cardNoSearch, setCardNoSearch] = useState(cardData.cardNo || "");
+	const [cardInput, setCardInput] = useState(cardData?.cardNo || "");
+	const [cardFilterType, setCardFilterType] = useState(cardData?.cardNo ?? "cardLast4");
 	const [cardType, setCardType] = useState<string[]>([]);
-	const [merchant, setMerchant] = useState("");
-	const [tranStatus, setTranStatus] = useState(undefined);
 
 	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : []);
+		let startDate = undefined;
+		let endDate = undefined;
+		if (dates) {
+			startDate = dates[0].format("YYYY-MM-DD");
+			startDate.setHours(0, 0, 0, 0);
+
+			endDate = dates[1].format("YYYY-MM-DD");
+			endDate.setHours(23, 59, 59, 999);
+		}
+
+		setSearchTransactionRequest({
+			...searchTransactionRequest,
+			where: {
+				...searchTransactionRequest.where,
+				startDate,
+				endDate
+			}
+		});
+		setCardTableParams({
+			...cardTableParams,
+			where: {
+				...cardTableParams.where,
+				createdAt: {
+					min: startDate,
+					max: endDate
+				}
+			}
+		});
 	};
 
 	const handleCardTypeChange = (value: string[]) => {
@@ -371,25 +393,26 @@ const TradeQuery = () => {
 	};
 
 	const onClickSearch = () => {
+		console.log("onClickSearch");
 		setTransactionTableParams({
+			...transactionTableParams,
 			pagination: {
 				...transactionTableParams.pagination,
 				current: 1
 			}
 		});
-		searchTransaction(1, transactionTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE);
-	};
-
-	const handleTimeFormat = (time: string) => {
-		const date = new Date(time);
-		date.setHours(23, 59, 59, 999);
-		return date;
+		setTimeout(() => {
+			searchTransaction();
+		}, 50);
 	};
 
 	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = (pagination, filters, sorter) => {
+		console.log("handleTransactionTableChange, pagination:", pagination, "sorter:", sorter);
 		const sortField = Array.isArray(sorter) ? TRANSACTION_DEFAULT_SORT_FIELD : sorter.field?.toString();
 		const sortOrder = Array.isArray(sorter) ? "ascend" : sorter.order;
+		setTransactionTablePageNum(pagination.current ?? 1);
 		setTransactionTableParams({
+			...transactionTableParams,
 			pagination: {
 				...transactionTableParams.pagination,
 				current: pagination.current,
@@ -398,41 +421,66 @@ const TradeQuery = () => {
 			sortField,
 			sortOrder
 		});
-		searchTransaction(
-			pagination.current ?? 1,
-			pagination.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE,
-			sortField,
-			sortOrder === "ascend"
-		);
+		// setTimeout(() => {
+		// 	console.log("transactionTableParams:", transactionTableParams);
+		// 	searchTransaction();
+		// }, 200);
 	};
 
 	const handleCardTableChange: TableProps<FormattedCard>["onChange"] = pagination => {
 		setCardTableParams({
+			...cardTableParams,
 			pagination: {
 				...cardTableParams.pagination,
 				current: pagination.current,
 				pageSize: pagination.pageSize
 			}
 		});
-		fetchUserCards(pagination.current ?? 1, pagination.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE);
 	};
 
-	const fetchUserCards = async (pageNum: number, pageSize: number, adjustedStart?: number, adjustedEnd?: number) => {
+	const onCardFilterChanged = (input: string, type: string) => {
+		if (!type) {
+			type = "cardLast4";
+		}
+		console.log("onCardFilterChanged, input:", input, "type:", type);
+		let value: string | number = input;
+		if (type === "cardId") {
+			value = parseInt(input);
+		}
+		setSearchTransactionRequest({
+			...searchTransactionRequest,
+			where: {
+				...searchTransactionRequest.where,
+				[type]: value
+			}
+		});
+	};
+
+	const handleCardInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCardInput(e.target.value);
+		onCardFilterChanged(e.target.value, cardFilterType);
+	};
+
+	const handleCardFilterTypeChange = (value: string) => {
+		console.log("handleCardFilterTypeChange, value:", value);
+		setCardFilterType(value);
+		onCardFilterChanged(cardInput, value);
+	};
+
+	const fetchUserCards = async () => {
 		try {
 			const response = await UserCardApi({
 				where: {
-					createdAt: {
-						min: adjustedStart ?? undefined,
-						max: adjustedEnd ?? undefined
-					}
+					...cardTableParams.where,
+					cardType: cardType
 				},
-				pageNum: pageNum ?? 1,
-				pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
+				pageNum: cardTableParams.pagination?.current ?? 1,
+				pageSize: cardTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
 			});
 			setCardTableParams({
 				pagination: {
 					...cardTableParams.pagination,
-					current: response.pageNum ?? 1,
+					// current: response.pageNum ?? 1,
 					total: response.total ?? 0
 				}
 			});
@@ -463,26 +511,17 @@ const TradeQuery = () => {
 		}
 	};
 
-	const searchTransaction = (
-		current: number,
-		pageSize: number,
-		sortBy: string = TRANSACTION_DEFAULT_SORT_FIELD,
-		asc: boolean = false
-	) => {
-		const requestBody: SearchTransactionRequest = {
-			where: {
-				startDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[0] : undefined,
-				endDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[1] : undefined,
-				status: tranStatus,
-				merchantName: merchant,
-				cardNumber: cardNoSearch
-			},
-			sortBy: sortBy,
-			asc: asc,
-			pageNum: current ?? 1,
-			pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
+	const searchTransaction = () => {
+		const query = {
+			...searchTransactionRequest,
+			// pageNum: transactionTableParams.pagination?.current,
+			pageNum: transactionTablePageNum,
+			pageSize: transactionTableParams.pagination?.pageSize
 		};
-		SearchTransactionApi(requestBody).then(res => {
+
+		console.log("transactionTablePageNum:", transactionTablePageNum);
+		console.log("searchTransaction, query:", query);
+		SearchTransactionApi(query).then(res => {
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					...tran,
@@ -498,7 +537,6 @@ const TradeQuery = () => {
 			setTransactionTableParams({
 				pagination: {
 					...transactionTableParams.pagination,
-					current: res.pageNum,
 					total: res.total
 				}
 			});
@@ -508,15 +546,30 @@ const TradeQuery = () => {
 		});
 	};
 
-	const applyFilters = () => {
-		let adjustedStart: number | undefined = undefined;
-		let adjustedEnd: number | undefined = undefined;
-		if (selectedTimeRange.length > 0) {
-			const [start, end] = selectedTimeRange;
-			adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-			adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+	const onClickSearchBtn = () => {
+		if (tradeType === "auth") {
+			if (transactionTableParams.pagination?.current == 1) {
+				searchTransaction();
+			} else {
+				setTransactionTableParams({
+					pagination: {
+						...transactionTableParams.pagination,
+						current: 1
+					}
+				});
+			}
+		} else {
+			if (cardTableParams.pagination?.current == 1) {
+				fetchUserCards();
+			} else {
+				setCardTableParams({
+					pagination: {
+						...cardTableParams.pagination,
+						current: 1
+					}
+				});
+			}
 		}
-		fetchUserCards(1, TRANSACTION_DEFAULT_PAGE_SIZE, adjustedStart, adjustedEnd);
 	};
 
 	return (
@@ -552,7 +605,8 @@ const TradeQuery = () => {
 								onPressEnter={onClickSearch}
 								allowClear
 								onChange={(e: any) => {
-									setMerchant(e.target.value);
+									searchTransactionRequest.where!.merchantName = e.target.value;
+									setSearchTransactionRequest({ ...searchTransactionRequest });
 								}}
 							/>
 							<Select
@@ -560,25 +614,20 @@ const TradeQuery = () => {
 								allowClear
 								style={{ width: 120 }}
 								onChange={value => {
-									setTranStatus(value);
+									searchTransactionRequest.where!.status = value;
+									setSearchTransactionRequest({ ...searchTransactionRequest });
 								}}
 								options={Object.entries(StatusMapping).map(([key, label]) => ({ value: key, label }))}
 								className="transactionType"
 							/>
 
-							<Input
-								placeholder="卡号"
-								style={{ width: 200 }}
-								value={cardNoSearch}
-								onPressEnter={onClickSearch}
-								allowClear
-								onChange={(e: any) => {
-									const value = e.target.value;
-									// 使用正则表达式过滤掉非数字字符
-									const filteredValue = value.replace(/[^0-9*]/g, ""); // \D 表示非数字
-									setCardNoSearch(filteredValue); // 更新用户输入的值
-								}}
-							/>
+							<Input.Group compact>
+								<Select defaultValue="cardLast4" style={{ width: "40%" }} onChange={handleCardFilterTypeChange}>
+									<Option value="cardLast4">卡号</Option>
+									<Option value="cardAlias">卡昵称</Option>
+								</Select>
+								<Input style={{ width: "50%" }} onChange={handleCardInputChange} allowClear />
+							</Input.Group>
 
 							<Button type="primary" onClick={onClickSearch}>
 								查询
@@ -600,7 +649,7 @@ const TradeQuery = () => {
 								]}
 								className="transactionType"
 							/>
-							<Button type="primary" onClick={applyFilters}>
+							<Button type="primary" onClick={onClickSearchBtn}>
 								查询
 							</Button>
 						</Space>
