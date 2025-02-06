@@ -65,14 +65,29 @@ const ControllingShareholderInfo = () => {
 		});
 	};
 
-	const onUploadFileChange = (fileType: string) => (event: { file: any }) => {
+	const onUploadFileChange = (fileType: string, index: number) => (event: { file: any; fileList: any[] }) => {
+		const { file, fileList } = event;
 		if (event.file.status === "done") {
-			console.log("upload success, fileId=", event.file.response.fileId);
 			setUploadSuccess(prev => ({ ...prev, [fileType]: true }));
 		} else if (event.file.status === "error") {
-			console.log("upload failed");
-			setUploadSuccess(prev => ({ ...prev, [fileType]: false }));
-			message.error("文件传输失败，请重试");
+			if (!event.file.error.message.includes("timeout")) {
+				setUploadSuccess(prev => ({ ...prev, [fileType]: false }));
+				message.error("文件传输失败 / File upload failed.");
+			} else {
+				message.error("文件传输超时 / File upload timeout.");
+			}
+			const updatedFileList = fileList.filter(item => item.uid !== file.uid);
+			form.setFieldsValue({
+				shareholders: form.getFieldValue("shareholders").map((item: any, i: number) => {
+					if (i === index) {
+						return {
+							...item,
+							[fileType]: updatedFileList
+						};
+					}
+					return item;
+				})
+			});
 		}
 	};
 
@@ -192,15 +207,12 @@ const ControllingShareholderInfo = () => {
 																						onSuccess(response);
 																					}
 																				} catch (error: any) {
-																					message.error("文件传输失败");
-																					console.error("File upload failed:", error);
-
 																					if (onError) {
 																						onError(error);
 																					}
 																				}
 																			}}
-																			onChange={onUploadFileChange("directorPassportFile")}
+																			onChange={onUploadFileChange("directorPassportFile", index)}
 																		>
 																			<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 																		</Upload>
