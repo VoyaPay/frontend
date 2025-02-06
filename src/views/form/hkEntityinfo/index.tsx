@@ -94,12 +94,21 @@ const HKEntityInfo = () => {
 		console.log("Failed:", errorInfo);
 	};
 
-	const onUploadFileChange = (fileType: string) => (event: { file: any }) => {
+	const onUploadFileChange = (fileType: string) => (event: { file: any; fileList: any[] }) => {
+		const { file, fileList } = event;
 		if (event.file.status === "done") {
 			setUploadSuccess(prev => ({ ...prev, [fileType]: true }));
 		} else if (event.file.status === "error") {
-			setUploadSuccess(prev => ({ ...prev, [fileType]: false }));
-			message.error("文件传输失败 / File upload failed.");
+			if (!event.file.error.message.includes("timeout")) {
+				setUploadSuccess(prev => ({ ...prev, [fileType]: false }));
+				message.error("文件传输失败 / File upload failed.");
+			} else {
+				message.error("文件传输超时 / File upload timeout.");
+			}
+			const updatedFileList = fileList.filter(item => item.uid !== file.uid);
+			form.setFieldsValue({
+				[fileType]: updatedFileList
+			});
 		}
 	};
 
@@ -245,7 +254,6 @@ const HKEntityInfo = () => {
 																		onSuccess(response);
 																	}
 																} catch (error: any) {
-																	message.error("文件传输失败 / File upload failed");
 																	onError?.(error);
 																}
 															}}
