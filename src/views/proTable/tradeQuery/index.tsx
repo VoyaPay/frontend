@@ -115,7 +115,7 @@ const TradeQuery = () => {
 
 	const [transactionTableParams, setTransactionTableParams] = useState<any>({
 		pagination: {
-			current: 1,
+			current: transactionTablePageNum,
 			pageSize: TRANSACTION_DEFAULT_PAGE_SIZE,
 			showSizeChanger: false
 		},
@@ -342,9 +342,11 @@ const TradeQuery = () => {
 			width: "120px"
 		}
 	];
+
+	const allCardFilters = ["cardLast4", "cardAlias"];
 	const [columns, setColumns] = useState(transactionColumns);
 	const [cardInput, setCardInput] = useState(cardData?.cardNo || "");
-	const [cardFilterType, setCardFilterType] = useState(cardData?.cardNo ?? "cardLast4");
+	const [cardFilterType, setCardFilterType] = useState(cardData?.cardNo ?? allCardFilters[0]);
 	const [cardType, setCardType] = useState<string[]>([]);
 
 	const handleTimeChange = (dates: any) => {
@@ -392,18 +394,12 @@ const TradeQuery = () => {
 		}
 	};
 
-	const onClickSearch = () => {
-		console.log("onClickSearch");
-		setTransactionTableParams({
-			...transactionTableParams,
-			pagination: {
-				...transactionTableParams.pagination,
-				current: 1
-			}
-		});
-		setTimeout(() => {
+	const onClickSearchTransaction = () => {
+		if (transactionTablePageNum == 1) {
 			searchTransaction();
-		}, 50);
+		} else {
+			setTransactionTablePageNum(1);
+		}
 	};
 
 	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = (pagination, filters, sorter) => {
@@ -421,10 +417,6 @@ const TradeQuery = () => {
 			sortField,
 			sortOrder
 		});
-		// setTimeout(() => {
-		// 	console.log("transactionTableParams:", transactionTableParams);
-		// 	searchTransaction();
-		// }, 200);
 	};
 
 	const handleCardTableChange: TableProps<FormattedCard>["onChange"] = pagination => {
@@ -440,8 +432,10 @@ const TradeQuery = () => {
 
 	const onCardFilterChanged = (input: string, type: string) => {
 		if (!type) {
-			type = "cardLast4";
+			type = allCardFilters[0];
 		}
+		const filtersToClean = allCardFilters.filter(filter => filter !== type);
+
 		console.log("onCardFilterChanged, input:", input, "type:", type);
 		let value: string | number = input;
 		if (type === "cardId") {
@@ -451,7 +445,11 @@ const TradeQuery = () => {
 			...searchTransactionRequest,
 			where: {
 				...searchTransactionRequest.where,
-				[type]: value
+				[type]: value,
+				...filtersToClean.reduce((acc, filter) => {
+					acc[filter] = undefined;
+					return acc;
+				}, {} as Record<string, undefined>)
 			}
 		});
 	};
@@ -546,17 +544,12 @@ const TradeQuery = () => {
 		});
 	};
 
-	const onClickSearchBtn = () => {
+	const onClickSearchCard = () => {
 		if (tradeType === "auth") {
 			if (transactionTableParams.pagination?.current == 1) {
 				searchTransaction();
 			} else {
-				setTransactionTableParams({
-					pagination: {
-						...transactionTableParams.pagination,
-						current: 1
-					}
-				});
+				setTransactionTablePageNum(1);
 			}
 		} else {
 			if (cardTableParams.pagination?.current == 1) {
@@ -602,7 +595,7 @@ const TradeQuery = () => {
 							<Input
 								placeholder="商户名称"
 								style={{ width: 200 }}
-								onPressEnter={onClickSearch}
+								onPressEnter={onClickSearchTransaction}
 								allowClear
 								onChange={(e: any) => {
 									searchTransactionRequest.where!.merchantName = e.target.value;
@@ -629,7 +622,7 @@ const TradeQuery = () => {
 								<Input style={{ width: "50%" }} onChange={handleCardInputChange} allowClear />
 							</Input.Group>
 
-							<Button type="primary" onClick={onClickSearch}>
+							<Button type="primary" onClick={onClickSearchTransaction}>
 								查询
 							</Button>
 						</Space>
@@ -649,7 +642,7 @@ const TradeQuery = () => {
 								]}
 								className="transactionType"
 							/>
-							<Button type="primary" onClick={onClickSearchBtn}>
+							<Button type="primary" onClick={onClickSearchCard}>
 								查询
 							</Button>
 						</Space>
