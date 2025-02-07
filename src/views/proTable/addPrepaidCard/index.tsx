@@ -11,6 +11,7 @@ interface BinData {
 	bin: string;
 	network?: string;
 	orgCompanyId?: string;
+	note?: string;
 }
 
 const AddPrepaidCard = () => {
@@ -239,7 +240,11 @@ const AddPrepaidCard = () => {
 					const formattedData = response.map((bins: any) => ({
 						bin: bins.bin,
 						network: bins.network, // Include other properties if needed
-						orgCompanyId: bins.orgCompanyId
+						orgCompanyId: bins.orgCompanyId,
+						note:
+							bins.bin === "555243"
+								? "支持全球商户全币种消费(除美国经济制裁地区外)，以美元结算。"
+								: "仅支持美国境内商户消费，以美元结算。"
 					}));
 					setDataSource(formattedData);
 				} else {
@@ -290,15 +295,16 @@ const AddPrepaidCard = () => {
 				<div className="title">1.卡产品选择</div>
 				<div className="cardWrap">
 					{dataSource.map((bin, index) => (
-						<div
-							key={index}
-							className={`prepaidCard ${selectedCard === bin.bin ? "selected" : ""}`}
-							onClick={() => {
-								setSelectedCard(bin.bin);
-								console.log("Selected card:", bin.network, bin.bin);
-							}}
-						>
-							{bin.network + " " + bin.bin}
+						<div key={index}>
+							<div
+								className={`prepaidCard ${selectedCard === bin.bin ? "selected" : ""}`}
+								onClick={() => {
+									setSelectedCard(bin.bin);
+								}}
+							>
+								{bin.network + " " + bin.bin}
+								<p className="cardDesc">{bin.note}</p>
+							</div>
 						</div>
 					))}
 				</div>
