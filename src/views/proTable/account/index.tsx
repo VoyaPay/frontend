@@ -4,7 +4,7 @@ import { Select } from "antd";
 const { Option } = Select;
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import "./index.less";
-import { SearchTransfersApi } from "@/api/modules/ledger";
+import { SearchTransfersApi, TransferEntity } from "@/api/modules/ledger";
 import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
 import { SearchTransferRequest } from "@/api/interface";
 import { PageResponse } from "@/api";
@@ -27,6 +27,8 @@ const TransferTypeMapping = {
 	fee: "手续费",
 	cardWithdrawn: "卡提现返还",
 	closeCardRefund: "销卡返还",
+	cardCreationRebate: "开卡手续费返点",
+	consumptionRebate: "消费返点",
 	other: "其他"
 };
 
@@ -58,19 +60,36 @@ const Account = () => {
 		}
 	};
 
+	const getTransferDetail = (transaction: TransferEntity) => {
+		let cardName = "预充卡 ";
+		if (transaction.card) {
+			cardName += transaction.card.number;
+			if (transaction.card.alias) {
+				cardName += " ( ";
+				cardName += transaction.card.alias;
+				cardName += " )";
+			}
+		}
+		if (transaction.type === "cardPurchase" || transaction.type === "cardTopup") {
+			return "沃易卡账户 -> " + cardName;
+		} else if (transaction.type === "deposit") {
+			return "您的资金转入至沃易卡账户";
+		} else if (transaction.type === "closeCardRefund") {
+			return cardName + " -> 沃易卡账户";
+		} else if (transaction.type === "fee") {
+			return cardName + " 开卡手续费";
+		} else if (transaction.type === "cardWithdrawn") {
+			return cardName + " -> 沃易卡账户";
+		} else if (TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping]) {
+			return "";
+		}
+		return "其他";
+	};
+
 	const fetchTransfers = async () => {
 		try {
 			const response = await SearchTransfersApi(searchTransferRequest);
 			const formattedData = response.datalist.map(transaction => {
-				let cardName = "预充卡 ";
-				if (transaction.card) {
-					cardName += transaction.card.number;
-					if (transaction.card.alias) {
-						cardName += " ( ";
-						cardName += transaction.card.alias;
-						cardName += " )";
-					}
-				}
 				return {
 					key: transaction.id + "",
 					typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
@@ -80,20 +99,7 @@ const Account = () => {
 					currency: "USD",
 					time: formatDate(transaction.createdAt),
 					cardNumber: transaction.card?.number,
-					transactionDetail:
-						transaction.type === "cardPurchase"
-							? "沃易卡账户 -> " + cardName
-							: transaction.type === "cardTopup"
-							? "沃易卡账户 -> " + cardName
-							: transaction.type === "deposit"
-							? "您的资金转入至沃易卡账户"
-							: transaction.type === "closeCardRefund"
-							? cardName + " -> 沃易卡账户"
-							: transaction.type === "fee"
-							? cardName + " 开卡手续费"
-							: transaction.type === "cardWithdrawn"
-							? cardName + " -> 沃易卡账户"
-							: "其他"
+					transactionDetail: getTransferDetail(transaction)
 				};
 			});
 			setTableSource({
