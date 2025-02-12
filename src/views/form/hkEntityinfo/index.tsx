@@ -235,7 +235,9 @@ const HKEntityInfo = () => {
 														getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
 														rules={[
 															{
-																required: ["businessRegistration", "companyIncorporation"].includes(fileType),
+																required: ["businessRegistration", "companyIncorporation", "incorporationForm"].includes(
+																	fileType
+																),
 																message: "请上传文件 / Please upload the document"
 															}
 														]}
