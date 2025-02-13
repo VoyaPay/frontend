@@ -104,7 +104,7 @@ const PrepaidCard = () => {
 		value: bin.bin,
 		label: `${bin.bin}`
 	}));
-	const fetchUserCards = async (pageNum: number, pageSize: number, type: string) => {
+	const fetchUserCards = async (pageNum: number, pageSize: number, type?: string) => {
 		let adjustedStart: number | undefined = undefined;
 		let adjustedEnd: number | undefined = undefined;
 		if (selectedTimeRange?.length > 0) {
