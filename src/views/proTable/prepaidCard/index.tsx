@@ -128,7 +128,7 @@ const PrepaidCard = () => {
 				pageNum: pageNum ?? 1,
 				pageSize: pageSize ?? 10
 			});
-			if (type === "init") {
+			if (type !== "initasdf") {
 				processUserCardData(response);
 			}
 		} catch (error) {
