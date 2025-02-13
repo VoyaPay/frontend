@@ -84,7 +84,7 @@ class RequestHttp {
 					}
 				} else if (response && response.status >= 400 && response.status < 500) {
 					const errorData = response.data as ErrorResponse;
-					if (errorData.errorCode === 1001) {
+					if ([1001, 1002].includes(errorData.errorCode)) {
 						return Promise.reject(checkErrorCode(errorData.errorCode));
 					} else if (errorData.errorCode === 11005) {
 						message.error("卡片余额与WEX系统不一致，无法注销。");
