@@ -46,6 +46,9 @@ export const checkErrorCode = (errorCode: number): void => {
 		case 1001:
 			message.error("您的账号暂未激活，请先前往邮箱激活!");
 			break;
+		case 1002:
+			message.error("您的账号已注销，如有疑问，请联系管理员");
+			break;
 		default:
 			message.error("请求失败！");
 	}
