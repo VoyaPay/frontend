@@ -1,5 +1,12 @@
 import { PORT3 } from "@/api/config/servicePort";
-import { CardsCSVRequest, ResPage, ResultData, SearchTransactionRequest, TransactionListItem } from "@/api/interface";
+import {
+	CardsCSVRequest,
+	ResPage,
+	ResultData,
+	SearchTransactionRequest,
+	TransactionListItem,
+	TransactionStatisticRequest
+} from "@/api/interface";
 import http from "@/api";
 import { downloadCSV } from "./csv";
 
@@ -18,4 +25,8 @@ export const TransactionsCSVApi = async (req: SearchTransactionRequest): Promise
 
 export const CardsCSVApi = async (req: CardsCSVRequest): Promise<void> => {
 	return downloadCSV(PORT3 + "/cards/csv", "cards.csv", req);
+};
+
+export const TransactionStatisticApi = (req: TransactionStatisticRequest) => {
+	return http.post<ResultData>(PORT3 + "/transactions/statistics", {}, { params: req });
 };

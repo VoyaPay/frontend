@@ -186,3 +186,8 @@ export class SearchTransferWhere {
 export interface SearchTransferRequest extends ReqPage {
 	where?: SearchTransferWhere;
 }
+
+export interface TransactionStatisticRequest {
+	startDate?: string;
+	endDate?: string;
+}
