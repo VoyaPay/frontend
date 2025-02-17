@@ -24,7 +24,9 @@ const TransferTypeMapping = {
 	fee: "手续费",
 	cardWithdrawn: "卡提现返还",
 	closeCardRefund: "销卡返还",
-	other: "其他"
+	other: "其他",
+	cardCreationRebate: "开卡手续费返点",
+	consumptionRebate: "消费返点",
 };
 
 const Account = () => {
