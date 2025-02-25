@@ -16,7 +16,6 @@ interface CardTransactionRecordList {
 	orderNumber: string;
 	notes: string;
 }
-
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
