@@ -1,184 +1,163 @@
-import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space } from "antd";
-import { Select } from "antd";
+import { useEffect, useState, useRef } from "react";
+import { Button, DatePicker } from "antd";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { TransactionStatisticApi } from "@/api/modules/transactions";
+import { GetBalanceApi } from "@/api/modules/ledger";
+import * as echarts from "echarts";
+import { MCC_MAP, COUNTRY_MAP } from "@/enums/transactions";
+
 import "./index.less";
-import { UserTransfersApi } from "@/api/modules/ledger";
-import { GetBalanceApi, LedgerCSVApi } from "@/api/modules/ledger";
-
-interface FormattedTransaction {
-	key: string;
-	typeLabel: string;
-	type: string;
-	dynamicAccountType: string;
-	amount: string;
-	currency: string;
-	time: string;
-	transactionDetail: string;
-}
-
-const TransferTypeMapping = {
-	cardPurchase: "卡首充",
-	cardTopup: "卡充值",
-	deposit: "账户充值",
-	fee: "手续费",
-	cardWithdrawn: "卡提现返还",
-	closeCardRefund: "销卡返还",
-	other: "其他"
-};
 
 const Account = () => {
-	const { RangePicker } = DatePicker;
-	const [dataSource, setDataSource] = useState<FormattedTransaction[]>([]);
-	const [filteredDataSource, setFilteredDataSource] = useState<FormattedTransaction[]>([]);
-	const [selectedTransferType, setSelectedTransferType] = useState<string>();
-	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
 	const [accountBalance, setAccountBalance] = useState(0);
 	const location = useLocation();
+	const [selectedDateRange, setSelectedDateRange] = useState<[string, string] | null>(null);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			await Promise.all([getBalance(), fetchTransactions()]);
-		};
-		fetchData();
-	}, []);
+	const [transactionData, setTransactionData] = useState({
+		mccGroup: [],
+		merchantCountryGroup: [],
+		monthGroup: []
+	});
 
+	const transactionChartRef = useRef(null);
+	const mccChartRef = useRef(null);
+	const countryChartRef = useRef(null);
+
+	// ✅ 获取交易统计数据
+	const getTransactionStatistics = async (startDate?: string, endDate?: string) => {
+		try {
+			const response = await TransactionStatisticApi({ startDate, endDate });
+
+			console.log("📊 交易统计完整响应:", JSON.stringify(response, null, 2));
+			setTransactionData(response);
+		} catch (error) {
+			console.error("获取交易统计数据失败:", error);
+		}
+	};
+
+	// ✅ 获取账户余额
 	const getBalance = async () => {
 		try {
 			const response = await GetBalanceApi();
 			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
 			setAccountBalance(balance);
 		} catch (error) {
-			console.log("Cannot get balance of the account:", error);
+			console.log("无法获取账户余额:", error);
 		}
 	};
 
-	const fetchTransactions = async () => {
-		try {
-			const response = await UserTransfersApi();
-			if (Array.isArray(response)) {
-				const formattedData = response.map(transaction => {
-					let cardName = "预充卡 ";
-					if (transaction.card) {
-						cardName += transaction.card.number;
-						if (transaction.card.alias) {
-							cardName += " ( ";
-							cardName += transaction.card.alias;
-							cardName += " )";
-						}
+	// ✅ 组件挂载时请求数据
+	useEffect(() => {
+		const defaultStartDate = new Date();
+		defaultStartDate.setFullYear(defaultStartDate.getFullYear() - 10);
+		getTransactionStatistics(defaultStartDate.toISOString().split("T")[0], new Date().toISOString().split("T")[0]);
+		getBalance();
+	}, []);
+
+	// ✅ 监听 `transactionData` 变化，更新图表
+	useEffect(() => {
+		if (transactionData.monthGroup.length > 0) {
+			renderTransactionChart();
+		}
+		if (transactionData.mccGroup.length > 0) {
+			renderMccChart();
+		}
+		if (transactionData.merchantCountryGroup.length > 0) {
+			renderCountryChart();
+		}
+	}, [transactionData]);
+
+	// ✅ 日期筛选
+	const handleDateChange = (dates: any) => {
+		if (dates) {
+			// ✅ 选择了日期
+			const [start, end] = dates;
+			const formattedRange: [string, string] = [start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD")];
+			setSelectedDateRange(formattedRange);
+			console.log("📅 选择的日期范围:", formattedRange);
+			getTransactionStatistics(formattedRange[0], formattedRange[1]);
+		} else {
+			// ✅ 点击清除按钮，重置为默认日期范围（最近10年）
+			console.log("🚀 日期被清除，恢复默认查询");
+			setSelectedDateRange(null); // 确保 UI 也能同步更新
+
+			const defaultStartDate = new Date();
+			defaultStartDate.setFullYear(defaultStartDate.getFullYear() - 10);
+			const defaultEndDate = new Date().toISOString().split("T")[0];
+
+			getTransactionStatistics(defaultStartDate.toISOString().split("T")[0], defaultEndDate);
+		}
+	};
+
+	// ✅ 确保 selectedDateRange 被使用
+	useEffect(() => {
+		console.log("🔍 当前选定的日期范围:", selectedDateRange);
+	}, [selectedDateRange]);
+
+	// ✅ 渲染 交易统计图表
+	const renderTransactionChart = () => {
+		if (transactionChartRef.current) {
+			const chart = echarts.init(transactionChartRef.current);
+			chart.setOption({
+				tooltip: { trigger: "axis", axisPointer: { type: "cross", crossStyle: { color: "#999" } } },
+				legend: { data: ["交易金额", "交易笔数"] },
+				xAxis: { type: "category", data: transactionData.monthGroup.map(item => item.groupBy), axisPointer: { type: "shadow" } },
+				yAxis: [
+					{ type: "value", name: "交易金额", min: 0, axisLabel: { formatter: "${value}" } },
+					{ type: "value", name: "交易笔数", min: 0 }
+				],
+				series: [
+					{ name: "交易金额", type: "bar", data: transactionData.monthGroup.map(item => item.totalAmount) },
+					{ name: "交易笔数", type: "line", yAxisIndex: 1, data: transactionData.monthGroup.map(item => item.totalTransactions) }
+				]
+			});
+		}
+	};
+
+	// ✅ 渲染 MCC 图表
+	const renderMccChart = () => {
+		if (mccChartRef.current) {
+			const chart = echarts.init(mccChartRef.current);
+			chart.setOption({
+				tooltip: { trigger: "item" },
+				legend: { orient: "vertical", left: "left" },
+				series: [
+					{
+						name: "MCC分布",
+						type: "pie",
+						radius: "50%",
+						data: transactionData.mccGroup.map(item => ({
+							value: item.totalAmount,
+							name: MCC_MAP[item.groupBy] || item.groupBy
+						})),
+						emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: "rgba(0, 0, 0, 0.5)" } }
 					}
-					return {
-						key: transaction.id,
-						typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
-						type: transaction.type,
-						dynamicAccountType: transaction.origin || "N/A",
-						amount: "$" + String(Math.abs(parseFloat(transaction.amount)).toFixed(2)),
-						currency: "USD",
-						time: formatDate(transaction.createdAt),
-						transactionDetail:
-							transaction.type === "cardPurchase"
-								? "沃易卡账户 -> " + cardName
-								: transaction.type === "cardTopup"
-								? "沃易卡账户 -> " + cardName
-								: transaction.type === "deposit"
-								? "您的资金转入至沃易卡账户"
-								: transaction.type === "closeCardRefund"
-								? cardName + " -> 沃易卡账户"
-								: transaction.type === "fee"
-								? cardName + " 开卡手续费"
-								: transaction.type === "cardWithdrawn"
-								? cardName + " -> 沃易卡账户"
-								: "其他"
-					};
-				});
-
-				setDataSource(formattedData);
-				setFilteredDataSource(formattedData); // Default to show all data initially
-			}
-		} catch (error) {
-			console.error("Error fetching transactions:", error);
-		}
-	};
-
-	const getCSV = async (): Promise<void> => {
-		try {
-			await LedgerCSVApi({
-				where: {
-					startDate: selectedTimeRange[0],
-					endDate: selectedTimeRange[1],
-					type: selectedTransferType
-				},
-				pageNum: 1,
-				pageSize: 100
-			});
-		} catch (e: any) {
-			console.log(e);
-		}
-	};
-
-	const columns: any[] = [
-		{ title: "交易类型", dataIndex: "typeLabel", key: "typeLabel", align: "center", width: "200px" },
-		{
-			title: "金额",
-			dataIndex: "amount",
-			key: "amount",
-			align: "center",
-			width: "300px",
-			sorter: (a: any, b: any) => {
-				const amountA = parseFloat(a.amount.replace("$", "").replace(",", ""));
-				const amountB = parseFloat(b.amount.replace("$", "").replace(",", ""));
-				return amountA - amountB;
-			}
-		},
-		{ title: "币种", dataIndex: "currency", key: "currency", align: "center", width: "200px" },
-		{
-			title: "时间",
-			dataIndex: "time",
-			key: "time",
-			align: "center",
-			defaultSortOrder: "descend",
-			sorter: (a: any, b: any) => {
-				const dateA = new Date(a.time).getTime();
-				const dateB = new Date(b.time).getTime();
-				return dateA - dateB;
-			},
-			width: "400px"
-		},
-		{ title: "交易明细", dataIndex: "transactionDetail", key: "transactionDetail", align: "center", width: "400px" }
-	];
-
-	// Update selected transaction types
-	const handleTransactionTypeChange = (selectedType: string) => {
-		setSelectedTransferType(selectedType);
-	};
-
-	// Update selected date range
-	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
-	};
-
-	// Apply filters based on transaction type and date range when the user clicks "查询"
-	const applyFilters = () => {
-		let filteredData = dataSource; // 初始为所有数据
-
-		if (selectedTransferType) {
-			filteredData = filteredData.filter(transaction => transaction.type === selectedTransferType);
-		}
-
-		if (selectedTimeRange.length > 0) {
-			const [start, end] = selectedTimeRange;
-			const adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-
-			// Set end time to 23:59:59 for the end date
-			const adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
-
-			filteredData = filteredData.filter(transaction => {
-				const cardDate = new Date(transaction.time).getTime();
-				return cardDate >= adjustedStart && cardDate <= adjustedEnd;
+				]
 			});
 		}
+	};
 
-		setFilteredDataSource(filteredData);
+	// ✅ 渲染 商户国家分布图表
+	const renderCountryChart = () => {
+		if (countryChartRef.current) {
+			const chart = echarts.init(countryChartRef.current);
+			chart.setOption({
+				tooltip: { trigger: "item" },
+				legend: { orient: "vertical", left: "left" },
+				series: [
+					{
+						name: "国家分布",
+						type: "pie",
+						radius: "50%",
+						data: transactionData.merchantCountryGroup.map(item => ({
+							value: item.totalAmount,
+							name: COUNTRY_MAP[item.groupBy] || item.groupBy
+						})),
+						emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: "rgba(0, 0, 0, 0.5)" } }
+					}
+				]
+			});
+		}
 	};
 
 	return (
@@ -196,54 +175,29 @@ const Account = () => {
 							<NavLink to="/account/recharge">充值</NavLink>
 						</Button>
 					</div>
-					<div className="actionWrap">
-						<div>
-							<span className="title">动账明细</span>
-							<Space>
-								<RangePicker onChange={handleTimeChange} />
-								<Select
-									placeholder="请选择交易类型"
-									// mode="multiple"
-									allowClear
-									style={{ width: 200 }}
-									onChange={handleTransactionTypeChange}
-									options={Object.entries(TransferTypeMapping).map(([key, type]) => {
-										return { label: type, value: key };
-									})}
-									className="transactionType"
-								/>
-								<Button type="primary" onClick={applyFilters}>
-									查询
-								</Button>
-							</Space>
+					<div className="accountChart">
+						<div className="chartHeader">
+							<h3 className="title">交易总额</h3>
+							<DatePicker.RangePicker style={{ width: "200px" }} onChange={handleDateChange} />
 						</div>
-						<Button type="primary" onClick={getCSV}>
-							导出账单明细
-						</Button>
+						<div className="chartContent">
+							<div ref={transactionChartRef} style={{ height: "300px", marginBottom: "20px" }}></div>
+							<div style={{ display: "flex", justifyContent: "space-between" }}>
+								<div style={{ width: "48%" }}>
+									<div className="chartTitle">商户类别分布</div>
+									<div ref={mccChartRef} style={{ height: "400px", width: "100%" }}></div>
+								</div>
+								<div style={{ width: "48%" }}>
+									<div className="chartTitle">商户国家分布</div>
+									<div ref={countryChartRef} style={{ height: "400px", width: "100%" }}></div>
+								</div>
+							</div>
+						</div>
 					</div>
-					<Table
-						bordered={true}
-						dataSource={filteredDataSource}
-						columns={columns}
-						pagination={{ pageSize: 10, showSizeChanger: false }}
-					/>
 				</div>
 			)}
 		</>
 	);
-};
-
-const formatDate = (dateString: string) => {
-	const date = new Date(dateString);
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const day = String(date.getDate()).padStart(2, "0");
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
-	const seconds = String(date.getSeconds()).padStart(2, "0");
-
-	// 返回格式为 yyyy-MM-dd hh:mm:ss
-	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
 export default Account;
