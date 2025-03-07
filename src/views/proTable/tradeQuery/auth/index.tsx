@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
-import { Table, DatePicker, Button, Space, Input, Select, TableProps, TablePaginationConfig, Tooltip } from "antd";
-import { SorterResult } from "antd/es/table/interface";
+import { Table, DatePicker, Button, Space, Input, Select, TableProps, Tooltip } from "antd";
 import { SearchTransactionApi, TransactionsCSVApi } from "@/api/modules/transactions";
 import { SearchTransactionRequest, TransactionListItem } from "@/api/interface";
 import { formatDate } from "@/utils/util";
-
-interface TableParams {
-	pagination?: TablePaginationConfig;
-	sortField?: SorterResult<any>["field"];
-	sortOrder?: SorterResult<any>["order"];
-}
+import { useLocation } from "react-router-dom";
+import { Option } from "antd/es/mentions";
 
 interface FormattedTransaction extends TransactionListItem {
 	key: string;
@@ -33,22 +28,42 @@ const CardTypeMapping = {
 };
 
 const Auth = () => {
+	const intentCardId = (useLocation().state as any)?.key;
+	console.log("intentCardId:", intentCardId);
+
 	const { RangePicker } = DatePicker;
 	const [transactionPage, setTransactionPage] = useState<FormattedTransaction[]>([]);
-	const [selectedTimeRange, setSelectedTimeRange] = useState<any[]>([]);
-	const [cardNoSearch, setCardNoSearch] = useState("");
-	const [merchant, setMerchant] = useState("");
-	const [tranStatus, setTranStatus] = useState(undefined);
-	const [transactionTableParams, setTransactionTableParams] = useState<TableParams>({
+
+	const allCardFilters = ["cardLast4", "cardAlias", "cardId"];
+
+	const [searchTransactionRequest, setSearchTransactionRequest] = useState<any>(
+		new SearchTransactionRequest({
+			where: {
+				[intentCardId ? "cardId" : allCardFilters[0]]: intentCardId
+			},
+			sortBy: TRANSACTION_DEFAULT_SORT_FIELD,
+			asc: false
+		})
+	);
+
+	const [cardInput, setCardInput] = useState(intentCardId || "");
+	const [cardFilterType, setCardFilterType] = useState(intentCardId ? allCardFilters[2] : allCardFilters[0]);
+
+	const [transactionTablePageNum, setTransactionTablePageNum] = useState<number>(1);
+
+	useEffect(() => {
+		searchTransaction();
+	}, [transactionTablePageNum]);
+
+	const [transactionTableParams, setTransactionTableParams] = useState<any>({
 		pagination: {
-			current: 1,
+			current: transactionTablePageNum,
 			pageSize: TRANSACTION_DEFAULT_PAGE_SIZE,
 			showSizeChanger: false
 		},
 		sortField: TRANSACTION_DEFAULT_SORT_FIELD,
 		sortOrder: "descend"
 	});
-
 	const accountColumns: any[] = [
 		{
 			title: "时间",
@@ -64,9 +79,9 @@ const Auth = () => {
 			align: "center"
 		},
 		{
-			title: "卡片类型",
-			dataIndex: "cardType",
-			key: "cardType",
+			title: "卡昵称",
+			dataIndex: "cardAlias",
+			key: "cardAlias",
 			align: "center",
 			width: "90px"
 		},
@@ -153,18 +168,34 @@ const Auth = () => {
 		}
 	];
 
-	useEffect(() => {
-		searchTransaction(1, TRANSACTION_DEFAULT_PAGE_SIZE);
-	}, []);
-
 	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : []);
+		let startDate = undefined;
+		let endDate = undefined;
+		if (dates) {
+			startDate = dates[0].format("YYYY-MM-DD");
+			startDate.setHours(0, 0, 0, 0);
+
+			endDate = dates[1].format("YYYY-MM-DD");
+			endDate.setHours(23, 59, 59, 999);
+		}
+
+		setSearchTransactionRequest({
+			...searchTransactionRequest,
+			where: {
+				...searchTransactionRequest.where,
+				startDate,
+				endDate
+			}
+		});
 	};
 
 	const handleTransactionTableChange: TableProps<FormattedTransaction>["onChange"] = (pagination, filters, sorter) => {
+		console.log("handleTransactionTableChange, pagination:", pagination, "sorter:", sorter);
 		const sortField = Array.isArray(sorter) ? TRANSACTION_DEFAULT_SORT_FIELD : sorter.field?.toString();
 		const sortOrder = Array.isArray(sorter) ? "ascend" : sorter.order;
+		setTransactionTablePageNum(pagination.current ?? 1);
 		setTransactionTableParams({
+			...transactionTableParams,
 			pagination: {
 				...transactionTableParams.pagination,
 				current: pagination.current,
@@ -173,34 +204,54 @@ const Auth = () => {
 			sortField,
 			sortOrder
 		});
-		searchTransaction(
-			pagination.current ?? 1,
-			pagination.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE,
-			sortField,
-			sortOrder === "ascend"
-		);
 	};
 
-	const searchTransaction = (
-		current: number,
-		pageSize: number,
-		sortBy: string = TRANSACTION_DEFAULT_SORT_FIELD,
-		asc: boolean = false
-	) => {
-		const requestBody: SearchTransactionRequest = {
+	const onCardFilterChanged = (input: string, type: string) => {
+		if (!type) {
+			type = allCardFilters[0];
+		}
+		const filtersToClean = allCardFilters.filter(filter => filter !== type);
+
+		console.log("onCardFilterChanged, input:", input, "type:", type);
+		let value: string | number = input;
+		if (type === "cardId") {
+			value = parseInt(input);
+		}
+		setSearchTransactionRequest({
+			...searchTransactionRequest,
 			where: {
-				startDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[0] : undefined,
-				endDate: selectedTimeRange && selectedTimeRange.length > 0 ? selectedTimeRange[1] : undefined,
-				status: tranStatus,
-				merchantName: merchant,
-				cardNumber: cardNoSearch
-			},
-			sortBy: sortBy,
-			asc: asc,
-			pageNum: current ?? 1,
-			pageSize: pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE
+				...searchTransactionRequest.where,
+				[type]: value,
+				...filtersToClean.reduce((acc, filter) => {
+					acc[filter] = undefined;
+					return acc;
+				}, {} as Record<string, undefined>)
+			}
+		});
+	};
+
+	const handleCardInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCardInput(e.target.value);
+		onCardFilterChanged(e.target.value, cardFilterType);
+	};
+
+	const handleCardFilterTypeChange = (value: string) => {
+		console.log("handleCardFilterTypeChange, value:", value);
+		setCardFilterType(value);
+		onCardFilterChanged(cardInput, value);
+	};
+
+	const searchTransaction = () => {
+		const query = {
+			...searchTransactionRequest,
+			// pageNum: transactionTableParams.pagination?.current,
+			pageNum: transactionTablePageNum,
+			pageSize: transactionTableParams.pagination?.pageSize
 		};
-		SearchTransactionApi(requestBody).then(res => {
+
+		console.log("transactionTablePageNum:", transactionTablePageNum);
+		console.log("searchTransaction, query:", query);
+		SearchTransactionApi(query).then(res => {
 			const formattedData = res.datalist?.map((tran: any) => {
 				const t: FormattedTransaction = {
 					...tran,
@@ -216,7 +267,6 @@ const Auth = () => {
 			setTransactionTableParams({
 				pagination: {
 					...transactionTableParams.pagination,
-					current: res.pageNum,
 					total: res.total
 				}
 			});
@@ -228,32 +278,18 @@ const Auth = () => {
 
 	const getBillCSV = async (): Promise<void> => {
 		try {
-			await TransactionsCSVApi({
-				where: {
-					startDate: selectedTimeRange ? selectedTimeRange[0] : undefined,
-					endDate: selectedTimeRange ? selectedTimeRange[1] : undefined,
-					status: tranStatus,
-					merchantName: merchant,
-					cardNumber: cardNoSearch
-				},
-				sortBy: TRANSACTION_DEFAULT_SORT_FIELD,
-				asc: false,
-				pageNum: 1,
-				pageSize: TRANSACTION_DEFAULT_PAGE_SIZE
-			});
+			await TransactionsCSVApi(searchTransactionRequest);
 		} catch (e: any) {
 			console.log(e);
 		}
 	};
 
 	const onClickSearch = () => {
-		setTransactionTableParams({
-			pagination: {
-				...transactionTableParams.pagination,
-				current: 1
-			}
-		});
-		searchTransaction(1, transactionTableParams.pagination?.pageSize ?? TRANSACTION_DEFAULT_PAGE_SIZE);
+		if (transactionTablePageNum == 1) {
+			searchTransaction();
+		} else {
+			setTransactionTablePageNum(1);
+		}
 	};
 
 	return (
@@ -267,7 +303,8 @@ const Auth = () => {
 						onPressEnter={onClickSearch}
 						allowClear
 						onChange={(e: any) => {
-							setMerchant(e.target.value);
+							searchTransactionRequest.where!.merchantName = e.target.value;
+							setSearchTransactionRequest({ ...searchTransactionRequest });
 						}}
 					/>
 					<Select
@@ -275,23 +312,25 @@ const Auth = () => {
 						allowClear
 						style={{ width: 120 }}
 						onChange={value => {
-							setTranStatus(value);
+							searchTransactionRequest.where!.status = value;
+							setSearchTransactionRequest({ ...searchTransactionRequest });
 						}}
 						options={Object.entries(StatusMapping).map(([key, label]) => ({ value: key, label }))}
 						className="transactionType"
 					/>
-					<Input
-						placeholder="卡号"
-						style={{ width: 200 }}
-						value={cardNoSearch}
-						onPressEnter={onClickSearch}
-						allowClear
-						onChange={(e: any) => {
-							const value = e.target.value;
-							const filteredValue = value.replace(/[^0-9*]/g, "");
-							setCardNoSearch(filteredValue);
-						}}
-					/>
+					<Input.Group compact>
+						<Select
+							defaultValue="cardLast4"
+							style={{ width: "40%" }}
+							onChange={handleCardFilterTypeChange}
+							value={cardFilterType}
+						>
+							<Option value="cardLast4">卡号</Option>
+							<Option value="cardAlias">卡昵称</Option>
+							<Option value="cardId">卡ID</Option>
+						</Select>
+						<Input style={{ width: "50%" }} onChange={handleCardInputChange} allowClear value={cardInput} />
+					</Input.Group>
 					<Button type="primary" onClick={onClickSearch}>
 						查询
 					</Button>

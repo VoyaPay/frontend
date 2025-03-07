@@ -216,14 +216,7 @@ const Detail = () => {
 	const goCheck = (record: CardData) => {
 		navigate("/tradeQuery", {
 			state: {
-				key: record.key,
-				cardName: record.cardName,
-				cardOwner: record.cardOwner,
-				cardGroup: record.cardGroup,
-				cardNo: record.cardNo,
-				cardStatus: record.cardStatus,
-				balance: record.balance,
-				createCardTime: record.createCardTime
+				key: record.key
 			}
 		});
 	};

@@ -29,6 +29,8 @@ export interface CardTransactionRecordParams {
 		merchantName?: string;
 		status?: string;
 	};
+	pageNum: number;
+	pageSize: number;
 }
 
 export const CardInformationApi = (id: string) => {
