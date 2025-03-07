@@ -104,7 +104,7 @@ const PrepaidCard = () => {
 		value: bin.bin,
 		label: `${bin.bin}`
 	}));
-	const fetchUserCards = async (pageNum: number, pageSize: number, type?: string) => {
+	const fetchUserCards = async (pageNum: number, pageSize: number) => {
 		let adjustedStart: number | undefined = undefined;
 		let adjustedEnd: number | undefined = undefined;
 		if (selectedTimeRange?.length > 0) {
@@ -128,9 +128,7 @@ const PrepaidCard = () => {
 				pageNum: pageNum ?? 1,
 				pageSize: pageSize ?? 10
 			});
-			if (type === "init") {
-				processUserCardData(response);
-			}
+			processUserCardData(response);
 		} catch (error) {
 			console.error("Failed to fetch user cards:", error);
 		}
@@ -187,7 +185,7 @@ const PrepaidCard = () => {
 		if (location.pathname === "/prepaidCard") {
 			getCardBin();
 			getBalance();
-			fetchUserCards(1, 10, "init");
+			fetchUserCards(1, 10);
 		}
 	}, [location.pathname]);
 
