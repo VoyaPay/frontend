@@ -4,7 +4,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { TransactionStatisticApi } from "@/api/modules/transactions";
 import { GetBalanceApi } from "@/api/modules/ledger";
 import * as echarts from "echarts";
-import { MCC_MAP, COUNTRY_MAP } from "@/enums/transactions";
+import { COUNTRY_MAP } from "@/enums/transactions";
 
 import "./index.less";
 
@@ -23,7 +23,7 @@ const Account = () => {
 	const mccChartRef = useRef(null);
 	const countryChartRef = useRef(null);
 
-	// ✅ 获取交易统计数据
+	//  获取交易统计数据
 	const getTransactionStatistics = async (startDate?: string, endDate?: string) => {
 		try {
 			const response = await TransactionStatisticApi({ startDate, endDate });
@@ -35,7 +35,7 @@ const Account = () => {
 		}
 	};
 
-	// ✅ 获取账户余额
+	//  获取账户余额
 	const getBalance = async () => {
 		try {
 			const response = await GetBalanceApi();
@@ -46,7 +46,7 @@ const Account = () => {
 		}
 	};
 
-	// ✅ 组件挂载时请求数据
+	//  组件挂载时请求数据
 	useEffect(() => {
 		const defaultStartDate = new Date();
 		defaultStartDate.setFullYear(defaultStartDate.getFullYear() - 10);
@@ -54,7 +54,7 @@ const Account = () => {
 		getBalance();
 	}, []);
 
-	// ✅ 监听 `transactionData` 变化，更新图表
+	//  监听 `transactionData` 变化，更新图表
 	useEffect(() => {
 		if (transactionData.monthGroup.length > 0) {
 			renderTransactionChart();
@@ -67,10 +67,10 @@ const Account = () => {
 		}
 	}, [transactionData]);
 
-	// ✅ 日期筛选
+	//  日期筛选
 	const handleDateChange = (dates: any) => {
 		if (dates) {
-			// ✅ 选择了日期
+			//  选择了日期
 			const [start, end] = dates;
 			const formattedRange: [string, string] = [start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD")];
 			setSelectedDateRange(formattedRange);
@@ -89,12 +89,12 @@ const Account = () => {
 		}
 	};
 
-	// ✅ 确保 selectedDateRange 被使用
+	//  确保 selectedDateRange 被使用
 	useEffect(() => {
 		console.log("🔍 当前选定的日期范围:", selectedDateRange);
 	}, [selectedDateRange]);
 
-	// ✅ 渲染 交易统计图表
+	//  渲染 交易统计图表
 	const renderTransactionChart = () => {
 		if (transactionChartRef.current) {
 			const chart = echarts.init(transactionChartRef.current);
@@ -114,7 +114,7 @@ const Account = () => {
 		}
 	};
 
-	// ✅ 渲染 MCC 图表
+	//  渲染 MCC 图表
 	const renderMccChart = () => {
 		if (mccChartRef.current) {
 			const chart = echarts.init(mccChartRef.current);
@@ -128,7 +128,7 @@ const Account = () => {
 						radius: "50%",
 						data: transactionData.mccGroup.map(item => ({
 							value: item.totalAmount,
-							name: MCC_MAP[item.groupBy] || item.groupBy
+							name: item.groupBy
 						})),
 						emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: "rgba(0, 0, 0, 0.5)" } }
 					}
@@ -137,7 +137,7 @@ const Account = () => {
 		}
 	};
 
-	// ✅ 渲染 商户国家分布图表
+	//  渲染 商户国家分布图表
 	const renderCountryChart = () => {
 		if (countryChartRef.current) {
 			const chart = echarts.init(countryChartRef.current);
@@ -184,7 +184,7 @@ const Account = () => {
 							<div ref={transactionChartRef} style={{ height: "300px", marginBottom: "20px" }}></div>
 							<div style={{ display: "flex", justifyContent: "space-between" }}>
 								<div style={{ width: "48%" }}>
-									<div className="chartTitle">商户类别分布</div>
+									<div className="chartTitle">商户类别(MCC)分布</div>
 									<div ref={mccChartRef} style={{ height: "400px", width: "100%" }}></div>
 								</div>
 								<div style={{ width: "48%" }}>
