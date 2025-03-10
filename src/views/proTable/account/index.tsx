@@ -7,13 +7,14 @@ import * as echarts from "echarts";
 import { COUNTRY_MAP } from "@/enums/transactions";
 
 import "./index.less";
+import { TransactionData } from "@/api/interface";
 
 const Account = () => {
 	const [accountBalance, setAccountBalance] = useState(0);
 	const location = useLocation();
 	const [selectedDateRange, setSelectedDateRange] = useState<[string, string] | null>(null);
 
-	const [transactionData, setTransactionData] = useState({
+	const [transactionData, setTransactionData] = useState<TransactionData>({
 		mccGroup: [],
 		merchantCountryGroup: [],
 		monthGroup: []
@@ -98,6 +99,24 @@ const Account = () => {
 	const renderTransactionChart = () => {
 		if (transactionChartRef.current) {
 			const chart = echarts.init(transactionChartRef.current);
+			console.log("⚙️ 正在设置交易统计图表...", transactionData.monthGroup.length === 0);
+
+			if (transactionData.monthGroup.length === 0) {
+				// 清空图表，显示“暂无数据”
+				chart.clear();
+				chart.setOption({
+					title: {
+						text: "暂无数据",
+						left: "center",
+						top: "center",
+						textStyle: {
+							color: "#ccc",
+							fontSize: 20
+						}
+					}
+				});
+				return;
+			}
 			chart.setOption({
 				tooltip: { trigger: "axis", axisPointer: { type: "cross", crossStyle: { color: "#999" } } },
 				legend: { data: ["交易金额", "交易笔数"] },
@@ -118,6 +137,22 @@ const Account = () => {
 	const renderMccChart = () => {
 		if (mccChartRef.current) {
 			const chart = echarts.init(mccChartRef.current);
+			if (transactionData.mccGroup.length === 0) {
+				chart.clear();
+				chart.setOption({
+					title: {
+						text: "暂无数据",
+						left: "center",
+						top: "center",
+						textStyle: {
+							color: "#ccc",
+							fontSize: 20
+						}
+					}
+				});
+				return;
+			}
+
 			chart.setOption({
 				tooltip: { trigger: "item" },
 				legend: { orient: "vertical", left: "left" },
@@ -141,6 +176,22 @@ const Account = () => {
 	const renderCountryChart = () => {
 		if (countryChartRef.current) {
 			const chart = echarts.init(countryChartRef.current);
+			if (transactionData.merchantCountryGroup.length === 0) {
+				chart.clear();
+				chart.setOption({
+					title: {
+						text: "暂无数据",
+						left: "center",
+						top: "center",
+						textStyle: {
+							color: "#ccc",
+							fontSize: 20
+						}
+					}
+				});
+				return;
+			}
+
 			chart.setOption({
 				tooltip: { trigger: "item" },
 				legend: { orient: "vertical", left: "left" },
