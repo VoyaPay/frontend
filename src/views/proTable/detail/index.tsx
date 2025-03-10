@@ -33,6 +33,8 @@ export interface CardData {
 	autoRecharge: boolean;
 }
 
+const maxLength = 20;
+
 const fetchCardInformation = async (id: string, setCardData: React.Dispatch<React.SetStateAction<CardData>>) => {
 	try {
 		const information = await CardInformationApi(id);
@@ -126,14 +128,13 @@ const Detail = () => {
 	};
 
 	const saveChanges2 = async () => {
-		const maxLength = 16;
 		if (cardData.cardStatus === "Closed") {
 			// Display error message and prevent editing
 			message.error("无法修改已注销的卡片。");
 			return;
 		}
 		if (cardName.length > maxLength) {
-			message.error("卡昵称长度不能超过16个字符。");
+			message.error(`卡昵称长度不能超过${maxLength}个字符`);
 			return;
 		}
 		const updatedData = {
@@ -342,10 +343,10 @@ const Detail = () => {
 										value={cardName}
 										onChange={e => {
 											const value = e.target.value;
-											if (value.length <= 16) {
+											if (value.length <= maxLength) {
 												setCardName(value);
 											} else {
-												message.error("卡昵称长度不能超过16个字符");
+												message.error(`卡昵称长度不能超过${maxLength}个字符`);
 											}
 										}}
 										className="edit"

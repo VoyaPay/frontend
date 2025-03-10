@@ -28,14 +28,14 @@ const AddPrepaidCard = () => {
 	const [dataSource, setDataSource] = useState<BinData[]>([]);
 	const [selectedCard, setSelectedCard] = useState<string | null>(null);
 	const navigate = useNavigate();
-	const maxLength = 16;
+	const maxLength = 20;
 	const combinedLength = firstName.length + lastName.length;
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 
 		if (value.length > maxLength) {
-			message.error("卡昵称长度不能超过16个字符");
+			message.error(`卡昵称长度不能超过${maxLength}个字符`);
 			return;
 		}
 
