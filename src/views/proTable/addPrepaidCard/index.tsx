@@ -28,14 +28,14 @@ const AddPrepaidCard = () => {
 	const [dataSource, setDataSource] = useState<BinData[]>([]);
 	const [selectedCard, setSelectedCard] = useState<string | null>(null);
 	const navigate = useNavigate();
-	const maxLength = 16;
+	const maxLength = 20;
 	const combinedLength = firstName.length + lastName.length;
 
 	const changeCardName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 
 		if (value.length > maxLength) {
-			message.error("卡昵称长度不能超过16个字符");
+			message.error(`卡昵称长度不能超过${maxLength}个字符`);
 			return;
 		}
 
@@ -241,10 +241,9 @@ const AddPrepaidCard = () => {
 						bin: bins.bin,
 						network: bins.network, // Include other properties if needed
 						orgCompanyId: bins.orgCompanyId,
-						note:
-							bins.bin === "555243"
-								? "支持全球商户全币种消费(除美国经济制裁地区外)，以美元结算。"
-								: "仅支持美国境内商户消费，以美元结算。"
+						note: ["555243", "555657"].includes(bins.bin)
+							? "支持全球商户全币种消费(除美国经济制裁地区外)，以美元结算。"
+							: "仅支持美国境内商户消费，以美元结算。"
 					}));
 					setDataSource(formattedData);
 				} else {
