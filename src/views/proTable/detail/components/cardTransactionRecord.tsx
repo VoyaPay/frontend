@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Input, Select, Button, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { CardTransactionRecordApi, CardTransactionRecordCSVApi, CardTransactionRecordParams } from "@/api/modules/card";
+import { CardTransactionRecordApi, CardTransactionRecordCSVApi } from "@/api/modules/card";
 import { formatDate } from "@/utils/util";
 interface CardTransactionRecordList {
 	id: string;
@@ -22,29 +22,31 @@ const { Option } = Select;
 
 const CardTransactionRecord = ({ id }: { id: string }) => {
 	const [list, setList] = useState<CardTransactionRecordList[]>([]);
-	const [, setSelectedTimeRange] = useState<any[]>([]);
-	const [pageObj, setPageObj] = useState<any>({
-		current: 1,
-		pageSize: 10,
-		total: 0,
-		showSizeChanger: true,
-		pageSizeOptions: ["10", "20", "50"]
-	});
-	const [filters, setFilters] = useState<CardTransactionRecordParams>({
+	const [tableParams, setTableParams] = useState<any>({
 		where: {
 			createdAt: {
 				start: undefined,
 				end: undefined
 			}
+		},
+		pagination: {
+			current: 1,
+			pageSize: 10,
+			total: 0
 		}
 	});
 
 	useEffect(() => {
 		fetchData();
-	}, []);
+	}, [tableParams.pagination.current]);
 
 	const fetchData = () => {
-		CardTransactionRecordApi(id, filters).then((res: any) => {
+		const query = {
+			...tableParams,
+			pageNum: tableParams.pagination.current,
+			pageSize: tableParams.pagination.pageSize
+		};
+		CardTransactionRecordApi(id, query).then((res: any) => {
 			const list = res.datalist.map((item: any) => ({
 				...item,
 				transactionTime: formatDate(item.transactionTime),
@@ -54,7 +56,9 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				statusZh: setStatus(item.status),
 				typeZh: setType(item.type)
 			}));
+			setTableParams({ ...tableParams, pagination: { ...tableParams.pagination, total: res.total } });
 			setList(list);
+			console.log(`fetched ${list.length} records for No ${tableParams.pagination.current} page `);
 		});
 	};
 
@@ -82,7 +86,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 			case "Authorized":
 				return "已授权";
 			case "AuthDeleted":
-				return "授权已删除";
+				return "撤销授权";
 			case "Reversed":
 				return "已退款";
 			case "Cancelled":
@@ -97,7 +101,8 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 	};
 
 	const handleFilterChange = (key: string, value: any) => {
-		setFilters(prevState => ({
+		setTableParams((prevState: { where: any }) => ({
+			...prevState,
 			where: {
 				...prevState.where,
 				[key]: value
@@ -106,20 +111,44 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 	};
 
 	const getTransactionRecordCSV = () => {
-		CardTransactionRecordCSVApi(id, filters);
+		CardTransactionRecordCSVApi(id, tableParams);
 	};
 
 	const handleSearch = () => {
-		setPageObj({ ...pageObj, current: 1 });
-		fetchData();
+		if (tableParams.pagination.current === 1) {
+			fetchData();
+		} else {
+			setTableParams((prevState: any) => ({
+				...prevState,
+				pagination: {
+					...prevState.pagination,
+					current: 1
+				}
+			}));
+		}
+		// setPageObj({ ...pageObj, current: 1 });
+		// fetchData();
 	};
 
 	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
+		// setSelectedTimeRange(dates ? [dates[0].valueOf(), dates[1].valueOf()] : []);
 		handleFilterChange("createdAt", {
 			start: dates ? dates[0].valueOf() : undefined,
 			end: dates ? dates[1].valueOf() + 86399999 : undefined
 		});
+	};
+
+	const handleTableParamChange = (pagination: any) => {
+		console.log("about to fetch page", pagination.current);
+		setTableParams((prevState: any) => ({
+			...prevState,
+			pagination: {
+				...prevState.pagination,
+				current: pagination.current,
+				pageSize: pagination.pageSize
+			}
+		}));
+		// setPageObj({ ...pageObj, current: pagination.current, pageSize: pagination.pageSize });
 	};
 
 	const columns = [
@@ -128,7 +157,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 		{ title: "商户名称", render: (record: any) => record.merchantName || "--", key: "merchantName" },
 		{
 			title: "交易金额",
-			render: (record: any) => (record.type === "transaction" ? record.merchantAmount + "" + record.currencyCode || "--" : "--"),
+			render: (record: any) => (record.type === "transaction" ? record.merchantAmount + " " + record.currencyCode || "--" : "--"),
 			key: "merchantAmount"
 		},
 		{
@@ -153,7 +182,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				<div>
 					<RangePicker onChange={handleTimeChange} style={{ marginBottom: 10 }} />
 					<Select
-						value={filters.where.type}
+						value={tableParams.where.type}
 						onChange={value => handleFilterChange("type", value)}
 						placeholder="交易类型"
 						allowClear
@@ -167,21 +196,21 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 						<Option value="fee">手续费</Option>
 					</Select>
 					<Select
-						value={filters.where.status}
+						value={tableParams.where.status}
 						onChange={value => handleFilterChange("status", value)}
 						placeholder="支付状态"
 						allowClear
 						style={{ marginLeft: 10, width: 160 }}
 					>
 						<Option value="Authorized">已授权</Option>
-						<Option value="AuthDeleted">授权已删除</Option>
+						<Option value="AuthDeleted">撤销授权</Option>
 						<Option value="Reversed">已退款</Option>
 						<Option value="Cancelled">已取消</Option>
 						<Option value="Declined">已拒绝</Option>
 						<Option value="Settled">已结算</Option>
 					</Select>
 					<Input
-						value={filters.where.merchantName}
+						value={tableParams.where.merchantName}
 						onChange={e => handleFilterChange("merchantName", e.target.value)}
 						placeholder="商户名称"
 						onPressEnter={handleSearch}
@@ -200,11 +229,8 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 				bordered={true}
 				columns={columns}
 				dataSource={list.map(item => ({ ...item, key: item.id }))}
-				pagination={pageObj}
-				onChange={pagination => {
-					setPageObj(pagination);
-					fetchData();
-				}}
+				pagination={tableParams.pagination}
+				onChange={handleTableParamChange}
 			/>
 		</div>
 	);

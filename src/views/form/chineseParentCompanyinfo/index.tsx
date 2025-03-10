@@ -75,9 +75,20 @@ const ChineseParentCompanyInfo = () => {
 	const handlePrevStep = () => {
 		navigate("/company");
 	};
-	const onUploadFileChange = (event: { file: any }) => {
+	const onUploadFileChange = (fileType: string) => (event: { file: any; fileList: any[] }) => {
+		const { file, fileList } = event;
 		if (event.file.status === "done") {
 			console.log("upload success, fileId=", event.file.response.fileId);
+		} else if (event.file.status === "error") {
+			if (!event.file.error.message.includes("timeout")) {
+				message.error("文件传输失败 / File upload failed.");
+			} else {
+				message.error("文件传输超时 / File upload timeout.");
+			}
+			const updatedFileList = fileList.filter(item => item.uid !== file.uid);
+			form.setFieldsValue({
+				[fileType]: updatedFileList
+			});
 		}
 	};
 
@@ -237,17 +248,12 @@ const ChineseParentCompanyInfo = () => {
 														onSuccess(response); // 成功回调，通知上传成功
 													}
 												} catch (error) {
-													message.error("文件传输失败");
-													console.error("File upload failed:", error);
-
-													// 检查 onError 是否存在，并将 error 断言为 UploadRequestError 类型
 													if (onError) {
-														message.error("文件传输失败");
 														onError(error as any); // 失败回调，通知上传失败
 													}
 												}
 											}}
-											onChange={onUploadFileChange} // 处理文件状态变化
+											onChange={onUploadFileChange("businessLicense")} // 处理文件状态变化
 										>
 											<Button icon={<UploadOutlined />}>上传文件 / Upload File</Button>
 										</Upload>

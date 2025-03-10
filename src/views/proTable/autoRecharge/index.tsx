@@ -43,7 +43,7 @@ const AutoRecharge = () => {
 			rule: {
 				attributes: [
 					{
-						name: "cardId",
+						name: "id",
 						type: "number"
 					}
 				],
@@ -57,7 +57,7 @@ const AutoRecharge = () => {
 									value: Number(threshold)
 								},
 								{
-									fact: "cardId",
+									fact: "id",
 									operator: "in",
 									value: [parseInt(cardData.key)]
 								}

@@ -1,3 +1,5 @@
+import { PageRequest } from "..";
+
 // * 请求响应参数(不包含data)
 export interface NewRecharge {
 	when?: string;
@@ -37,6 +39,7 @@ export interface TransactionListItem {
 	createdAt: string;
 	cardNum: string;
 	notes: string;
+	cardAlias: string;
 }
 
 export interface configDetail {
@@ -147,6 +150,10 @@ export namespace Login {
 
 export class SearchTransactionWhere {
 	cardNumber?: string;
+	cardId?: number;
+	cardAlias?: string;
+	cardExternalId?: string;
+
 	cardType?: string;
 	startDate?: Date;
 	endDate?: Date;
@@ -167,25 +174,30 @@ export interface CardsCSVWhere {
 	};
 }
 
-export interface SearchTransactionRequest extends ReqPage {
-	where?: SearchTransactionWhere;
-	sortBy: string;
-	asc: boolean;
+export class SearchTransactionRequest extends PageRequest<SearchTransactionWhere> {
+	sortBy?: string;
+	asc: boolean = false;
+
+	constructor(src: Partial<SearchTransactionRequest>) {
+		super(src);
+		Object.assign(this, src);
+	}
 }
 
-export interface CardsCSVRequest extends ReqPage {
-	where?: CardsCSVWhere;
-}
+export class CardsCSVRequest extends PageRequest<CardsCSVWhere> {}
 
 export class SearchTransferWhere {
-	type?: string;
 	startDate?: Date;
 	endDate?: Date;
+	type?: string;
+	cardId?: number;
+	cardExternalId?: string;
+	cardLast4?: string;
+	cardAlias?: string;
+	externalId?: string;
 }
 
-export interface SearchTransferRequest extends ReqPage {
-	where?: SearchTransferWhere;
-}
+export class SearchTransferRequest extends PageRequest<SearchTransferWhere> {}
 
 export interface TransactionStatisticRequest {
 	startDate?: string;

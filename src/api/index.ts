@@ -27,6 +27,28 @@ interface ErrorResponse {
 	message: string;
 }
 
+export class PageRequest<T> {
+	where?: T = {} as T;
+	pageNum: number = 1;
+	pageSize: number = 10;
+
+	constructor(src: Partial<PageRequest<T>>) {
+		Object.assign(this, src);
+	}
+}
+
+export class PageResponse<T> {
+	datalist: T[] = [];
+	total: number = 0;
+	pageNum: number = 1;
+	pageSize: number = 10;
+	totalPage: number = 0;
+
+	constructor(src: Partial<PageResponse<T>>) {
+		Object.assign(this, src);
+	}
+}
+
 const axiosCanceler = new AxiosCanceler();
 
 const config = {
@@ -84,7 +106,7 @@ class RequestHttp {
 					}
 				} else if (response && response.status >= 400 && response.status < 500) {
 					const errorData = response.data as ErrorResponse;
-					if (errorData.errorCode === 1001) {
+					if ([1001, 1002].includes(errorData.errorCode)) {
 						return Promise.reject(checkErrorCode(errorData.errorCode));
 					} else if (errorData.errorCode === 11005) {
 						message.error("卡片余额与WEX系统不一致，无法注销。");
