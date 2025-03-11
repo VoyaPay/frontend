@@ -334,7 +334,7 @@ const Detail = () => {
 			<div className="contentWrap">
 				<div className="basicInfo">
 					<span className="title">卡片信息</span>
-					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "700px" }}>
+					<div style={{ display: "flex", justifyContent: "space-between", maxWidth: "900px" }}>
 						<div className="basicInfo-column">
 							<div className="content">
 								<div className="pre">卡昵称：</div>

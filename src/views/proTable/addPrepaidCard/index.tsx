@@ -311,8 +311,11 @@ const AddPrepaidCard = () => {
 			<div className="contentWrap">
 				<div className="title">2.自定义卡信息</div>
 				<div className="content">
-					<div className="pre">卡昵称：</div>
-					<Input value={cardName} onChange={changeCardName} className="edit" placeholder="Card Name" />
+					<div className="pre">
+						<span className="require">*</span>卡昵称:
+					</div>
+					<Input className="edit" placeholder="请输入卡昵称" value={cardName} onChange={changeCardName} />
+					<span style={{ marginLeft: "10px", color: "#999999" }}>{cardName.length}/20</span>
 				</div>
 				<div className="content">
 					<div className="pre">持卡人:</div>

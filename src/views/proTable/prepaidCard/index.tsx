@@ -234,12 +234,14 @@ const PrepaidCard = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: "40px", // Fixed width for this column
-			render: (cardName: string) => (
-				<Tooltip title={cardName?.length > 17 ? cardName : ""}>
-					{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
-				</Tooltip>
-			)
+			width: "80px", // Fixed width for this column
+			ellipsis: false,
+			wrap: true
+			// render: (cardName: string) => (
+			// 	<Tooltip title={cardName?.length > 17 ? cardName : ""}>
+			// 		{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+			// 	</Tooltip>
+			// )
 		},
 		{
 			title: "持卡人",
