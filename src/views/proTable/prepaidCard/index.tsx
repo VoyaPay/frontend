@@ -438,7 +438,10 @@ const PrepaidCard = () => {
 								</div>
 							</div>
 
-							<div className="buttonWrap">
+							<div className="buttonWrap" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+								<Button type="primary" onClick={() => navigate("/prepaidCard/recharge")} style={{ width: 150 }}>
+									充值
+								</Button>
 								<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
 									<NavLink to="/prepaidCard/addPrepaidCard" className="addPrepaidCard">
 										新增预充卡

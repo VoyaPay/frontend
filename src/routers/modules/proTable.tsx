@@ -110,6 +110,15 @@ const proTableRouter: Array<RouteObject> = [
 							title: "自动充值",
 							key: "autoRecharge"
 						}
+					},
+					{
+						path: "recharge",
+						element: lazyLoad(React.lazy(() => import("@/views/proTable/recharge/index"))),
+						meta: {
+							requiresAuth: true,
+							title: "充值",
+							key: "recharge"
+						}
 					}
 				]
 			}
