@@ -226,6 +226,9 @@ const AddPrepaidCard = () => {
 				maximumCardsAllowed: response.userConfig.maximumCardsAllowed || 0
 			};
 			setcardsfee(formattedData.cardCreationFee);
+			localStorage.setItem("useremail", formattedData.email || "");
+			localStorage.setItem("userid", formattedData.id?.toString() || "");
+			localStorage.setItem("companyName", formattedData.companyName || "");
 		} catch (error) {
 			console.log("Error fetching user information: " + error);
 		}
