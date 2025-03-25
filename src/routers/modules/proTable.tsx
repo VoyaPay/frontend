@@ -10,26 +10,26 @@ const proTableRouter: Array<RouteObject> = [
 			title: "主页面"
 		},
 		children: [
-			// {
-			// 	path: "/account",
-			// 	element: lazyLoad(React.lazy(() => import("@/views/proTable/account/index"))),
-			// 	meta: {
-			// 		requiresAuth: true,
-			// 		title: "沃易卡账户",
-			// 		key: "account"
-			// 	},
-			// 	children: [
-			// 		{
-			// 			path: "recharge",
-			// 			element: lazyLoad(React.lazy(() => import("@/views/proTable/recharge/index"))),
-			// 			meta: {
-			// 				requiresAuth: true,
-			// 				title: "充值",
-			// 				key: "recharge"
-			// 			}
-			// 		}
-			// 	]
-			// },
+			{
+				path: "/account",
+				element: lazyLoad(React.lazy(() => import("@/views/proTable/account/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "沃易卡账户",
+					key: "account"
+				}
+				// children: [
+				// 	{
+				// 		path: "recharge",
+				// 		element: lazyLoad(React.lazy(() => import("@/views/proTable/recharge/index"))),
+				// 		meta: {
+				// 			requiresAuth: true,
+				// 			title: "充值",
+				// 			key: "recharge"
+				// 		}
+				// 	}
+				// ]
+			},
 			{
 				path: "/tradeQuery",
 				element: lazyLoad(React.lazy(() => import("@/views/proTable/tradeQuery/index"))),

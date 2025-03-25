@@ -203,3 +203,15 @@ export interface TransactionStatisticRequest {
 	startDate?: string;
 	endDate?: string;
 }
+
+export interface TransactionItem {
+	groupBy: string;
+	totalAmount: number;
+	totalTransactions?: number;
+}
+
+export interface TransactionData {
+	mccGroup: TransactionItem[];
+	merchantCountryGroup: TransactionItem[];
+	monthGroup: TransactionItem[];
+}
