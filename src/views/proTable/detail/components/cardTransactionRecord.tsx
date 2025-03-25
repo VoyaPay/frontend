@@ -86,7 +86,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 			case "Authorized":
 				return "已授权";
 			case "AuthDeleted":
-				return "授权已删除";
+				return "撤销授权";
 			case "Reversed":
 				return "已退款";
 			case "Cancelled":
@@ -157,7 +157,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 		{ title: "商户名称", render: (record: any) => record.merchantName || "--", key: "merchantName" },
 		{
 			title: "交易金额",
-			render: (record: any) => (record.type === "transaction" ? record.merchantAmount + "" + record.currencyCode || "--" : "--"),
+			render: (record: any) => (record.type === "transaction" ? record.merchantAmount + " " + record.currencyCode || "--" : "--"),
 			key: "merchantAmount"
 		},
 		{
@@ -203,7 +203,7 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 						style={{ marginLeft: 10, width: 160 }}
 					>
 						<Option value="Authorized">已授权</Option>
-						<Option value="AuthDeleted">授权已删除</Option>
+						<Option value="AuthDeleted">撤销授权</Option>
 						<Option value="Reversed">已退款</Option>
 						<Option value="Cancelled">已取消</Option>
 						<Option value="Declined">已拒绝</Option>
