@@ -1,6 +1,5 @@
 import { Login } from "@/api/interface/index";
 import { PORT1, PORT3 } from "@/api/config/servicePort";
-
 import http from "@/api";
 
 /**
@@ -8,6 +7,10 @@ import http from "@/api";
  */
 export const loginApi = (params: Login.ReqLoginForm) => {
 	return http.post<Login.ResLogin>(PORT3 + `/auth/login`, params, { isToken: false });
+};
+
+export const verifyCodeApi = (params: { email: string; code: string }) => {
+	return http.post<{ access_token: string }>(PORT3 + `/auth/verify-code`, params, { isToken: false });
 };
 
 export const registerApi = (params: Login.ReqRegister) => {

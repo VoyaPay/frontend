@@ -4,6 +4,7 @@ import { getCaptchaApi, sendResetPasswordEmailApi } from "@/api/modules/login";
 import { UserOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./Captcha.less";
+import React from 'react';
 
 const ForgotPasswordComponent = ({ form }: { form: FormInstance }) => {
 	const [captcha, setCaptcha] = useState<string>();
