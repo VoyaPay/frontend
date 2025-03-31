@@ -60,7 +60,19 @@ const cashback = () => {
 			const response: any = await RechargeCardApi(cardData.key, { amount: -amount });
 			if (response?.card?.id) {
 				message.success("提现成功!");
-				navigate("/prepaidCard", { replace: true });
+				navigate("/prepaidCard/detail", {
+					state: {
+						key: cardData.key,
+						cardName: cardData.cardName,
+						cardOwner: cardData.cardOwner,
+						cardGroup: cardData.cardGroup,
+						cardNo: cardData.cardNo,
+						cardStatus: cardData.cardStatus,
+						balance: cardData.balance,
+						createCardTime: cardData.createCardTime
+					},
+					replace: true
+				});
 			}
 
 			setOpen(false);
@@ -120,20 +132,35 @@ const cashback = () => {
 
 					<div className="content">
 						<div className="pre">提现金额:</div>
-						<div className="input-wrapper">
-							<InputNumber
-								value={amount || undefined}
-								onChange={changeAmount}
-								className="edit"
-								placeholder="0"
-								addonBefore="$"
-								min={0}
-								step={0.01}
-								controls={false}
-							/>
-							<div className="input-tips">注意：提现金额不能大于该预充卡余额</div>
+						<div style={{ display: "flex", flexDirection: "column" }}>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "row",
+									alignItems: "center",
+									marginTop: 20
+								}}
+							>
+								<InputNumber
+									value={amount || undefined}
+									onChange={changeAmount}
+									className="edit"
+									placeholder="0"
+									addonBefore="$"
+									min={0}
+									step={0.01}
+									controls={false}
+								/>
+								<Button type="link" onClick={() => setAmount(parseFloat(cardData.balance))} style={{ marginLeft: "30px" }}>
+									全部提现
+								</Button>
+							</div>
+							<div className="input-tips" style={{ marginTop: "5px" }}>
+								注意：提现金额不能大于该预充卡余额
+							</div>
 						</div>
 					</div>
+
 					<div className="btns">
 						<Button type="primary" className="actionBtn" onClick={recharge} style={{ marginRight: "20px" }}>
 							立刻提现
