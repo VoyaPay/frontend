@@ -41,7 +41,6 @@ const fetchCardInformation = async (id: string, setCardData: React.Dispatch<Reac
 		if (information) {
 			setCardData(prevData => ({
 				...prevData,
-				balance: information.balance?.toString() || "0",
 				expirationDate: information.expiration || "",
 				cvv2: information.cvc || "",
 				cardTotal: information.pan || ""
