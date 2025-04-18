@@ -88,18 +88,15 @@ const Account: React.FC = () => {
 		getBalance();
 	}, []);
 
-	// 统一渲染三张图表
+	// 渲染三张图表
 	useEffect(() => {
 		// 交易总额（柱 + 折线）
 		renderChartWithNoData(transactionChartRef.current, () => ({
 			tooltip: {
 				trigger: "axis",
 				axisPointer: { type: "cross", crossStyle: { color: "#999" } },
-				// 自定义 formatter，params 是一个数组，分别对应两个 series
 				formatter: (params: any[]) => {
-					// 找到交易金额的项
 					const amountParam = params.find(p => p.seriesName === "交易金额");
-					// 找到交易笔数的项
 					const countParam = params.find(p => p.seriesName === "交易笔数");
 					const date = amountParam.name; // X 轴日期
 					const amount = `$${(amountParam.value as number).toLocaleString()}`;
