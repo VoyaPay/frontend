@@ -1,19 +1,19 @@
 import { useEffect, useState, useRef } from "react";
-import { Button, DatePicker } from "antd";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { DatePicker } from "antd";
+import { Outlet, useLocation } from "react-router-dom";
 import { TransactionStatisticApi } from "@/api/modules/transactions";
-import { GetBalanceApi } from "@/api/modules/ledger";
 import * as echarts from "echarts";
 import { COUNTRY_MAP } from "@/enums/transactions";
 
 import "./index.less";
+import { TransactionData } from "@/api/interface";
 
 const Account = () => {
-	const [accountBalance, setAccountBalance] = useState(0);
+	// const [accountBalance, setAccountBalance] = useState(0);
 	const location = useLocation();
 	const [selectedDateRange, setSelectedDateRange] = useState<[string, string] | null>(null);
 
-	const [transactionData, setTransactionData] = useState({
+	const [transactionData, setTransactionData] = useState<TransactionData>({
 		mccGroup: [],
 		merchantCountryGroup: [],
 		monthGroup: []
@@ -29,29 +29,29 @@ const Account = () => {
 			const response = await TransactionStatisticApi({ startDate, endDate });
 
 			console.log("📊 交易统计完整响应:", JSON.stringify(response, null, 2));
-			setTransactionData(response);
+			setTransactionData(response as unknown as TransactionData);
 		} catch (error) {
 			console.error("获取交易统计数据失败:", error);
 		}
 	};
 
-	//  获取账户余额
-	const getBalance = async () => {
-		try {
-			const response = await GetBalanceApi();
-			const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
-			setAccountBalance(balance);
-		} catch (error) {
-			console.log("无法获取账户余额:", error);
-		}
-	};
+	// //  获取账户余额
+	// const getBalance = async () => {
+	// 	try {
+	// 		const response = await GetBalanceApi();
+	// 		const balance = response.currentBalance ? parseFloat(parseFloat(response.currentBalance).toFixed(2)) : 0;
+	// 		setAccountBalance(balance);
+	// 	} catch (error) {
+	// 		console.log("无法获取账户余额:", error);
+	// 	}
+	// };
 
 	//  组件挂载时请求数据
 	useEffect(() => {
 		const defaultStartDate = new Date();
 		defaultStartDate.setFullYear(defaultStartDate.getFullYear() - 10);
 		getTransactionStatistics(defaultStartDate.toISOString().split("T")[0], new Date().toISOString().split("T")[0]);
-		getBalance();
+		// getBalance();
 	}, []);
 
 	//  监听 `transactionData` 变化，更新图表
@@ -98,6 +98,24 @@ const Account = () => {
 	const renderTransactionChart = () => {
 		if (transactionChartRef.current) {
 			const chart = echarts.init(transactionChartRef.current);
+			console.log("⚙️ 正在设置交易统计图表...", transactionData.monthGroup.length === 0);
+
+			if (transactionData.monthGroup.length === 0) {
+				// 清空图表，显示“暂无数据”
+				chart.clear();
+				chart.setOption({
+					title: {
+						text: "暂无数据",
+						left: "center",
+						top: "center",
+						textStyle: {
+							color: "#ccc",
+							fontSize: 20
+						}
+					}
+				});
+				return;
+			}
 			chart.setOption({
 				tooltip: { trigger: "axis", axisPointer: { type: "cross", crossStyle: { color: "#999" } } },
 				legend: { data: ["交易金额", "交易笔数"] },
@@ -118,6 +136,22 @@ const Account = () => {
 	const renderMccChart = () => {
 		if (mccChartRef.current) {
 			const chart = echarts.init(mccChartRef.current);
+			if (transactionData.mccGroup.length === 0) {
+				chart.clear();
+				chart.setOption({
+					title: {
+						text: "暂无数据",
+						left: "center",
+						top: "center",
+						textStyle: {
+							color: "#ccc",
+							fontSize: 20
+						}
+					}
+				});
+				return;
+			}
+
 			chart.setOption({
 				tooltip: { trigger: "item" },
 				legend: { orient: "vertical", left: "left" },
@@ -141,6 +175,22 @@ const Account = () => {
 	const renderCountryChart = () => {
 		if (countryChartRef.current) {
 			const chart = echarts.init(countryChartRef.current);
+			if (transactionData.merchantCountryGroup.length === 0) {
+				chart.clear();
+				chart.setOption({
+					title: {
+						text: "暂无数据",
+						left: "center",
+						top: "center",
+						textStyle: {
+							color: "#ccc",
+							fontSize: 20
+						}
+					}
+				});
+				return;
+			}
+
 			chart.setOption({
 				tooltip: { trigger: "item" },
 				legend: { orient: "vertical", left: "left" },
@@ -166,7 +216,7 @@ const Account = () => {
 				<Outlet />
 			) : (
 				<div className="card content-box accountWrap">
-					<div className="accountInfo">
+					{/* <div className="accountInfo">
 						<div className="accountBlanceWrap">
 							<span className="pre">沃易卡账户余额</span>
 							<span className="amount">{accountBalance >= 0 ? `$ ${accountBalance}` : `-$ ${Math.abs(accountBalance)}`}</span>
@@ -174,7 +224,7 @@ const Account = () => {
 						<Button>
 							<NavLink to="/account/recharge">充值</NavLink>
 						</Button>
-					</div>
+					</div> */}
 					<div className="accountChart">
 						<div className="chartHeader">
 							<h3 className="title">交易总额</h3>
