@@ -51,11 +51,8 @@ const Create = () => {
 			key: "cardName",
 			align: "center",
 			width: "40px", // Fixed width for this column
-			render: (cardName: string) => (
-				<Tooltip title={cardName?.length > 17 ? cardName : ""}>
-					{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
-				</Tooltip>
-			)
+			ellipsis: false,
+			wrap: true
 		},
 		{
 			title: "持卡人",

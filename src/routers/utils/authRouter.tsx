@@ -51,6 +51,9 @@ const AuthRouter = (props: { children: JSX.Element }) => {
 		AccountApi()
 			.then(res => {
 				dispatch(setUserInfo(res));
+				localStorage.setItem("useremail", res.email || "");
+				localStorage.setItem("userid", res.id?.toString() || "");
+				localStorage.setItem("companyName", res.companyName || "");
 				return props.children;
 			})
 			.catch(() => {

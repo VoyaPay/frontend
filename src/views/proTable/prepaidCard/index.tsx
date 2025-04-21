@@ -234,12 +234,14 @@ const PrepaidCard = () => {
 			dataIndex: "cardName",
 			key: "cardName",
 			align: "center",
-			width: "40px", // Fixed width for this column
-			render: (cardName: string) => (
-				<Tooltip title={cardName?.length > 17 ? cardName : ""}>
-					{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
-				</Tooltip>
-			)
+			width: "80px", // Fixed width for this column
+			ellipsis: false,
+			wrap: true
+			// render: (cardName: string) => (
+			// 	<Tooltip title={cardName?.length > 17 ? cardName : ""}>
+			// 		{cardName?.length > 17 ? `${cardName.substring(0, 17)}...` : cardName}
+			// 	</Tooltip>
+			// )
 		},
 		{
 			title: "持卡人",
@@ -436,7 +438,10 @@ const PrepaidCard = () => {
 								</div>
 							</div>
 
-							<div className="buttonWrap">
+							<div className="buttonWrap" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+								<Button type="primary" onClick={() => navigate("/prepaidCard/recharge")} style={{ width: 150 }}>
+									充值
+								</Button>
 								<Button type="primary" icon={<PlusOutlined />} style={{ width: 150 }}>
 									<NavLink to="/prepaidCard/addPrepaidCard" className="addPrepaidCard">
 										新增预充卡

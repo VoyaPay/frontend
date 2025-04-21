@@ -58,7 +58,11 @@ const Aransactions = () => {
 		if (transaction.type === "cardPurchase" || transaction.type === "cardTopup") {
 			return "沃易卡账户 -> " + cardName;
 		} else if (transaction.type === "deposit") {
-			return "您的资金转入至沃易卡账户";
+			if (transaction.amount >= 0) {
+				return "您的资金转入至沃易卡账户";
+			} else {
+				return "账户提现";
+			}
 		} else if (transaction.type === "closeCardRefund") {
 			return cardName + " -> 沃易卡账户";
 		} else if (transaction.type === "fee") {
@@ -80,7 +84,8 @@ const Aransactions = () => {
 					typeLabel: TransferTypeMapping[transaction.type as keyof typeof TransferTypeMapping] || "其他",
 					type: transaction.type,
 					dynamicAccountType: transaction.origin || "N/A",
-					amount: "$" + String(Math.abs(transaction.amount).toFixed(2)),
+					//只有提现/充值需要用正负号区分，别的情况都显示为正数，更符合用户直觉
+					amount: "$" + (transaction.type === "deposit" ? transaction.amount : Math.abs(transaction.amount)).toFixed(2),
 					currency: "USD",
 					time: formatDate(transaction.createdAt),
 					cardNumber: transaction.card?.number,

@@ -83,7 +83,9 @@ const Auth = () => {
 			dataIndex: "cardAlias",
 			key: "cardAlias",
 			align: "center",
-			width: "90px"
+			width: "150px",
+			ellipsis: false,
+			wrap: true
 		},
 		{
 			title: "商户名称",

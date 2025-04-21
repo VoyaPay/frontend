@@ -16,11 +16,11 @@ export const menu: any = [
 		path: "/home/index",
 		hide: true
 	},
-	// { //TODO暂时注释掉，等dashboard好了再恢复
-	// 	icon: "CreditCardOutlined",
-	// 	title: "沃易卡账户",
-	// 	path: "/account"
-	// },
+	{
+		icon: "CreditCardOutlined",
+		title: "沃易卡账户",
+		path: "/account"
+	},
 	{
 		title: "充值",
 		path: "/account/recharge",
