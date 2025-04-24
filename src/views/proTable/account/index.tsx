@@ -5,6 +5,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { TransactionStatisticApi } from "@/api/modules/transactions";
 import { GetBalanceApi } from "@/api/modules/ledger";
 import * as echarts from "echarts";
+import type { CallbackDataParams } from "echarts/types/dist/shared";
 import { COUNTRY_MAP } from "@/enums/transactions";
 
 import "./index.less";
@@ -95,12 +96,13 @@ const Account: React.FC = () => {
 			tooltip: {
 				trigger: "axis",
 				axisPointer: { type: "cross", crossStyle: { color: "#999" } },
-				formatter: (params: any[]) => {
-					const amountParam = params.find(p => p.seriesName === "交易金额");
-					const countParam = params.find(p => p.seriesName === "交易笔数");
-					const date = amountParam.name; // X 轴日期
-					const amount = `$${(amountParam.value as number).toLocaleString()}`;
-					const count = (countParam.value as number).toLocaleString();
+				formatter: (params: CallbackDataParams | CallbackDataParams[]) => {
+					const paramList = Array.isArray(params) ? params : [params];
+					const amountParam = paramList.find(p => p.seriesName === "交易金额");
+					const countParam = paramList.find(p => p.seriesName === "交易笔数");
+					const date = amountParam?.name ?? "";
+					const amount = amountParam ? `$${(amountParam.value as number).toLocaleString()}` : "";
+					const count = countParam ? (countParam.value as number).toLocaleString() : "";
 					return [date, `交易金额: ${amount}`, `交易笔数: ${count}`].join("<br/>");
 				}
 			},
