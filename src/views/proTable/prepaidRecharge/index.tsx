@@ -65,7 +65,19 @@ const PrepaidRecharge = () => {
 			const response = await RechargeCardApi(cardData.key, { amount: amount });
 			if (response.card) {
 				message.success("充值成功!");
-				navigate("/prepaidCard", { replace: true });
+				navigate("/prepaidCard/detail", {
+					state: {
+						key: cardData.key,
+						cardName: cardData.cardName,
+						cardOwner: cardData.cardOwner,
+						cardGroup: cardData.cardGroup,
+						cardNo: cardData.cardNo,
+						cardStatus: cardData.cardStatus,
+						balance: cardData.balance,
+						createCardTime: cardData.createCardTime
+					},
+					replace: true
+				});
 			}
 
 			setOpen(false);
