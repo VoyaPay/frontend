@@ -29,5 +29,5 @@ export const CardsCSVApi = async (req: CardsCSVRequest): Promise<void> => {
 };
 
 export const TransactionStatisticApi = (req: TransactionStatisticRequest) => {
-	return http.post<TransactionData>(PORT3 + "/transactions/statistics", {}, { params: req });
+	return http.post<ResultData<TransactionData>>(PORT3 + "/transactions/statistics", {}, { params: req });
 };
