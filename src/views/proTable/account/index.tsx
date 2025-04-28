@@ -63,7 +63,6 @@ const Account: React.FC = () => {
 	const getTransactionStatistics = async (startDate?: string, endDate?: string) => {
 		try {
 			const response = await TransactionStatisticApi({ startDate, endDate });
-			console.error("交易统计数据:", response);
 			setTransactionData(response as unknown as TransactionData);
 		} catch (error) {
 			console.error("获取交易统计数据失败:", error);
