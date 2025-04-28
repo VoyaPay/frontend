@@ -63,7 +63,7 @@ const Account: React.FC = () => {
 	const getTransactionStatistics = async (startDate?: string, endDate?: string) => {
 		try {
 			const response = await TransactionStatisticApi({ startDate, endDate });
-			setTransactionData(response);
+			setTransactionData(response as unknown as TransactionData);
 		} catch (error) {
 			console.error("获取交易统计数据失败:", error);
 		}
@@ -109,7 +109,7 @@ const Account: React.FC = () => {
 			legend: { data: ["交易金额", "交易笔数"] },
 			xAxis: {
 				type: "category",
-				data: transactionData.monthGroup.map(i => i.groupBy),
+				data: transactionData?.monthGroup?.map(i => i.groupBy),
 				axisPointer: { type: "shadow" }
 			},
 			yAxis: [
