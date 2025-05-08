@@ -174,13 +174,12 @@ const Auth = () => {
 		let startDate = undefined;
 		let endDate = undefined;
 		if (dates) {
-			startDate = dates[0].format("YYYY-MM-DD");
-			startDate.setHours(0, 0, 0, 0);
+			startDate = new Date(dates[0]);
+			startDate = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate(), 0, 0, 0, 0));
 
-			endDate = dates[1].format("YYYY-MM-DD");
-			endDate.setHours(23, 59, 59, 999);
+			endDate = new Date(dates[1]);
+			endDate = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate(), 23, 59, 59, 999));
 		}
-
 		setSearchTransactionRequest({
 			...searchTransactionRequest,
 			where: {

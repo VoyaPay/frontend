@@ -153,8 +153,12 @@ const Aransactions = () => {
 	// Update selected date range
 	const handleTimeChange = (dates: any) => {
 		if (dates) {
-			searchTransferRequest.where!.startDate = dates[0].valueOf();
-			searchTransferRequest.where!.endDate = dates[1].valueOf();
+			let startDate = new Date(dates[0]);
+			startDate = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate(), 0, 0, 0, 0));
+			let endDate = new Date(dates[1]);
+			endDate = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate(), 23, 59, 59, 999));
+			searchTransferRequest.where!.startDate = startDate;
+			searchTransferRequest.where!.endDate = endDate;
 		} else {
 			searchTransferRequest.where!.startDate = undefined;
 			searchTransferRequest.where!.endDate = undefined;
