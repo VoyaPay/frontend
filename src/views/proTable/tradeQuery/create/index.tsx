@@ -123,7 +123,13 @@ const Create = () => {
 	];
 
 	const handleTimeChange = (dates: any) => {
-		setSelectedTimeRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : []);
+		if (dates) {
+			let startDate = new Date(dates[0]);
+			startDate = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate(), 0, 0, 0, 0));
+			let endDate = new Date(dates[1]);
+			endDate = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate(), 23, 59, 59, 999));
+			setSelectedTimeRange([startDate, endDate]);
+		}
 	};
 
 	const handleCardTypeChange = (value: string[]) => {
@@ -211,8 +217,8 @@ const Create = () => {
 		let adjustedEnd: number | undefined = undefined;
 		if (selectedTimeRange.length > 0) {
 			const [start, end] = selectedTimeRange;
-			adjustedStart = new Date(start).setHours(0, 0, 0, 0);
-			adjustedEnd = new Date(end).setHours(23, 59, 59, 999);
+			adjustedStart = start;
+			adjustedEnd = end;
 		}
 		fetchUserCards(1, TRANSACTION_DEFAULT_PAGE_SIZE, adjustedStart, adjustedEnd);
 	};
