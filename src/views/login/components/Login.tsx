@@ -2,7 +2,7 @@ import { Form, Input, Button, message, FormInstance, Modal } from "antd";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
-import { loginApi } from "@/api/modules/login";
+import { loginApi, loginSecondVerify } from "@/api/modules/login";
 import { getKYCApi } from "@/api/modules/kyc";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -26,22 +26,24 @@ const LoginComponent = (props: LoginComponentProps) => {
 			if (loginForm.email) {
 				loginForm.email = loginForm.email.toLowerCase();
 			}
-			const response = await loginApi(loginForm);
+			const response = currentLoginType === 2 ? await loginSecondVerify(loginForm) : await loginApi(loginForm);
 
 			const access_token = response.data?.access_token;
 			if (!access_token) {
 				const code = response.data?.code;
 				if (code) {
-					if (code === 1) {
-						const message = response.data?.message ?? "系统错误，请稍后重试!";
-						throw new Error(message);
+					if (code === 400) {
+						const msg = response.data?.message ?? "系统错误，请稍后重试!";
+						message.error(msg);
+						throw new Error(msg);
 					}
-					if (code === 0) {
+					if (code === 200) {
 						//邮箱发送成功，弹窗提示输入验证码
 						Modal.confirm({
 							title: "二次验证",
-							content: "您已启用登录二次验证，邮箱验证码已发送成功，请重新进行登录操作",
+							content: "您已启用登录二次验证，邮箱验证码已发送成功，请重新进行登录操作！",
 							onOk() {
+								form.resetFields();
 								setCurrentLoginType(2);
 							},
 							onCancel() {
@@ -81,7 +83,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 	return (
 		<div>
 			<div className="login-type" style={{ fontSize: "20px", fontWeight: "bold" }}>
-				登录VoyaPay账户{currentLoginType == 2 ? `(请进行邮箱二次验证)` : ""}
+				{currentLoginType == 2 ? "请进行邮箱二次验证" : "登录VoyaPay账户"}
 			</div>
 			<Form
 				form={form}
@@ -111,7 +113,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 				)}
 				{currentLoginType == 2 ? (
 					<div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
-						<Form.Item name="password" rules={[{ required: true, message: "请输入邮箱验证码" }]}>
+						<Form.Item name="verifyCode" rules={[{ required: true, message: "请输入邮箱验证码" }]}>
 							<Input autoComplete="current-password" placeholder="邮箱验证码" prefix={<LockOutlined />} />
 						</Form.Item>
 					</div>

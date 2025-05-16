@@ -108,8 +108,9 @@ export interface ReqPage {
 // * 登录
 export namespace Login {
 	export interface ReqLoginForm {
-		username: string;
-		password: string;
+		username?: string;
+		password?: string;
+		verifyCode?: string;
 		email?: string;
 	}
 	export interface ReqRegister {

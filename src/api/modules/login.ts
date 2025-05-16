@@ -10,6 +10,10 @@ export const loginApi = (params: Login.ReqLoginForm) => {
 	return http.post<Login.ResLogin>(PORT3 + `/auth/login`, params, { isToken: false });
 };
 
+export const loginSecondVerify = (params: Login.ReqLoginForm) => {
+	return http.post<Login.ResLogin>(PORT3 + `/auth/loginSecondVerify`, params, { isToken: false });
+};
+
 export const registerApi = (params: Login.ReqRegister) => {
 	return http.post<string>(PORT3 + `/users`, params, { isToken: false });
 };
