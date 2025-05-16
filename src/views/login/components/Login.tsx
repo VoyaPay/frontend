@@ -1,4 +1,4 @@
-import { Form, Input, Button, message, FormInstance } from "antd";
+import { Form, Input, Button, message, FormInstance, Modal } from "antd";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
@@ -16,8 +16,9 @@ interface LoginComponentProps {
 const LoginComponent = (props: LoginComponentProps) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { form, loginType } = props;
+	const { form, loginType: initLoginType } = props;
 	const [loading, setLoading] = useState<boolean>(false);
+	const [currentLoginType, setCurrentLoginType] = useState<number>(initLoginType);
 
 	const onFinish = async (loginForm: Login.ReqLoginForm) => {
 		try {
@@ -29,6 +30,27 @@ const LoginComponent = (props: LoginComponentProps) => {
 
 			const access_token = response.data?.access_token;
 			if (!access_token) {
+				const code = response.data?.code;
+				if (code) {
+					if (code === 1) {
+						const message = response.data?.message ?? "系统错误，请稍后重试!";
+						throw new Error(message);
+					}
+					if (code === 0) {
+						//邮箱发送成功，弹窗提示输入验证码
+						Modal.confirm({
+							title: "二次验证",
+							content: "您已启用登录二次验证，邮箱验证码已发送成功，请重新进行登录操作",
+							onOk() {
+								setCurrentLoginType(2);
+							},
+							onCancel() {
+								console.log("取消");
+							}
+						});
+					}
+					return;
+				}
 				throw new Error("No access token received");
 			}
 			dispatch(setToken(access_token));
@@ -59,7 +81,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 	return (
 		<div>
 			<div className="login-type" style={{ fontSize: "20px", fontWeight: "bold" }}>
-				登录VoyaPay账户
+				登录VoyaPay账户{currentLoginType == 2 ? `(请进行邮箱二次验证)` : ""}
 			</div>
 			<Form
 				form={form}
@@ -71,7 +93,7 @@ const LoginComponent = (props: LoginComponentProps) => {
 				size="large"
 				autoComplete="on"
 			>
-				{loginType == 0 ? (
+				{currentLoginType == 0 ? (
 					<Form.Item name="username" rules={[{ required: true, message: `请输入手机号` }]}>
 						<Input placeholder="手机号" prefix={<UserOutlined />} />
 					</Form.Item>
@@ -87,19 +109,28 @@ const LoginComponent = (props: LoginComponentProps) => {
 						/>
 					</Form.Item>
 				)}
-				<div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
-					<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
-						<Input.Password autoComplete="current-password" placeholder="密码" prefix={<LockOutlined />} />
-					</Form.Item>
-					<a
-						onClick={() => {
-							navigate("/forgot-password");
-						}}
-						style={{ position: "absolute", bottom: "8px", right: "0" }}
-					>
-						忘记密码
-					</a>
-				</div>
+				{currentLoginType == 2 ? (
+					<div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+						<Form.Item name="password" rules={[{ required: true, message: "请输入邮箱验证码" }]}>
+							<Input autoComplete="current-password" placeholder="邮箱验证码" prefix={<LockOutlined />} />
+						</Form.Item>
+					</div>
+				) : (
+					<div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+						<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
+							<Input.Password autoComplete="current-password" placeholder="密码" prefix={<LockOutlined />} />
+						</Form.Item>
+						<a
+							onClick={() => {
+								navigate("/forgot-password");
+							}}
+							style={{ position: "absolute", bottom: "8px", right: "0" }}
+						>
+							忘记密码
+						</a>
+					</div>
+				)}
+
 				<Form.Item className="login-btn">
 					<Button
 						onClick={() => {
@@ -115,11 +146,19 @@ const LoginComponent = (props: LoginComponentProps) => {
 					</Button>
 				</Form.Item>
 			</Form>
-			<div className="otherText-wrap">
-				<a onClick={() => navigate("/register")} style={{ marginRight: 10 }}>
-					没有账号？立即注册
-				</a>
-			</div>
+			{currentLoginType == 1 ? (
+				<div className="otherText-wrap">
+					<a onClick={() => navigate("/register")} style={{ marginRight: 10 }}>
+						没有账号？立即注册
+					</a>
+				</div>
+			) : (
+				<div className="otherText-wrap">
+					<a onClick={() => setCurrentLoginType(1)} style={{ marginRight: 10 }}>
+						返回登录页面
+					</a>
+				</div>
+			)}
 		</div>
 	);
 };

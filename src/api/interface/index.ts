@@ -132,6 +132,8 @@ export namespace Login {
 
 	export interface ResLogin {
 		access_token: string;
+		message: string;
+		code: number;
 	}
 
 	export interface ReqCaptcha {

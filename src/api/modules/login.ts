@@ -1,4 +1,4 @@
-import { Login } from "@/api/interface/index";
+import { Login } from "@/api/interface";
 import { PORT1, PORT3 } from "@/api/config/servicePort";
 
 import http from "@/api";
