@@ -155,11 +155,9 @@ const Aransactions = () => {
 		if (dates) {
 			let startDate = new Date(dates[0]);
 			startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
-			startDate = new Date(startDate.getTime() - 8 * 1000 * 60 * 60);
 
 			let endDate = new Date(dates[1]);
 			endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
-			endDate = new Date(endDate.getTime() - 8 * 1000 * 60 * 60);
 
 			searchTransferRequest.where!.startDate = startDate;
 			searchTransferRequest.where!.endDate = endDate;
