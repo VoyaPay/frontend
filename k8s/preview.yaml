@@ -6,7 +6,7 @@ data:
   NODE_ENV: "preview"
   PORT: "3000"
   VITE_GLOB_APP_TITLE: "Voyapay"
-  VITE_API_URL: "http://alb-cbup6cxmqwd4sv7kv6.cn-hongkong.alb.aliyuncsslbintl.com"
+  VITE_API_URL: "http://api-preview.dsgj.cn"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -87,7 +87,7 @@ spec:
     kind: Deployment
     name: preview-ui-main
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 2
   metrics:
   - type: Resource
     resource:
@@ -111,17 +111,3 @@ spec:
   selector:
     matchLabels:
       app: preview-ui-main
----
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: preview-ui-main-quota
-spec:
-  hard:
-    requests.cpu: "0.25"
-    requests.memory: 512Mi
-    limits.cpu: "0.5"
-    limits.memory: 1Gi
-    persistentvolumeclaims: "3"
-    services.loadbalancers: "1"
-    services.nodeports: "1" 
