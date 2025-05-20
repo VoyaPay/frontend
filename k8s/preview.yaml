@@ -4,7 +4,7 @@ metadata:
   name: preview-ui-main-config
 data:
   NODE_ENV: "preview"
-  PORT: "3000"
+  PORT: "80"
   VITE_GLOB_APP_TITLE: "Voyapay"
   VITE_API_URL: "http://api-preview.dsgj.cn"
 ---
@@ -71,7 +71,7 @@ spec:
   type: ClusterIP
   ports:
   - port: 80
-    targetPort: 3000
+    targetPort: 80
     protocol: TCP
     name: http
   selector:
