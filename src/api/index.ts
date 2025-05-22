@@ -90,24 +90,26 @@ class RequestHttp {
 					message.error(data.msg);
 					return Promise.reject(data);
 				}
-				return data;
+				return Promise.resolve(data);
 			},
 			async (error: AxiosError) => {
 				const response = error.response;
 				NProgress.done();
 				tryHideFullScreenLoading();
-				if (response?.status === 401) {
+				if (response?.status === 0) {
+					message.error("网络无响应或已超时");
+				} else if (response?.status === 401) {
 					if (!response?.request?.responseURL.includes("/auth/login")) {
 						store.dispatch(setToken(""));
 						message.error("您的会话已过期，请重新登录。");
 						window.location.hash = "/login";
 					} else {
-						return Promise.reject(checkStatus(response.status));
+						checkStatus(response.status);
 					}
 				} else if (response && response.status >= 400 && response.status < 500) {
 					const errorData = response.data as ErrorResponse;
 					if ([1001, 1002].includes(errorData.errorCode)) {
-						return Promise.reject(checkErrorCode(errorData.errorCode));
+						checkErrorCode(errorData.errorCode);
 					} else if (errorData.errorCode === 11005) {
 						message.error("卡片余额与WEX系统不一致，无法注销。");
 						return Promise.reject(errorData.message);
@@ -115,10 +117,9 @@ class RequestHttp {
 					message.error(errorData.message);
 					return Promise.reject(errorData.message);
 				} else if (response && response.status >= 500) {
-					message.error((response.data as ErrorResponse).message);
-					return Promise.reject(checkStatus(response.status));
+					checkStatus(response.status);
 				} else if (!window.navigator.onLine) window.location.hash = "/500";
-				return Promise.reject(error);
+				return Promise.reject(error.response?.data);
 			}
 		);
 	}
@@ -126,7 +127,7 @@ class RequestHttp {
 	get<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
 		return this.service.get(url, { params, ..._object });
 	}
-	post<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	post<T>(url: string, params?: object | null, _object = {}): Promise<ResultData<T>> {
 		return this.service.post(url, params, _object);
 	}
 	postPage<T>(url: string, params?: object, _object = {}): Promise<ResPage<T>> {

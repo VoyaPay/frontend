@@ -37,6 +37,10 @@ export const CardInformationApi = (id: string) => {
 	return http.get<ResultData>(PORT3 + "/Cards/" + id + "/details", undefined);
 };
 
+export const enableCardDetail = (params: object) => {
+	return http.post<ResultData>(PORT3 + "/Auth/enableCardDetail", params);
+};
+
 export const CardbinApi = () => {
 	return http.get<ResultData>(PORT3 + "/Cards/bins", undefined);
 };
