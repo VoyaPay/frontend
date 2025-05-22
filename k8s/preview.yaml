@@ -6,7 +6,7 @@ data:
   NODE_ENV: "preview"
   PORT: "80"
   VITE_GLOB_APP_TITLE: "Voyapay"
-  VITE_API_URL: "http://api-preview.dsgj.cn"
+  VITE_API_URL: "http://api-preview2.voyapay.com"
 ---
 apiVersion: apps/v1
 kind: Deployment
