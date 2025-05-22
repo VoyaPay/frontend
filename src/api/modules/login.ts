@@ -1,4 +1,4 @@
-import { Login } from "@/api/interface";
+import { Login, UserSafeOperation } from "@/api/interface";
 import { PORT1, PORT3 } from "@/api/config/servicePort";
 
 import http from "@/api";
@@ -11,7 +11,11 @@ export const loginApi = (params: Login.ReqLoginForm) => {
 };
 
 export const loginSecondVerify = (params: Login.ReqLoginForm) => {
-	return http.post<Login.ResLogin>(PORT3 + `/auth/loginSecondVerify`, params, { isToken: false });
+	return http.post<Login.ResLogin>(PORT3 + `/auth/secondVerify`, params, { isToken: false });
+};
+
+export const safeOperation = (params: UserSafeOperation) => {
+	return http.get<Login.ResLogin>(PORT3 + `/auth/safeOperation`, params);
 };
 
 export const registerApi = (params: Login.ReqRegister) => {

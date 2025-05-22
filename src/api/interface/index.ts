@@ -49,7 +49,7 @@ export interface configDetail {
 	maximumCardsAllowed: number;
 }
 export interface Result {
-	code: string;
+	code: number;
 	msg: string;
 	card?: { number: string; alias: string };
 	transaction?: NewTransaction;
@@ -88,6 +88,10 @@ export interface KYCData extends Result {
 	status?: string;
 }
 
+export interface UserSafeOperation {
+	isVerify?: number;
+}
+
 export interface KYCFields extends KYCData {
 	[key: string]: any;
 }
@@ -106,6 +110,10 @@ export interface ReqPage {
 	pageSize: number;
 }
 
+export interface PayConfig {
+	payPwd: string;
+	showCardDetail: number;
+}
 // * 登录
 export namespace Login {
 	export interface ReqLoginForm {

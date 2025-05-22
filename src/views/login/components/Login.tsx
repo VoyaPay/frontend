@@ -7,6 +7,7 @@ import { getKYCApi } from "@/api/modules/kyc";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setToken, setUserInfo } from "@/redux/modules/global/action";
+import { ResultEnum } from "@/enums/httpEnum";
 
 interface LoginComponentProps {
 	form: FormInstance<any>;
@@ -30,20 +31,23 @@ const LoginComponent = (props: LoginComponentProps) => {
 
 			const access_token = response.data?.access_token;
 			if (!access_token) {
-				const code = response.data?.code;
+				const code = response?.code;
 				if (code) {
 					if (code === 400) {
-						const msg = response.data?.message ?? "系统错误，请稍后重试!";
+						const msg = response?.msg ?? "系统错误，请稍后重试!";
 						message.error(msg);
 						throw new Error(msg);
 					}
-					if (code === 200) {
+					if (code === ResultEnum.SUCCESS) {
 						//邮箱发送成功，弹窗提示输入验证码
 						Modal.confirm({
 							title: "二次验证",
-							content: "您已启用登录二次验证，邮箱验证码已发送成功，请重新进行登录操作！",
+							content: `为了您的账户安全，我们已向您的邮箱发送了6位验证码。请在15分钟内查收并输入验证码完成登录。`,
 							onOk() {
-								form.resetFields();
+								// form.resetFields();
+								form.setFieldsValue({
+									password: undefined
+								});
 								setCurrentLoginType(2);
 							},
 							onCancel() {
