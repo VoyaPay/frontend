@@ -25,7 +25,7 @@ spec:
         app: preview-ui-main
     spec:
       imagePullSecrets:
-      - name: ricco-private
+      - name: acs-ricco-private
       containers:
       - name: preview-ui-main
         image: registry.cn-hangzhou.aliyuncs.com/voyapay-demo/ui-main:${VERSION}-preview.${BUILD_NUMBER}
