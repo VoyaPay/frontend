@@ -4,9 +4,6 @@ metadata:
   name: preview-ui-main-config
 data:
   NODE_ENV: "preview"
-  PORT: "80"
-  VITE_GLOB_APP_TITLE: "Voyapay"
-  VITE_API_URL: "http://api-preview2.voyapay.com"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,21 +42,6 @@ spec:
             configMapKeyRef:
               name: preview-ui-main-config
               key: NODE_ENV
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: preview-ui-main-config
-              key: PORT
-        - name: VITE_GLOB_APP_TITLE
-          valueFrom:
-            configMapKeyRef:
-              name: preview-ui-main-config
-              key: VITE_GLOB_APP_TITLE
-        - name: VITE_API_URL
-          valueFrom:
-            configMapKeyRef:
-              name: preview-ui-main-config
-              key: VITE_API_URL
 ---
 apiVersion: v1
 kind: Service
