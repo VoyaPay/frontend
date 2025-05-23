@@ -73,7 +73,7 @@ export interface Result {
 	status?: string;
 	fileID?: string;
 	length?: string;
-	cardNumber?: string;
+	cardNumber?: number;
 }
 
 // * 请求响应参数(包含data)
