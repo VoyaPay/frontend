@@ -93,6 +93,7 @@ const Detail = () => {
 	const [openAutoRechargeModal, setOpenAutoRechargeModal] = useState(false);
 	const [autoRechargeSwitch, setAutoRechargeSwitch] = useState(false);
 	const [showCardDetails, setShowCardDetails] = useState(false);
+	const [isStartShowCardDetails, setIsStartShowCardDetails] = useState(false);
 	const payPwdRef = useRef("");
 
 	useEffect(() => {
@@ -105,8 +106,14 @@ const Detail = () => {
 
 	const getIsShowCardDetail = async () => {
 		const res = await findPayConfig();
-		if (res.data?.showCardDetail == 1) {
-			setShowCardDetails(true);
+		console.log("res--->", res);
+		if (res.data) {
+			setIsStartShowCardDetails(true);
+			if (res.data?.showCardDetail == 1) {
+				setShowCardDetails(true);
+			}
+		} else {
+			setIsStartShowCardDetails(false);
 		}
 	};
 
@@ -430,9 +437,13 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">卡号：</div>
 								<div className="text">{formatCardNumber(cardData.cardTotal)}</div>
-								<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
-									{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-								</span>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
 								<span className="action" onClick={toCopy}>
 									复制完整卡号
 								</span>
@@ -441,17 +452,25 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">有效期：</div>
 								<div className="text">{cardData.expirationDate || "N/A"}</div>
-								<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
-									{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-								</span>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
 							</div>
 
 							<div className="content">
 								<div className="pre">CVV：</div>
 								<div className="text">{cardData.cvv2 || "N/A"}</div>
-								<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
-									{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-								</span>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
 							</div>
 							<div className="content">
 								<div className="pre">自动充值：</div>
@@ -489,9 +508,14 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">余额：</div>
 								<div className="text"> {cardData.balance ? (showCardDetails ? "" : "$ ") + `${cardData.balance}` : "$0"}</div>
-								<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
-									{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-								</span>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
+
 								<div className="check" onClick={() => goCheck(cardData)}>
 									查看消费记录
 								</div>
