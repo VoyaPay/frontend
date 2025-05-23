@@ -106,7 +106,6 @@ const Detail = () => {
 
 	const getIsShowCardDetail = async () => {
 		const res = await findPayConfig();
-		console.log("res--->", res);
 		if (res.data) {
 			setIsStartShowCardDetails(true);
 			if (res.data?.showCardDetail == 1) {

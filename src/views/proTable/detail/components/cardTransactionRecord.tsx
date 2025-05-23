@@ -165,7 +165,14 @@ const CardTransactionRecord = ({ id }: { id: string }) => {
 			render: (record: any) => (record.type === "transaction" ? record.amount || "--" : "--"),
 			key: "amount"
 		},
-		{ title: "结算金额(USD)", render: (record: any) => record.totalAmount || "--", key: "totalAmount" },
+		{
+			title: "结算金额(USD)",
+			render: (record: any) => {
+				const amount = parseFloat(record.totalAmount);
+				return isNaN(amount) ? "--" : (amount * -1).toFixed(2) || "--";
+			},
+			key: "totalAmount"
+		},
 		{
 			title: "失败原因",
 			render: (record: any) => {
