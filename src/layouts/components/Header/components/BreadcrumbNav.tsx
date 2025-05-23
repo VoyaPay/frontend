@@ -10,7 +10,9 @@ const BreadcrumbNav = (props: any) => {
 	const mainRouter = rootRouter.find((item: any) => item.meta?.title === "主页面")?.children;
 	const routerPath = pathname.split("/");
 	const renderBreadcrumb = (router: any) => {
-		if (routerPath.includes(router.path.split("/").pop())) {
+		const fullPath = `/${routerPath.filter(Boolean).join("/")}`;
+		if (fullPath.startsWith(router.path)) {
+			// if (routerPath.includes(router.path.split("/").pop())) {
 			return (
 				<React.Fragment key={router.path}>
 					<Breadcrumb.Item
