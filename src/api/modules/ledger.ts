@@ -11,6 +11,10 @@ export const GetBalanceApi = () => {
 	return http.get<ResultData>(PORT3 + "/Ledger/balance", undefined);
 };
 
+export const GetCardNumberApi = () => {
+	return http.get<ResultData>(PORT3 + "/cards/cardNumber", undefined);
+};
+
 export const GetTotalBalanceApi = () => {
 	return http.get<ResultData>(PORT3 + "/cards/totalBalance", undefined);
 };

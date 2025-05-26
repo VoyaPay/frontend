@@ -4,7 +4,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./index.less";
 import { UserCardApi } from "@/api/modules/prepaid";
-import { GetBalanceApi, GetTotalBalanceApi } from "@/api/modules/ledger";
+import { GetBalanceApi, GetCardNumberApi, GetTotalBalanceApi } from "@/api/modules/ledger";
 import { CardbinApi } from "@/api/modules/card";
 import SvgIcon from "@/components/svgIcon";
 import { SorterResult } from "antd/lib/table/interface";
@@ -219,13 +219,19 @@ const PrepaidCard = () => {
 	};
 
 	const getBalance = async () => {
-		const [balanceResponse, totalBalanceResponse] = await Promise.all([GetBalanceApi(), GetTotalBalanceApi()]);
+		const [balanceResponse, totalBalanceResponse, cardNumber] = await Promise.all([
+			GetBalanceApi(),
+			GetTotalBalanceApi(),
+			GetCardNumberApi()
+		]);
 		const balance = balanceResponse.currentBalance ? parseFloat(parseFloat(balanceResponse.currentBalance).toFixed(2)) : 0;
 		const totalBalance = totalBalanceResponse.totalBalance
 			? parseFloat(parseFloat(totalBalanceResponse.totalBalance).toFixed(2))
 			: 0;
+		const totalCardNumber = cardNumber.cardNumber ?? 0;
 		setAccountBalance(balance);
 		setTotalBalance(totalBalance);
+		setTotalCardNumber(totalCardNumber);
 	};
 
 	const columns: any[] = [
