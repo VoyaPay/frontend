@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: preview-ui-main-config
+data:
+  NODE_ENV: "preview"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: preview-ui-main
+  labels:
+    app: preview-ui-main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: preview-ui-main
+  template:
+    metadata:
+      labels:
+        app: preview-ui-main
+    spec:
+      imagePullSecrets:
+      - name: acs-ricco-private
+      containers:
+      - name: preview-ui-main
+        image: registry.cn-hangzhou.aliyuncs.com/voyapay-demo/ui-main:${VERSION}-preview.${BUILD_NUMBER}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: preview-ui-main-config
+              key: NODE_ENV
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: preview-ui-main
+  labels:
+    app: preview-ui-main
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: preview-ui-main
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: preview-ui-main-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: preview-ui-main
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: preview-ui-main-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: preview-ui-main
