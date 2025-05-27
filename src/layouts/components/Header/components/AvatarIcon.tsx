@@ -8,7 +8,7 @@ import avatar from "@/assets/icons/avatar.svg";
 import useLogout from "@/hooks/useLogout";
 import { store } from "@/redux";
 interface ModalProps {
-	showModal: (params: { name: number }) => void;
+	showModal: (params: { type: number }) => void;
 }
 
 const AvatarIcon = () => {
@@ -48,7 +48,7 @@ const AvatarIcon = () => {
 				{
 					key: "3",
 					label: <span className="dropdown-item">修改密码</span>,
-					onClick: () => passRef.current!.showModal({ name: 11 })
+					onClick: () => passRef.current!.showModal({ type: 11 })
 				},
 				{
 					type: "divider"

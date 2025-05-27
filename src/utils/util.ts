@@ -1,4 +1,5 @@
 import { RouteObject } from "@/routers/interface";
+import { AES, enc, mode, pad } from "crypto-js";
 
 /**
  * @description 获取localStorage
@@ -234,4 +235,13 @@ export const formatDate = (dateString: string) => {
 	const seconds = String(date.getSeconds()).padStart(2, "0");
 
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+export const encryption = (str: string) => {
+	let key = enc.Latin1.parse("1236896487626579");
+	return AES.encrypt(str, key, {
+		iv: key,
+		mode: mode.CBC,
+		padding: pad.Pkcs7
+	}).toString();
 };
