@@ -113,6 +113,8 @@ export interface ReqPage {
 export interface PayConfig {
 	payPwd: string;
 	showCardDetail: number;
+	isOpen: number;
+	lastShowCardTime: Date;
 }
 // * 登录
 export namespace Login {

@@ -18,3 +18,11 @@ export const findPayConfig = () => {
 export const sendPayConfigEmailCode = () => {
 	return http.get<ResultData>(PORT3 + "/auth/sendEmailCode", undefined);
 };
+
+export const enablePay = (params: object) => {
+	return http.post<PayConfig>(PORT3 + "/auth/enablePay", params);
+};
+
+export const changePayPwd = async (params: object) => {
+	return http.post<ResultData>(PORT3 + "/auth/changePayPwd", params);
+};
