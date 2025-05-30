@@ -205,14 +205,13 @@ const AddPrepaidCard = () => {
 			cardHolderLastName: lastName,
 			cardBin: selectedCard
 		};
-		await AddCardApi(payload)
-			.then(() => {
-				message.success("申请已提交");
-				navigate("/applySuccess/index");
-			})
-			.catch(error => {
-				message.error(error);
-			});
+		await AddCardApi(payload).then(() => {
+			message.success("申请已提交");
+			navigate("/applySuccess/index");
+		});
+		// .catch(error => {
+		// 	message.error(error);
+		// });
 	};
 	const userInformation = async () => {
 		try {
