@@ -127,26 +127,24 @@ const PasswordModal = (props: Props) => {
 	) : isPayType === 13 ? (
 		<Modal title="设置初始密码" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} destroyOnClose={true}>
 			<Form form={form} layout="vertical">
-				<Form.Item label="邮箱验证码" name="oldPassword" rules={[{ required: true, message: "请输入邮箱验证码" }]}>
+				<Form.Item
+					label="邮箱验证码(默认发往注册邮箱)"
+					name="oldPassword"
+					rules={[{ required: true, message: "请输入邮箱验证码" }]}
+				>
 					<div style={{ display: "flex" }}>
 						<Form.Item name="oldPassword" noStyle>
-							<Input autoComplete="current-password" placeholder="邮箱验证码(默认发往注册邮箱)" style={{ flex: 1 }} />
+							<Input autoComplete="current-password" placeholder="请填入6位验证码，15分钟内有效" style={{ flex: 1 }} />
 						</Form.Item>
 						<Button
 							type="primary"
 							disabled={countdown > 0}
 							onClick={async () => {
-								try {
-									// 调用发送验证码接口
-									const res = await sendPayConfigEmailCode();
-									if (res.code === 200) {
-										message.success("邮箱验证码已发送");
-										startCountdown();
-									} else {
-										message.error(res.message || "发送失败");
-									}
-								} catch (error) {
-									// message.error('邮箱验证码发送失败');
+								// 调用发送验证码接口
+								const res = await sendPayConfigEmailCode();
+								if (res.code === 200) {
+									message.success("邮箱验证码已发送");
+									startCountdown();
 								}
 							}}
 							style={{ marginLeft: 8, height: "32px", alignSelf: "center" }}
@@ -159,11 +157,11 @@ const PasswordModal = (props: Props) => {
 					label="初始密码"
 					name="newPassword"
 					rules={[
-						{ required: true, message: "请输入初始密码" },
-						{ pattern: /^\d{6}$/, message: "请输入正确的6位数字密码" }
+						{ required: true, message: "请设置6位纯数字密码" },
+						{ pattern: /^\d{6}$/, message: "请设置6位纯数字密码" }
 					]}
 				>
-					<Input.Password placeholder="初始密码" prefix={<LockOutlined />} />
+					<Input.Password placeholder="请设置6位纯数字密码" prefix={<LockOutlined />} />
 				</Form.Item>
 			</Form>
 		</Modal>

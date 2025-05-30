@@ -40,7 +40,7 @@ const AccountSetting = () => {
 		}
 		if (code === 200) {
 			setVerifySwitch(checked);
-			message.success(`${checked ? "关闭成功" : "开启成功"}`);
+			message.success(`${checked ? "开启成功" : "关闭成功"}`);
 		}
 	};
 	const isOpenPay = async () => {
