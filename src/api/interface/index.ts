@@ -49,7 +49,7 @@ export interface configDetail {
 	maximumCardsAllowed: number;
 }
 export interface Result {
-	code: string;
+	code: number;
 	msg: string;
 	card?: { number: string; alias: string };
 	transaction?: NewTransaction;
@@ -73,6 +73,7 @@ export interface Result {
 	status?: string;
 	fileID?: string;
 	length?: string;
+	cardNumber?: number;
 }
 
 // * 请求响应参数(包含data)
@@ -85,6 +86,10 @@ export interface KYCData extends Result {
 	fields?: KYCFields;
 	lastUpdateAt?: string;
 	status?: string;
+}
+
+export interface UserSafeOperation {
+	isVerify?: number;
 }
 
 export interface KYCFields extends KYCData {
@@ -105,6 +110,12 @@ export interface ReqPage {
 	pageSize: number;
 }
 
+export interface PayConfig {
+	payPwd: string;
+	showCardDetail: number;
+	isOpen: number;
+	lastShowCardTime: Date;
+}
 // * 登录
 export namespace Login {
 	export interface ReqLoginForm {

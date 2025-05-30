@@ -1,13 +1,16 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Input, Button, message, Modal, Switch } from "antd";
 import bankcard from "@/assets/images/bluecardwithshadow.png";
 import "./index.less";
-import { CardInformationApi, ChangeCardInformationApi } from "@/api/modules/card";
+import { CardInformationApi, ChangeCardInformationApi, enableCardDetail } from "@/api/modules/card";
 import copy from "copy-to-clipboard";
 import CardTabs from "./components/cardTabs";
-import { formatDate } from "@/utils/util";
+import { encryption, formatDate } from "@/utils/util";
 import { GetRulesApi, UpdateRuleStatusApi } from "@/api/modules/rules";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import { ResultEnum } from "@/enums/httpEnum";
+import { findPayConfig } from "@/api/modules/user";
 
 export interface CardData {
 	key: string;
@@ -89,12 +92,29 @@ const Detail = () => {
 	const [confirmLoading, setConfirmLoading] = useState(false);
 	const [openAutoRechargeModal, setOpenAutoRechargeModal] = useState(false);
 	const [autoRechargeSwitch, setAutoRechargeSwitch] = useState(false);
+	const [showCardDetails, setShowCardDetails] = useState(false);
+	const [isStartShowCardDetails, setIsStartShowCardDetails] = useState(false);
+	const payPwdRef = useRef("");
+
 	useEffect(() => {
 		if (cardData.key) {
+			getIsShowCardDetail();
 			fetchCardInformation(cardData.key, setCardData);
 			fetchRules();
 		}
 	}, [cardData.key]);
+
+	const getIsShowCardDetail = async () => {
+		const res = await findPayConfig();
+		if (res.data && res.data?.isOpen == 0) {
+			setIsStartShowCardDetails(true);
+			if (res.data?.showCardDetail == 1) {
+				setShowCardDetails(true);
+			}
+		} else {
+			setIsStartShowCardDetails(false);
+		}
+	};
 
 	const fetchRules = async () => {
 		await GetRulesApi({ where: { name: `autoRecharge:[${cardData.key}]`, trigger: "cardBalanceChanged" } }).then((res: any) => {
@@ -107,6 +127,53 @@ const Detail = () => {
 				setAutoRechargeSwitch(res.datalist[0].isEnable);
 			}
 		});
+	};
+
+	const openOrClosedDetail = async () => {
+		const res = await findPayConfig();
+		if (!res.data) {
+			message.error("请刷浏览器后重新操作");
+			return;
+		}
+		const fifteenMinutesAgo = new Date().getTime() - 15 * 60 * 1000;
+		const lastShowTime = res.data?.lastShowCardTime ? new Date(res.data.lastShowCardTime).getTime() : 0;
+		if (showCardDetails && (lastShowTime === 0 || lastShowTime <= fifteenMinutesAgo)) {
+			Modal.confirm({
+				title: "请输入支付密码",
+				icon: null,
+				content: (
+					<Input.Password
+						onChange={e => {
+							payPwdRef.current = e.target.value;
+						}}
+						placeholder="请输入支付密码..."
+					/>
+				),
+				onOk() {
+					let value = payPwdRef.current;
+					if (!value) {
+						message.error("请输入支付密码！");
+						return Promise.reject();
+					}
+					// 这里执行确认后的逻辑
+					enableCardDetail({ pwd: encryption(value), enable: showCardDetails ? 0 : 1 }).then(res => {
+						if (res.code == ResultEnum.SUCCESS) {
+							fetchCardInformation(cardData.key, setCardData);
+							setShowCardDetails(!showCardDetails);
+						}
+					});
+				},
+				onCancel() {}
+			});
+		} else {
+			// 这里执行确认后的逻辑
+			enableCardDetail({ enable: showCardDetails ? 0 : 1 }).then(res => {
+				if (res.code == ResultEnum.SUCCESS) {
+					fetchCardInformation(cardData.key, setCardData);
+					setShowCardDetails(!showCardDetails);
+				}
+			});
+		}
 	};
 
 	const saveChanges1 = async () => {
@@ -385,6 +452,13 @@ const Detail = () => {
 							<div className="content">
 								<div className="pre">卡号：</div>
 								<div className="text">{formatCardNumber(cardData.cardTotal)}</div>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
 								<span className="action" onClick={toCopy}>
 									复制完整卡号
 								</span>
@@ -392,12 +466,26 @@ const Detail = () => {
 
 							<div className="content">
 								<div className="pre">有效期：</div>
-								<div className="text">{cardData.expirationDate}</div>
+								<div className="text">{cardData.expirationDate || "N/A"}</div>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
 							</div>
 
 							<div className="content">
 								<div className="pre">CVV：</div>
 								<div className="text">{cardData.cvv2 || "N/A"}</div>
+								{isStartShowCardDetails ? (
+									<span className="action eye-icon" onClick={() => openOrClosedDetail()}>
+										{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+									</span>
+								) : (
+									""
+								)}
 							</div>
 							<div className="content">
 								<div className="pre">自动充值：</div>
@@ -434,7 +522,14 @@ const Detail = () => {
 
 							<div className="content">
 								<div className="pre">余额：</div>
-								<div className="text"> {cardData.balance ? `$ ${cardData.balance}` : "$0"}</div>
+								<div className="text"> {cardData.balance ? (showCardDetails ? "" : "$ ") + `${cardData.balance}` : "$0"}</div>
+								{/*{isStartShowCardDetails ? (*/}
+								{/*	<span className="action eye-icon" onClick={() => openOrClosedDetail()}>*/}
+								{/*		{showCardDetails ? <EyeInvisibleOutlined /> : <EyeOutlined />}*/}
+								{/*	</span>*/}
+								{/*) : (*/}
+								{/*	""*/}
+								{/*)}*/}
 
 								<div className="check" onClick={() => goCheck(cardData)}>
 									查看消费记录
